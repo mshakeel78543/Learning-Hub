@@ -1,148 +1,62 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
+import { 
+  Layout, 
+  Menu, 
+  Input, 
+  Card, 
+  Button, 
+  Progress, 
+  Badge, 
+  Avatar, 
+  Typography, 
+  Space, 
   Drawer,
-  AppBar,
-  Toolbar,
-  List,
-  Typography,
-  Divider,
-  IconButton,
-  ListItemButton,
-  ListItemText,
-  Collapse,
-  TextField,
-  InputAdornment,
-  Chip,
-  Paper,
-  Grid,
-  Tab,
   Tabs,
-  Button,
-  Avatar,
-  Stack,
-  Badge,
-} from '@mui/material';
+  Select,
+  Alert,
+  Spin,
+  theme,
+  ConfigProvider,
+  Switch,
+  FloatButton,
+} from 'antd';
 import {
-  Menu as MenuIcon,
-  Search as SearchIcon,
-  ExpandLess,
-  ExpandMore,
-  Code as CodeIcon,
-  Book as BookIcon,
-  Terminal as TerminalIcon,
-  Person as PersonIcon,
-  Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
-  Brightness4 as DarkModeIcon,
-  Brightness7 as LightModeIcon,
-} from '@mui/icons-material';
-import { ThemeProvider, PaletteMode } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { getTheme } from '@/lib/theme';
+  MenuOutlined,
+  SearchOutlined,
+  BookOutlined,
+  CodeOutlined,
+  ApiOutlined,
+  BellOutlined,
+  SettingOutlined,
+  UserOutlined,
+  BulbOutlined,
+  ThunderboltOutlined,
+  TrophyOutlined,
+  ClockCircleOutlined,
+  FireOutlined,
+  RocketOutlined,
+  CheckCircleOutlined,
+  LockOutlined,
+  BgColorsOutlined,
+} from '@ant-design/icons';
 import { contentStructure, Topic } from '@/lib/contentStructure';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
-import ProgressCard from '@/components/ProgressCard';
-import LessonCard from '@/components/LessonCard';
-import LessonContent from '@/components/LessonContent';
 
-const drawerWidth = 320;
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box>{children}</Box>}
-    </div>
-  );
-}
-
-function ContentViewer({ html }: { html: string }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <Box sx={{ p: 4, display: 'flex', justifyContent: 'center' }}>
-        <Typography>Loading content...</Typography>
-      </Box>
-    );
-  }
-
-  return (
-    <Box
-      sx={{
-        height: '100%',
-        overflow: 'auto',
-        p: 4,
-        '& .header': {
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          p: 4,
-          borderRadius: 2,
-          mb: 4,
-        },
-        '& .header h1': {
-          fontSize: '2.5rem',
-          fontWeight: 700,
-          margin: 0,
-        },
-        '& .content': {
-          maxWidth: 900,
-          margin: '0 auto',
-        },
-        '& h2': {
-          color: '#667eea',
-          fontSize: '1.8rem',
-          fontWeight: 600,
-          mt: 4,
-          mb: 2,
-        },
-        '& p': {
-          lineHeight: 1.8,
-          mb: 2,
-          fontSize: '1.05rem',
-        },
-        '& code': {
-          backgroundColor: '#f5f5f5',
-          padding: '3px 8px',
-          borderRadius: 1,
-          fontFamily: 'Consolas, Monaco, monospace',
-          color: '#d63031',
-          fontSize: '0.9em',
-        },
-      }}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
-}
+const { Header, Sider, Content } = Layout;
+const { Title, Text, Paragraph } = Typography;
+const { TabPane } = Tabs;
+const { Option } = Select;
 
 export default function LearningPlatform() {
-  const [mode, setMode] = useState<PaletteMode>('light');
+  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openCategories, setOpenCategories] = useState<{ [key: string]: boolean }>({});
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [contentHtml, setContentHtml] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState('1');
   const [code, setCode] = useState('// Write your API security code here\n\nconst apiUrl = "https://jsonplaceholder.typicode.com/users";\n\nfetch(apiUrl)\n  .then(response => response.json())\n  .then(data => console.log(data))\n  .catch(error => console.error("Error:", error));');
   const [apiUrl, setApiUrl] = useState('https://jsonplaceholder.typicode.com/users');
   const [apiMethod, setApiMethod] = useState('GET');
@@ -151,84 +65,16 @@ export default function LearningPlatform() {
   const [apiResponse, setApiResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [completedLessons, setCompletedLessons] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  const theme = React.useMemo(() => getTheme(mode), [mode]);
+  const { token } = theme.useToken();
 
-  const toggleColorMode = () => {
-    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-  };
-
-  useEffect(() => {
-    const initialOpen: { [key: string]: boolean } = {};
-    contentStructure.forEach(section => {
-      section.categories.forEach(category => {
-        initialOpen[category.id] = true;
-      });
+  const allTopics: Topic[] = [];
+  contentStructure.forEach(section => {
+    section.categories.forEach(category => {
+      allTopics.push(...category.topics);
     });
-    setOpenCategories(initialOpen);
-
-    if (contentStructure[0]?.categories[0]?.topics[0]) {
-      loadContent(contentStructure[0].categories[0].topics[0]);
-    }
-  }, []);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const handleCategoryClick = (categoryId: string) => {
-    setOpenCategories(prev => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }));
-  };
-
-  const loadContent = async (topic: Topic) => {
-    setSelectedTopic(topic);
-    try {
-      const response = await axios.get(`/api/content?file=${encodeURIComponent(topic.file)}`);
-      setContentHtml(response.data.content);
-    } catch (error) {
-      console.error('Error loading content:', error);
-      setContentHtml('<h2>Error: Could not load file</h2><p>Please try again.</p>');
-    }
-  };
-
-  const handleApiRequest = async () => {
-    setLoading(true);
-    setApiResponse('');
-    try {
-      let headers = {};
-      try {
-        headers = JSON.parse(apiHeaders);
-      } catch (e) {
-        headers = {};
-      }
-
-      const response = await axios.post('/api/proxy', {
-        url: apiUrl,
-        method: apiMethod,
-        headers: headers,
-        body: apiBody || undefined,
-      });
-
-      const formattedResponse = JSON.stringify({
-        status: response.data.status,
-        statusText: response.data.statusText,
-        headers: response.data.headers,
-        body: JSON.parse(response.data.body),
-      }, null, 2);
-
-      setApiResponse(formattedResponse);
-    } catch (error: any) {
-      setApiResponse(JSON.stringify({
-        error: error.message || 'Request failed',
-        details: error.response?.data || error.toString()
-      }, null, 2));
-    } finally {
-      setLoading(false);
-    }
-  };
+  });
 
   const filteredContent = contentStructure.map(section => ({
     ...section,
@@ -240,389 +86,330 @@ export default function LearningPlatform() {
     })).filter(category => category.topics.length > 0)
   })).filter(section => section.categories.length > 0);
 
-  const allTopics = contentStructure.flatMap(s => 
-    s.categories.flatMap(c => c.topics)
-  );
+  useEffect(() => {
+    if (contentStructure[0]?.categories[0]?.topics[0]) {
+      loadContent(contentStructure[0].categories[0].topics[0]);
+    }
+  }, []);
 
-  const drawer = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
+  const loadContent = async (topic: Topic) => {
+    setSelectedTopic(topic);
+    try {
+      const response = await fetch(`/api/content?file=${encodeURIComponent(topic.file)}`);
+      if (response.ok) {
+        const html = await response.text();
+        setContentHtml(html);
+      } else {
+        setContentHtml('<div class="error"><h2>Content not found</h2><p>Unable to load the lesson content.</p></div>');
+      }
+    } catch (error) {
+      setContentHtml('<div class="error"><h2>Error loading content</h2><p>Please try again later.</p></div>');
+    }
+  };
+
+  const handleApiRequest = async () => {
+    setLoading(true);
+    try {
+      const headers = JSON.parse(apiHeaders);
+      const response = await axios({
+        method: apiMethod,
+        url: '/api/proxy',
+        data: {
+          targetUrl: apiUrl,
+          method: apiMethod,
+          headers: headers,
+          body: apiMethod !== 'GET' ? apiBody : undefined
+        }
+      });
+      setApiResponse(JSON.stringify(response.data, null, 2));
+    } catch (error: any) {
+      setApiResponse(JSON.stringify({ error: error.message, details: error.response?.data }, null, 2));
+    }
+    setLoading(false);
+  };
+
+  const menuItems = filteredContent.map(section => ({
+    key: section.id,
+    icon: <FolderOutlined />,
+    label: section.title,
+    children: section.categories.map(category => ({
+      key: category.id,
+      icon: <span style={{ fontSize: '16px' }}>{category.icon}</span>,
+      label: category.title,
+      children: category.topics.map(topic => ({
+        key: topic.id,
+        label: topic.title,
+        onClick: () => {
+          loadContent(topic);
+          setMobileOpen(false);
+        }
+      }))
+    }))
+  }));
+
+  const sidebarContent = (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Sidebar Header */}
-      <Box sx={{ 
-        p: 2.5, 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      <div style={{ 
+        padding: '24px 16px', 
+        background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
         color: 'white'
       }}>
-        <Typography variant="h6" fontWeight={700} gutterBottom>
+        <Title level={4} style={{ color: 'white', margin: 0, marginBottom: 8 }}>
           📚 API Security Academy
-        </Typography>
-        <Typography variant="caption" sx={{ opacity: 0.9 }}>
+        </Title>
+        <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: '12px' }}>
           Master API Hacking Step by Step
-        </Typography>
-      </Box>
+        </Text>
+      </div>
 
       {/* Progress Card */}
-      <Box sx={{ p: 2, bgcolor: mode === 'light' ? '#f8f9fa' : 'background.default' }}>
-        <ProgressCard
-          completedLessons={completedLessons}
-          totalLessons={allTopics.length}
-          timeSpent="2h 15m"
-          streak={5}
-        />
-      </Box>
+      <Card size="small" style={{ margin: 16, borderRadius: 8 }}>
+        <Space direction="vertical" style={{ width: '100%' }} size="small">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text strong>Your Progress</Text>
+            <Badge count={completedLessons} style={{ backgroundColor: '#52c41a' }} />
+          </div>
+          <Progress 
+            percent={Math.round((completedLessons / allTopics.length) * 100)} 
+            strokeColor={{ '0%': '#1890ff', '100%': '#52c41a' }}
+            size="small"
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 8 }}>
+            <div style={{ textAlign: 'center' }}>
+              <ClockCircleOutlined style={{ fontSize: 16, color: '#1890ff' }} />
+              <div><Text type="secondary" style={{ fontSize: 11 }}>2h 15m</Text></div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <FireOutlined style={{ fontSize: 16, color: '#ff4d4f' }} />
+              <div><Text type="secondary" style={{ fontSize: 11 }}>5 days</Text></div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <TrophyOutlined style={{ fontSize: 16, color: '#faad14' }} />
+              <div><Text type="secondary" style={{ fontSize: 11 }}>Level {Math.floor(completedLessons / 10) + 1}</Text></div>
+            </div>
+          </div>
+        </Space>
+      </Card>
 
       {/* Search */}
-      <Box sx={{ px: 2, pb: 2, bgcolor: mode === 'light' ? '#f8f9fa' : 'background.default' }}>
-        <TextField
-          fullWidth
-          size="small"
+      <div style={{ padding: '0 16px 16px' }}>
+        <Input
           placeholder="Search lessons..."
+          prefix={<SearchOutlined />}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            bgcolor: 'background.paper',
-            '& .MuiOutlinedInput-root': {
-              borderRadius: 2,
-            }
-          }}
+          allowClear
         />
-      </Box>
+      </div>
 
-      <Divider />
-
-      {/* Lessons List */}
-      <Box sx={{ flex: 1, overflow: 'auto', px: 2, py: 2, bgcolor: 'background.paper' }}>
-        {filteredContent.map((section) => (
-          <Box key={section.id} sx={{ mb: 3 }}>
-            <Typography
-              variant="overline"
-              sx={{
-                color: '#667eea',
-                fontWeight: 700,
-                fontSize: '0.75rem',
-                letterSpacing: 1,
-                display: 'block',
-                mb: 1,
-              }}
-            >
-              {section.title}
-            </Typography>
-            
-            {section.categories.map((category) => (
-              <Box key={category.id} sx={{ mb: 1 }}>
-                <ListItemButton
-                  onClick={() => handleCategoryClick(category.id)}
-                  sx={{
-                    borderRadius: 1,
-                    mb: 0.5,
-                    bgcolor: openCategories[category.id] ? 'rgba(102, 126, 234, 0.05)' : 'transparent',
-                    '&:hover': {
-                      bgcolor: 'rgba(102, 126, 234, 0.08)',
-                    }
-                  }}
-                >
-                  <Typography sx={{ mr: 1, fontSize: '1.2rem' }}>{category.icon}</Typography>
-                  <ListItemText
-                    primary={category.title}
-                    primaryTypographyProps={{
-                      fontSize: '0.9rem',
-                      fontWeight: 600,
-                      color: 'text.primary',
-                    }}
-                  />
-                  {openCategories[category.id] ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
-                </ListItemButton>
-                
-                <Collapse in={openCategories[category.id]} timeout="auto" unmountOnExit>
-                  <Box sx={{ pl: 1, mt: 0.5 }}>
-                    {category.topics.map((topic, index) => (
-                      <LessonCard
-                        key={topic.id}
-                        title={topic.title}
-                        duration={`${5 + index * 2} min`}
-                        completed={false}
-                        current={selectedTopic?.id === topic.id}
-                        onClick={() => loadContent(topic)}
-                      />
-                    ))}
-                  </Box>
-                </Collapse>
-              </Box>
-            ))}
-          </Box>
-        ))}
-      </Box>
-    </Box>
+      {/* Menu */}
+      <div style={{ flex: 1, overflow: 'auto', padding: '0 8px' }}>
+        <Menu
+          mode="inline"
+          selectedKeys={[selectedTopic?.id || '']}
+          defaultOpenKeys={contentStructure.map(s => s.id)}
+          items={menuItems}
+          style={{ border: 'none' }}
+        />
+      </div>
+    </div>
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-        {/* Top Bar */}
-        <AppBar
-          position="fixed"
-          elevation={1}
-          sx={{
-            width: { xs: '100%', sm: `calc(100% - ${drawerWidth}px)` },
-            ml: { sm: `${drawerWidth}px` },
-            bgcolor: 'background.paper',
-            color: 'text.primary',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            zIndex: (theme) => theme.zIndex.drawer + 1,
+    <ConfigProvider
+      theme={{
+        algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#1890ff',
+          borderRadius: 8,
+        },
+      }}
+    >
+      <Layout style={{ minHeight: '100vh' }}>
+        {/* Desktop Sidebar */}
+        <Sider
+          width={280}
+          collapsible
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
+          breakpoint="lg"
+          collapsedWidth="0"
+          style={{
+            overflow: 'auto',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            background: token.colorBgContainer,
           }}
+          trigger={null}
         >
-          <Toolbar sx={{ minHeight: { xs: 56, md: 64 } }}>
-            <IconButton
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: 'none' } }}
-            >
-              <MenuIcon />
-            </IconButton>
+          {sidebarContent}
+        </Sider>
+
+        {/* Mobile Drawer */}
+        <Drawer
+          placement="left"
+          onClose={() => setMobileOpen(false)}
+          open={mobileOpen}
+          width={280}
+          bodyStyle={{ padding: 0 }}
+        >
+          {sidebarContent}
+        </Drawer>
+
+        <Layout style={{ marginLeft: collapsed ? 0 : 280, transition: 'margin-left 0.2s' }}>
+          {/* Header */}
+          <Header style={{ 
+            padding: '0 24px', 
+            background: token.colorBgContainer,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: `1px solid ${token.colorBorderSecondary}`,
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <Button 
+                type="text" 
+                icon={<MenuOutlined />} 
+                onClick={() => window.innerWidth < 992 ? setMobileOpen(true) : setCollapsed(!collapsed)}
+              />
+              <BookOutlined style={{ fontSize: 20, color: token.colorPrimary }} />
+              <Title level={5} style={{ margin: 0 }}>
+                {selectedTopic?.title || 'API Security Learning Platform'}
+              </Title>
+            </div>
             
-            <BookIcon sx={{ mr: 1, color: '#667eea', fontSize: { xs: 20, md: 24 } }} />
-            <Typography 
-              variant="h6" 
-              noWrap 
-              component="div" 
-              sx={{ 
-                flexGrow: 1, 
-                fontWeight: 600,
-                fontSize: { xs: '1rem', md: '1.25rem' },
-              }}
-            >
-              {selectedTopic?.title || 'API Security Learning Platform'}
-            </Typography>
+            <Space>
+              <Switch 
+                checkedChildren={<BulbOutlined />}
+                unCheckedChildren={<BgColorsOutlined />}
+                checked={isDarkMode}
+                onChange={setIsDarkMode}
+              />
+              <Badge count={3}>
+                <Button type="text" icon={<BellOutlined />} />
+              </Badge>
+              <Button type="text" icon={<SettingOutlined />} />
+              <Avatar icon={<UserOutlined />} style={{ backgroundColor: token.colorPrimary }} />
+            </Space>
+          </Header>
 
-            <Stack direction="row" spacing={{ xs: 0.5, md: 1 }}>
-              <IconButton onClick={toggleColorMode} size="small" title={mode === 'dark' ? 'Light Mode' : 'Dark Mode'}>
-                {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
-              </IconButton>
-              <IconButton size="small">
-                <Badge badgeContent={3} color="error">
-                  <NotificationsIcon fontSize="small" />
-                </Badge>
-              </IconButton>
-              <IconButton size="small">
-                <SettingsIcon fontSize="small" />
-              </IconButton>
-              <Avatar sx={{ width: 32, height: 32, bgcolor: '#667eea' }}>
-                <PersonIcon fontSize="small" />
-              </Avatar>
-            </Stack>
-          </Toolbar>
-        </AppBar>
+          {/* Main Content */}
+          <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
+            <Tabs activeKey={activeTab} onChange={setActiveTab} size="large">
+              <TabPane tab={<span><BookOutlined />Lesson</span>} key="1">
+                <Card bordered={false}>
+                  <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                </Card>
+              </TabPane>
 
-        {/* Sidebar */}
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        >
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{ keepMounted: true }}
-            sx={{
-              display: { xs: 'block', sm: 'none' },
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-            }}
-          >
-            {drawer}
-          </Drawer>
-          <Drawer
-            variant="permanent"
-            sx={{
-              display: { xs: 'none', sm: 'block' },
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-            }}
-            open
-          >
-            {drawer}
-          </Drawer>
-        </Box>
-
-        {/* Main Content */}
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            width: '100%',
-            minHeight: '100vh',
-            bgcolor: 'background.default',
-          }}
-        >
-          <Toolbar />
-          
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
-            <Tabs
-              value={activeTab}
-              onChange={(e, v) => setActiveTab(v)}
-              sx={{ px: { xs: 1, md: 2 } }}
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              <Tab icon={<BookIcon />} label="Lesson" iconPosition="start" sx={{ minWidth: { xs: 'auto', md: 120 } }} />
-              <Tab icon={<CodeIcon />} label="Practice" iconPosition="start" sx={{ minWidth: { xs: 'auto', md: 120 } }} />
-              <Tab icon={<TerminalIcon />} label="API Lab" iconPosition="start" sx={{ minWidth: { xs: 'auto', md: 120 } }} />
-            </Tabs>
-          </Box>
-
-          <TabPanel value={activeTab} index={0}>
-            <LessonContent htmlContent={contentHtml} />
-          </TabPanel>
-
-          <TabPanel value={activeTab} index={1}>
-            <Box sx={{ p: { xs: 2, md: 3 } }}>
-              <Paper sx={{ p: { xs: 2, md: 3 }, maxWidth: 1200, mx: 'auto' }}>
-                <Typography variant="h5" gutterBottom fontWeight={600} sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
-                  💻 Code Practice Lab
-                </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Practice your API security code here. Test different attack vectors and defensive techniques.
-                </Typography>
-
-                <Box sx={{ height: { xs: 300, md: 500 }, border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}>
-                  <Editor
-                    height="100%"
-                    defaultLanguage="javascript"
-                    theme="vs-dark"
-                    value={code}
-                    onChange={(value) => setCode(value || '')}
-                    options={{
-                      minimap: { enabled: false },
-                      fontSize: 14,
-                      lineNumbers: 'on',
-                      scrollBeyondLastLine: false,
-                      automaticLayout: true,
-                    }}
-                  />
-                </Box>
-              </Paper>
-            </Box>
-          </TabPanel>
-
-          <TabPanel value={activeTab} index={2}>
-            <Box sx={{ p: { xs: 2, md: 3 } }}>
-              <Grid container spacing={{ xs: 2, md: 3 }} sx={{ maxWidth: 1400, mx: 'auto' }}>
-                <Grid item xs={12} md={6}>
-                  <Paper sx={{ p: { xs: 2, md: 3 }, height: '100%' }}>
-                    <Typography variant="h6" gutterBottom fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                      🔧 API Request Builder
-                    </Typography>
-                    
-                    <TextField
-                      fullWidth
-                      label="API URL"
-                      value={apiUrl}
-                      onChange={(e) => setApiUrl(e.target.value)}
-                      margin="normal"
-                      size="small"
+              <TabPane tab={<span><CodeOutlined />Practice</span>} key="2">
+                <Card title="💻 Code Practice Lab" bordered={false}>
+                  <Paragraph type="secondary">
+                    Practice your API security code here. Test different attack vectors and defensive techniques.
+                  </Paragraph>
+                  <div style={{ height: 500, border: `1px solid ${token.colorBorder}`, borderRadius: 8, overflow: 'hidden' }}>
+                    <Editor
+                      height="100%"
+                      defaultLanguage="javascript"
+                      theme={isDarkMode ? "vs-dark" : "light"}
+                      value={code}
+                      onChange={(value) => setCode(value || '')}
+                      options={{
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                      }}
                     />
-                    
-                    <TextField
-                      fullWidth
-                      select
-                      label="Method"
-                      value={apiMethod}
-                      onChange={(e) => setApiMethod(e.target.value)}
-                      margin="normal"
-                      size="small"
-                      SelectProps={{ native: true }}
-                    >
-                      <option value="GET">GET</option>
-                      <option value="POST">POST</option>
-                      <option value="PUT">PUT</option>
-                      <option value="PATCH">PATCH</option>
-                      <option value="DELETE">DELETE</option>
-                    </TextField>
-                    
-                    <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-                      Headers (JSON)
-                    </Typography>
-                    <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, overflow: 'hidden' }}>
-                      <Editor
-                        height="120px"
-                        defaultLanguage="json"
-                        theme="vs-dark"
-                        value={apiHeaders}
-                        onChange={(value) => setApiHeaders(value || '')}
-                        options={{
-                          minimap: { enabled: false },
-                          fontSize: 13,
-                          lineNumbers: 'off',
-                        }}
+                  </div>
+                </Card>
+              </TabPane>
+
+              <TabPane tab={<span><ApiOutlined />API Lab</span>} key="3">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
+                  <Card title="🔧 API Request Builder" bordered={false}>
+                    <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                      <Input
+                        placeholder="API URL"
+                        value={apiUrl}
+                        onChange={(e) => setApiUrl(e.target.value)}
                       />
-                    </Box>
-                    
-                    {apiMethod !== 'GET' && (
-                      <>
-                        <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-                          Request Body (JSON)
-                        </Typography>
-                        <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, overflow: 'hidden' }}>
+                      <Select value={apiMethod} onChange={setApiMethod} style={{ width: '100%' }}>
+                        <Option value="GET">GET</Option>
+                        <Option value="POST">POST</Option>
+                        <Option value="PUT">PUT</Option>
+                        <Option value="PATCH">PATCH</Option>
+                        <Option value="DELETE">DELETE</Option>
+                      </Select>
+                      <div>
+                        <Text strong>Headers (JSON)</Text>
+                        <div style={{ height: 120, marginTop: 8, border: `1px solid ${token.colorBorder}`, borderRadius: 8 }}>
                           <Editor
-                            height="120px"
+                            height="100%"
                             defaultLanguage="json"
-                            theme="vs-dark"
-                            value={apiBody}
-                            onChange={(value) => setApiBody(value || '')}
-                            options={{
-                              minimap: { enabled: false },
-                              fontSize: 13,
-                              lineNumbers: 'off',
-                            }}
+                            theme={isDarkMode ? "vs-dark" : "light"}
+                            value={apiHeaders}
+                            onChange={(value) => setApiHeaders(value || '')}
+                            options={{ minimap: { enabled: false }, fontSize: 13, lineNumbers: 'off' }}
                           />
-                        </Box>
-                      </>
-                    )}
-                    
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      onClick={handleApiRequest}
-                      disabled={loading}
-                      sx={{ mt: 3, py: 1.5 }}
-                    >
-                      {loading ? 'Sending Request...' : 'Send Request'}
-                    </Button>
-                  </Paper>
-                </Grid>
-                
-                <Grid item xs={12} md={6}>
-                  <Paper sx={{ p: { xs: 2, md: 3 }, height: { xs: 400, md: '100%' } }}>
-                    <Typography variant="h6" gutterBottom fontWeight={600} sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
-                      📊 Response
-                    </Typography>
-                    <Box sx={{ height: { xs: 300, md: 'calc(100% - 50px)' }, border: '1px solid #e0e0e0', borderRadius: 1, overflow: 'hidden' }}>
+                        </div>
+                      </div>
+                      {apiMethod !== 'GET' && (
+                        <div>
+                          <Text strong>Request Body (JSON)</Text>
+                          <div style={{ height: 120, marginTop: 8, border: `1px solid ${token.colorBorder}`, borderRadius: 8 }}>
+                            <Editor
+                              height="100%"
+                              defaultLanguage="json"
+                              theme={isDarkMode ? "vs-dark" : "light"}
+                              value={apiBody}
+                              onChange={(value) => setApiBody(value || '')}
+                              options={{ minimap: { enabled: false }, fontSize: 13, lineNumbers: 'off' }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <Button 
+                        type="primary" 
+                        block 
+                        icon={<RocketOutlined />}
+                        onClick={handleApiRequest}
+                        loading={loading}
+                        size="large"
+                      >
+                        {loading ? 'Sending...' : 'Send Request'}
+                      </Button>
+                    </Space>
+                  </Card>
+
+                  <Card title="📊 Response" bordered={false}>
+                    <div style={{ height: 500, border: `1px solid ${token.colorBorder}`, borderRadius: 8, overflow: 'hidden' }}>
                       <Editor
                         height="100%"
                         defaultLanguage="json"
-                        theme="vs-dark"
+                        theme={isDarkMode ? "vs-dark" : "light"}
                         value={apiResponse || '// Response will appear here...'}
-                        options={{
-                          readOnly: true,
-                          minimap: { enabled: false },
-                          fontSize: 13,
-                          lineNumbers: 'on',
-                        }}
+                        options={{ readOnly: true, minimap: { enabled: false }, fontSize: 13 }}
                       />
-                    </Box>
-                  </Paper>
-                </Grid>
-              </Grid>
-            </Box>
-          </TabPanel>
-        </Box>
-      </Box>
-    </ThemeProvider>
+                    </div>
+                  </Card>
+                </div>
+              </TabPane>
+            </Tabs>
+          </Content>
+        </Layout>
+
+        {/* Float Button */}
+        <FloatButton.BackTop />
+      </Layout>
+    </ConfigProvider>
   );
 }
+
+// Missing import
+import { FolderOutlined } from '@ant-design/icons';
