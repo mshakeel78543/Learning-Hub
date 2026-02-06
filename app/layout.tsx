@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import { AntdRegistry } from '@ant-design/nextjs-registry';
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -21,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body style={{ margin: 0, padding: 0 }}>
-        <AntdRegistry>{children}</AntdRegistry>
+        {children}
       </body>
     </html>
   )

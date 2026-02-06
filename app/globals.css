@@ -1,5 +1,3 @@
-@import '~antd/dist/reset.css';
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -11,11 +9,6 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
 }
 
 /* Custom scrollbar */
@@ -37,21 +30,6 @@ body {
   background: #40a9ff;
 }
 
-/* Ant Design theme customization */
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 20, 20, 20;
-    --background-end-rgb: 20, 20, 20;
-  }
-}
-
 /* Mobile responsive */
 @media (max-width: 768px) {
   body {
@@ -61,4 +39,22 @@ body {
   * {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
+}
+
+/* Ant Design style overrides */
+.ant-layout {
+  min-height: 100vh;
+}
+
+.ant-layout-sider {
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+}
+
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.ant-menu-item-selected {
+  background-color: #e6f7ff !important;
 }
