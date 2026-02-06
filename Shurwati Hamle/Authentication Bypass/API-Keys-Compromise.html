@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys Compromise - Authentication Bypass</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #f093fb;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .key-card-box {
+            background: white;
+            border: 2px solid #f5576c;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .key-card-box h4 {
+            color: #f5576c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-card-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .key-card-box code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #f5576c;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .methods-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .methods-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .method-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .method-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .method-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .method-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .method-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #00b894;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #00b894;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .consequences-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .consequences-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .consequence-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .consequence-card strong {
+            color: #6c5ce7;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .consequence-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .consequence-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .consequence-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .defense-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #e17055;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .testing-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .testing-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .testing-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .testing-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .testing-card p {
+            color: #2d3436;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .testing-card ol {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .testing-card ol li {
+            margin: 8px 0;
+        }
+
+        .testing-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #f5576c;
+        }
+
+        .conclusion h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .methods-section, .consequences-section, .defense-section, .testing-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 API Keys Compromise</h1>
+            <p>API Keys Ki Ziada-dasti Aur Ghair-Ikhtiyar Istemal</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Authentication Bypass</a> /
+            <span>API Keys Compromise</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 API Key Kya Hai?</h2>
+                <p>
+                    Sab se pehle, yeh samajhna zaroori hai ke <strong>API key</strong> hoti kya hai. API key ek munfarid (unique) pehchan hoti hai jo kisi user, developer, ya call karne wale program ko API tak rasai (access) dene ke liye istemal hoti hai.
+                </p>
+                <p>
+                    Yeh darasal ek raazdar token hota hai jo khaas API functionalities aur data tak pahunchne ki ijazat deta hai.
+                </p>
+                
+                <div class="key-card-box">
+                    <h4>🎭 Simple Misaal</h4>
+                    <p>
+                        Aap isay ek <strong>password</strong> ya application ke liye ek <strong>key card</strong> samajh sakte hain. Jaise ek building mein entry ke liye aapko key card chahiye, waise hi API access ke liye API key chahiye hoti hai.
+                    </p>
+                    <p style="margin-top: 10px;"><strong>Common API Key Formats:</strong></p>
+                    <p><code>X-API-Key: sk_live_51H7Xj2eZvKYlo2C...</code></p>
+                    <p><code>Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code></p>
+                    <p><code>api_key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY</code></p>
+                </div>
+
+                <p style="margin-top: 15px;">
+                    <strong>"API Keys Compromise"</strong> topic "API Hacking" roadmap ke "Shurwati Hamle" (Initial Attacks) section mein "Authentication Bypass" ke andar aata hai.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">❓</span>"API Keys Compromise" Ka Kya Matlab Hai?</h2>
+                <p>
+                    <strong>"API Keys Compromise"</strong> ka matlab hai jab koi ghair-ikhtiyar (unauthorized) teesra fard kisi jaiz (legitimate) API key tak rasai haasil kar leta hai.
+                </p>
+                <p>
+                    Jab ek hacker ko API key mil jaati hai, to woh jaiz user ya application ka bhes badal kar API ko ghair-ikhtiyar (unauthorized) requests bhej sakta hai.
+                </p>
+            </div>
+
+            <div class="methods-section">
+                <h2><span class="icon">🔓</span>API Keys Compromise Kaise Hoti Hain?</h2>
+                <p>
+                    API keys mukhtalif tareeqon se compromise ho sakti hain:
+                </p>
+
+                <div class="method-card">
+                    <h3>1. Code/Applications Mein Hardcode Karna</h3>
+                    <p>
+                        Developers kabhi kabhi API keys ko directly client-side code mein daal dete hain. Is se hamlawaron ke liye code ka muaina kar ke unhe dhoondhna aasan ho jata hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Hardcoded Keys Examples:</h4>
+                        <code>// JavaScript mein (Frontend)</code>
+                        <code>const API_KEY = "sk_live_51H7Xj2eZvKYlo2C...";</code>
+                        <code>fetch('https://api.example.com/data', {</code>
+                        <code>  headers: {'X-API-Key': API_KEY}</code>
+                        <code>});</code>
+                        <p style="margin-top: 10px;">Ya</p>
+                        <code>// Mobile App Code mein</code>
+                        <code>String apiKey = "AIzaSyD-9tSrke72PouQMnMX...";</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>JavaScript files mein plaintext keys</li>
+                        <li>Mobile app binaries mein embedded keys</li>
+                        <li>Configuration files committed to codebase</li>
+                        <li>HTML source code mein hidden fields</li>
+                        <li>React/Angular app builds mein exposed keys</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>2. Version Control Systems (Git, SVN)</h3>
+                    <p>
+                        Galti se API keys ko public ya ghair-mehfooz private repositories mein commit karna ek bohot aam galti hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Git History Mein Keys:</h4>
+                        <code>git log --all -p | grep -i "api_key"</code>
+                        <code>git log --all -p | grep -i "secret"</code>
+                        <p style="margin-top: 10px;">Ya</p>
+                        <code>// .env file accidentally committed</code>
+                        <code>API_KEY=sk_live_51H7Xj2eZvKYlo2C...</code>
+                        <code>DB_PASSWORD=mypassword123</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>GitHub/GitLab public repositories</li>
+                        <li>Git history mein purani commits</li>
+                        <li>.env files accidentally committed</li>
+                        <li>config.json, secrets.yaml files</li>
+                        <li>Forked repositories mein keys</li>
+                        <li>GitHub Gists mein shared code</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>3. Ghair-mehfooz Configuration Files</h3>
+                    <p>
+                        API keys ko server par aasaan pahunch wale plain-text configuration files mein store karna.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Exposed Config Files:</h4>
+                        <code>https://example.com/.env</code>
+                        <code>https://example.com/config.json</code>
+                        <code>https://example.com/application.properties</code>
+                        <code>https://example.com/wp-config.php.bak</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Publicly accessible .env files</li>
+                        <li>Backup configuration files (.bak, .old)</li>
+                        <li>Debug/test configuration files</li>
+                        <li>Docker environment files</li>
+                        <li>Kubernetes secrets improperly configured</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>4. Man-in-the-Middle Attacks</h3>
+                    <p>
+                        Agar API requests ko encrypt nahin kiya gaya hai (masalan, HTTPS ki bajaye HTTP istemal karna), to ek hamlawar traffic ko rok kar API key chura sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 MITM Scenario:</h4>
+                        <code>// Insecure HTTP request</code>
+                        <code>GET http://api.example.com/data</code>
+                        <code>X-API-Key: sk_live_51H7Xj2eZvKYlo2C...</code>
+                        <p style="margin-top: 10px;">Attacker network par sniffing kar ke key dekh sakta hai</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>HTTP (non-encrypted) connections</li>
+                        <li>Public Wi-Fi networks par sniffing</li>
+                        <li>ARP spoofing attacks</li>
+                        <li>DNS hijacking</li>
+                        <li>SSL stripping attacks</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>5. Kamzor Access Controls</h3>
+                    <p>
+                        Agar API key rakhne wali file ya directory ke permissions kamzor hon, to server par ghair-ikhtiyar users us tak rasai haasil kar sakte hain.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Weak Permissions:</h4>
+                        <code>-rw-r--r-- 1 root root .env  (World readable!)</code>
+                        <code>chmod 644 /var/www/.env</code>
+                        <p style="margin-top: 10px;">Better:</p>
+                        <code>-rw------- 1 user user .env  (Owner only)</code>
+                        <code>chmod 600 /var/www/.env</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>World-readable configuration files</li>
+                        <li>Weak file system permissions</li>
+                        <li>Shared hosting environments</li>
+                        <li>Container escape vulnerabilities</li>
+                        <li>Local privilege escalation</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>6. Social Engineering/Phishing</h3>
+                    <p>
+                        Kisi developer ya administrator ko dhoka de kar API key zaahir karwa lena.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Phishing Examples:</h4>
+                        <p>Email: "Your API key is expiring. Please verify by clicking here..."</p>
+                        <p>Fake support call: "We need your API key for troubleshooting..."</p>
+                        <p>Malicious Slack/Discord messages</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Targeted phishing emails</li>
+                        <li>Fake support calls</li>
+                        <li>Impersonation attacks</li>
+                        <li>Compromised Slack/Teams accounts</li>
+                        <li>Fake API documentation sites</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>7. Brute-Forcing/Guessing</h3>
+                    <p>
+                        Agarchay complex keys ke liye yeh kam aam hai, simple ya behtar tareeqe se na banai gai API keys ka andaza lagaya ja sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Weak Key Patterns:</h4>
+                        <code>api_key=123456</code>
+                        <code>api_key=companyname_001</code>
+                        <code>api_key=user_12345</code>
+                        <p style="margin-top: 10px;">Predictable patterns easily guessed</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Short key lengths</li>
+                        <li>Sequential patterns</li>
+                        <li>Dictionary-based keys</li>
+                        <li>Timestamp-based generation</li>
+                        <li>Weak randomness</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>8. Data Breaches</h3>
+                    <p>
+                        Agar API keys store karne wala system breach ho jaye, to keys churai ja sakti hain.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Breach Scenarios:</h4>
+                        <p>Database compromise se API keys table leak</p>
+                        <p>Backup files accidentally exposed</p>
+                        <p>Third-party service breach</p>
+                        <p>Cloud storage misconfiguration (S3 buckets)</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Database breaches</li>
+                        <li>S3 bucket misconfigurations</li>
+                        <li>Backup file leaks</li>
+                        <li>Third-party vendor compromises</li>
+                        <li>Ransomware attacks</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>9. Documentation Mein Zaahir Hona</h3>
+                    <p>
+                        Kabhi kabhi, API keys (khaas kar misali keys) galti se public documentation mein reh sakti hain.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Documentation Exposure:</h4>
+                        <code>// API documentation example:</code>
+                        <code>curl -H "X-API-Key: sk_live_actual_key" \</code>
+                        <code>  https://api.example.com/users</code>
+                        <p style="margin-top: 10px;">Developers forget to replace with placeholder</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Public API documentation</li>
+                        <li>Blog posts aur tutorials</li>
+                        <li>Stack Overflow answers</li>
+                        <li>YouTube video descriptions</li>
+                        <li>README files</li>
+                        <li>Wiki pages</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>10. Browser Extensions & Malware</h3>
+                    <p>
+                        Malicious browser extensions ya malware API keys ko steal kar sakte hain.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Malware Theft:</h4>
+                        <code>// Malicious extension</code>
+                        <code>chrome.storage.local.get(['api_key'], function(result) {</code>
+                        <code>  sendToAttacker(result.api_key);</code>
+                        <code>});</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Malicious browser extensions</li>
+                        <li>Keyloggers</li>
+                        <li>Screen capture malware</li>
+                        <li>Clipboard hijacking</li>
+                        <li>Memory scraping</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="consequences-section">
+                <h2><span class="icon">💥</span>API Key Compromise Ke Nuqsanat</h2>
+                <p>
+                    Jab API key compromise ho jaye to yeh serious consequences ho sakte hain:
+                </p>
+
+                <div class="consequence-card">
+                    <strong>1. Ghair-ikhtiyar Data Tak Rasai</strong>
+                    <p>
+                        Hamlawar (attacker) us sensitive data ko padh sakta hai, tabdeel kar sakta hai ya mita sakta hai jis tak us API key ko rasai haasil hoti hai.
+                    </p>
+                    <ul>
+                        <li>Customer data theft</li>
+                        <li>Financial information exposure</li>
+                        <li>Personal identifiable information (PII) leaks</li>
+                        <li>Business secrets aur intellectual property</li>
+                        <li>Database dumping</li>
+                    </ul>
+                </div>
+
+                <div class="consequence-card">
+                    <strong>2. Service Ka Ghalat Istemal</strong>
+                    <p>
+                        Woh API resources ko istemal kar sakta hai, jis se jaiz malik (legitimate owner) ke liye kharche (costs) peda ho sakte hain.
+                    </p>
+                    <ul>
+                        <li>API quotas ka misuse</li>
+                        <li>Billing overages (AWS, Google Cloud)</li>
+                        <li>Expensive API operations (AI, ML services)</li>
+                        <li>Cryptocurrency mining via cloud APIs</li>
+                        <li>Spam aur mass operations</li>
+                    </ul>
+                </div>
+
+                <div class="consequence-card">
+                    <strong>3. Privilege Escalation</strong>
+                    <p>
+                        Agar compromise ki gai API key ko zyada permissions hasil hon, to hamlawar mazeed vulnerabilities talaash kar sakta hai ya zyada sensitive systems tak pahunch sakta hai.
+                    </p>
+                    <ul>
+                        <li>Admin-level API keys se complete control</li>
+                        <li>Infrastructure access</li>
+                        <li>Database credentials exposure</li>
+                        <li>Internal systems access</li>
+                        <li>Lateral movement possible</li>
+                    </ul>
+                </div>
+
+                <div class="consequence-card">
+                    <strong>4. Denial of Service (DoS)</strong>
+                    <p>
+                        Ek hamlawar jan boojh kar API key ka ghalat istemal kar ke service ko requests se bhar sakta hai, jis se woh jaiz users ke liye dastiyab nahin rahegi.
+                    </p>
+                    <ul>
+                        <li>Rate limit exhaustion</li>
+                        <li>Service degradation</li>
+                        <li>Account suspension</li>
+                        <li>Business operations disruption</li>
+                    </ul>
+                </div>
+
+                <div class="consequence-card">
+                    <strong>5. Reputation Damage</strong>
+                    <p>
+                        Company ki reputation aur customer trust ka loss.
+                    </p>
+                    <ul>
+                        <li>Media coverage of breach</li>
+                        <li>Customer confidence loss</li>
+                        <li>Partner relationships damage</li>
+                        <li>Stock price impact</li>
+                    </ul>
+                </div>
+
+                <div class="consequence-card">
+                    <strong>6. Legal & Compliance Issues</strong>
+                    <p>
+                        Regulatory violations aur legal consequences.
+                    </p>
+                    <ul>
+                        <li>GDPR violations</li>
+                        <li>PCI-DSS compliance breaches</li>
+                        <li>HIPAA violations</li>
+                        <li>Lawsuits aur fines</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Real-World Impact</h4>
+                <p>
+                    API key compromise ki wajah se kai major incidents hui hain:
+                </p>
+                <ul>
+                    <li><strong>Uber (2016):</strong> GitHub repository se AWS keys leak, 57 million records compromised</li>
+                    <li><strong>Toyota (2022):</strong> T-Connect API keys exposed for 10 years, 300K+ customers affected</li>
+                    <li><strong>Travis CI (2022):</strong> API tokens leak, thousands of organizations impacted</li>
+                    <li><strong>Crypto wallets:</strong> API keys leak se millions of dollars theft</li>
+                </ul>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>Rok Tham (Mitigation/Defenses)</h2>
+                <p>
+                    API key compromise ko rokne ke liye, behtareen tareeqon par amal karna zaroori hai:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Environment Variables Ka Istemal</strong>
+                    <p>
+                        API keys ko servers par environment variables ke taur par store karen, code mein directly nahin.
+                    </p>
+                    <ul>
+                        <li>Use <code>.env</code> files (never commit to git)</li>
+                        <li>Load environment variables at runtime</li>
+                        <li>Keep .env in .gitignore</li>
+                        <li>Use different keys for dev/staging/production</li>
+                    </ul>
+                    <div class="example-box">
+                        <h4>💡 Proper Implementation:</h4>
+                        <code>// .env file (not in git)</code>
+                        <code>API_KEY=sk_live_51H7Xj2eZvKYlo2C...</code>
+                        <code>DB_PASSWORD=securepassword</code>
+                        <p style="margin-top: 10px;">Code mein:</p>
+                        <code>const apiKey = process.env.API_KEY;</code>
+                    </div>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Makhsoos Secret Management Tools</strong>
+                    <p>
+                        API keys ko mehfooz tareeqe se store aur retrieve karne ke liye dedicated tools istemal karen.
+                    </p>
+                    <ul>
+                        <li><code>HashiCorp Vault</code> - Enterprise secret management</li>
+                        <li><code>AWS Secrets Manager</code> - Cloud-native solution</li>
+                        <li><code>Azure Key Vault</code> - Microsoft Azure</li>
+                        <li><code>Google Cloud Secret Manager</code> - GCP solution</li>
+                        <li><code>Doppler</code> - Modern secrets management</li>
+                        <li><code>1Password</code>, <code>LastPass</code> - Team password managers</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Kabhi Hardcode Na Karen</strong>
+                    <p>
+                        Front-end code ya aam dastiyab client-side applications mein API keys ko directly embed karne se bilkul parhez karen.
+                    </p>
+                    <ul>
+                        <li>Never put keys in JavaScript files</li>
+                        <li>Don't embed in mobile app binaries</li>
+                        <li>Use backend proxy for sensitive operations</li>
+                        <li>Implement proper authentication flow</li>
+                        <li>Use short-lived tokens instead</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. Least Privilege Principle</strong>
+                    <p>
+                        API keys ko sirf utni hi permissions den jitni unke kaam ke liye zaroori hon.
+                    </p>
+                    <ul>
+                        <li>Create separate keys for different services</li>
+                        <li>Limit scope aur permissions</li>
+                        <li>Read-only keys jahan possible ho</li>
+                        <li>Resource-specific restrictions</li>
+                        <li>Time-based access limitations</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. IP Whitelisting</strong>
+                    <p>
+                        Agar mumkin ho, to API key ke istemal ko khaas IP addresses ya ranges tak mehdood kar den.
+                    </p>
+                    <ul>
+                        <li>Configure allowed IP addresses</li>
+                        <li>Use CIDR notation for ranges</li>
+                        <li>Combine with VPN for remote access</li>
+                        <li>Monitor unauthorized IP attempts</li>
+                        <li>Update whitelist regularly</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. Rate Limiting</strong>
+                    <p>
+                        API endpoints par rate limiting implement karen taake agar key compromise ho bhi jaye, to bhi uska zyada istemal roka ja sake.
+                    </p>
+                    <ul>
+                        <li>Per-key rate limits</li>
+                        <li>Per-IP rate limits</li>
+                        <li>Burst protection</li>
+                        <li>Exponential backoff</li>
+                        <li>CAPTCHA after threshold</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Regular Rotation</strong>
+                    <p>
+                        Waqtan-fawaqtan (periodically) API keys ko rotate karte rahen taake compromise hone wali key ke istemal ka waqfa kam kiya ja sake.
+                    </p>
+                    <ul>
+                        <li>Quarterly or monthly rotation</li>
+                        <li>Automated rotation workflows</li>
+                        <li>Grace period for transitions</li>
+                        <li>Immediate rotation on suspicion</li>
+                        <li>Track key versions</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. HTTPS Enforce Karen</strong>
+                    <p>
+                        Hamesha HTTPS istemal karen taake API communication ko encrypt kiya ja sake aur keys ko intercept hone se roka ja sake.
+                    </p>
+                    <ul>
+                        <li>TLS 1.2 or higher</li>
+                        <li>Valid SSL certificates</li>
+                        <li>HSTS headers</li>
+                        <li>Certificate pinning (mobile apps)</li>
+                        <li>Reject HTTP connections</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>9. Monitoring Aur Logging</strong>
+                    <p>
+                        API key ke istemal ko ghair-mamooli sar-garmi ke liye monitor karen aur tamam API calls ko log karen.
+                    </p>
+                    <ul>
+                        <li>Log all API key usage</li>
+                        <li>Anomaly detection systems</li>
+                        <li>Alert on suspicious patterns</li>
+                        <li>Geographic anomalies</li>
+                        <li>Usage spike detection</li>
+                        <li>Failed authentication attempts</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>10. Automated Scanning</strong>
+                    <p>
+                        Code repositories aur deployments ko automatically scan karen for exposed keys.
+                    </p>
+                    <ul>
+                        <li><code>git-secrets</code> - Prevent commits</li>
+                        <li><code>truffleHog</code> - Scan git history</li>
+                        <li><code>GitGuardian</code> - Real-time monitoring</li>
+                        <li><code>GitHub Secret Scanning</code> - Built-in protection</li>
+                        <li>Pre-commit hooks</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="testing-section">
+                <h2><span class="icon">🔍</span>Testing For Exposed API Keys</h2>
+
+                <div class="testing-card">
+                    <h3>Test 1: Source Code Review</h3>
+                    <p>
+                        Client-side code mein hardcoded keys dhoondhein.
+                    </p>
+                    <ol>
+                        <li>Browser DevTools open karen</li>
+                        <li>Sources tab mein saari JS files dekhen</li>
+                        <li>Search karen: <code>api_key</code>, <code>apikey</code>, <code>secret</code>, <code>token</code></li>
+                        <li>Network tab mein requests check karen</li>
+                        <li>Headers aur query parameters analyze karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 2: Git Repository Scanning</h3>
+                    <p>
+                        Git history mein exposed keys search karen.
+                    </p>
+                    <ol>
+                        <li>Clone repository locally</li>
+                        <li>Run: <code>git log --all -p | grep -i "api_key"</code></li>
+                        <li>Use truffleHog: <code>trufflehog git https://github.com/user/repo</code></li>
+                        <li>Check .git folder if exposed publicly</li>
+                        <li>Review commit messages for keywords</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 3: Configuration Files</h3>
+                    <p>
+                        Common configuration files access karne ki koshish karen.
+                    </p>
+                    <ol>
+                        <li>Try: <code>https://target.com/.env</code></li>
+                        <li>Try: <code>https://target.com/config.json</code></li>
+                        <li>Try: <code>https://target.com/.git/config</code></li>
+                        <li>Directory fuzzing tools use karen</li>
+                        <li>Backup files check karen (.bak, .old)</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 4: Mobile App Decompilation</h3>
+                    <p>
+                        Mobile apps se API keys extract karen.
+                    </p>
+                    <ol>
+                        <li>APK download karen (Android)</li>
+                        <li>Use JADX ya apktool for decompilation</li>
+                        <li>Search for API keys in code</li>
+                        <li>Check strings.xml aur config files</li>
+                        <li>iOS: IPA file extract karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 5: Third-Party Services</h3>
+                    <p>
+                        Public platforms par exposed keys search karen.
+                    </p>
+                    <ol>
+                        <li>GitHub search: <code>org:company "api_key"</code></li>
+                        <li>Pastebin searches</li>
+                        <li>Stack Overflow answers</li>
+                        <li>Public Gists</li>
+                        <li>Documentation sites</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Ethical Testing Warning</h4>
+                <p>
+                    Discovered API keys ka misuse karna illegal hai. Agar aapko kisi organization ki exposed API keys milti hain to immediately unhe responsible disclosure ke zariye inform karen. Unauthorized access crime hai aur serious legal consequences ho sakte hain.
+                </p>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    <strong>API Key Compromise</strong> ek bohot bari vulnerability hai kyunki yeh aapki API ki functionalities aur data tak ghair-ikhtiyar rasai ka baais ban sakti hai. API keys ki mehfooz handling aur management API security ke liye bunyadi ahmiyat rakhti hai. Prevention se behtar koi cure nahi - proper practices ab implement karen taake baad mein regret na karna pade.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    API Keys Compromise modern application security mein ek critical threat hai. API keys basically aapki application ki master keys hain - agar yeh galat hathon mein chali jayen to complete system compromise ho sakta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Developers ko chahiye ke wo API keys ko treat karen jaise nuclear codes - extreme care ke saath. Kabhi hardcode na karen, hamesha encrypted aur secure storage use karen, regular rotation implement karen, aur comprehensive monitoring setup karen.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Yaad rakhein:</strong> "Prevention is better than cure" - API keys ko secure karna ek continuous process hai, one-time task nahi. Regular audits, automated scanning, aur security awareness training zaroori hain.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Servers - HTTP Protocol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #11998e;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #11998e;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #11998e;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #38ef7d;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #11998e;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .definition-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 8px solid #11998e;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .definition-box h3 {
+            color: #11998e;
+            font-size: 1.6em;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .definition-box p {
+            font-size: 1.1em;
+            color: #2c3e50;
+            line-height: 1.9;
+        }
+
+        .flow-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .flow-diagram h3 {
+            color: #11998e;
+            text-align: center;
+            margin: 0 0 30px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flow-box {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 150px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .flow-box .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .flow-box h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .flow-box p {
+            color: white;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #11998e;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #2c3e50;
+            text-align: left;
+        }
+
+        .types-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .types-section h3 {
+            color: #e67e22;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .type-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .type-card.forward {
+            border-left-color: #3498db;
+        }
+
+        .type-card.reverse {
+            border-left-color: #e74c3c;
+        }
+
+        .type-card.transparent {
+            border-left-color: #f39c12;
+        }
+
+        .type-card h4 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .type-card.forward h4 {
+            color: #3498db;
+        }
+
+        .type-card.reverse h4 {
+            color: #e74c3c;
+        }
+
+        .type-card.transparent h4 {
+            color: #f39c12;
+        }
+
+        .type-card p {
+            color: #555;
+        }
+
+        .hacking-importance {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 8px solid #c0392b;
+        }
+
+        .hacking-importance h2 {
+            color: #c0392b;
+            text-align: center;
+            margin: 0 0 25px 0;
+            border: none;
+            display: block;
+        }
+
+        .importance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .importance-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #c0392b;
+        }
+
+        .importance-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .importance-card h4 {
+            color: #c0392b;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .importance-card p {
+            color: #2c3e50;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .importance-card ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .importance-card ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .importance-card ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            background: #11998e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: bold;
+            margin-bottom: -15px;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .tools-section h3 {
+            color: white;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
+
+        .tool-card:hover {
+            transform: scale(1.05);
+        }
+
+        .tool-card .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .tool-card h4 {
+            color: white;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .tool-card p {
+            color: #f0f0f0;
+            text-align: left;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 5px solid #11998e;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #11998e;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .flow-steps {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .features-grid,
+            .importance-grid,
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .comparison-visual {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .comparison-visual h3 {
+            color: #11998e;
+            text-align: center;
+            margin: 0 0 30px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .comparison-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .comparison-box h4 {
+            color: #11998e;
+            margin-bottom: 15px;
+        }
+
+        .attack-vectors {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .attack-vectors h3 {
+            color: #e74c3c;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .attack-item {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #c0392b;
+        }
+
+        .attack-item h5 {
+            color: #c0392b;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .attack-item p {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Proxy Servers</h1>
+            <p>Intermediary Between Client and Server</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> → <span>Bunyadi Maloomat</span> → <span>HTTP Protocol</span> → Proxy Servers</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p>Ek <strong>proxy server</strong> client ki taraf se aane wali requests ke liye ek <strong>intermediary</strong> ka kaam karta hai, jo doosre servers se resources talash kar raha hota hai.</p>
+                
+                <p>Client seedha destination server se connect hone ke bajaye <strong>proxy server se connect</strong> hota hai, aur phir proxy server us request ko destination tak forward karta hai.</p>
+
+                <p>Yeh position unhe network traffic ko <strong>rokne (intercept), muaina karne (inspect), tabdeel karne (modify), aur aage bhejne (forward)</strong> ki ijazat deti hai.</p>
+            </div>
+
+            <div class="section">
+                <h2>📖 Proxy Server Kya Hai?</h2>
+
+                <div class="definition-box">
+                    <h3>Definition:</h3>
+                    <p>Ek proxy server ek <strong>intermediary server</strong> hai jo client device (jaise aapka computer ya phone) aur Internet ke darmiyan requests ko <strong>route</strong> karta hai.</p>
+                    <br>
+                    <p>Yeh aapke browser/tool (client) aur API server (destination) ke darmiyan <strong>baitha</strong> hota hai, jo complete control provide karta hai network traffic par.</p>
+                </div>
+
+                <div class="flow-diagram">
+                    <h3>🔄 Proxy Kaise Kaam Karta Hai?</h3>
+                    <div class="flow-steps">
+                        <div class="flow-box">
+                            <div class="icon">💻</div>
+                            <h4>Client</h4>
+                            <p>Request bhejta hai Proxy ko</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">🔄</div>
+                            <h4>Proxy Server</h4>
+                            <p>Intercept, Inspect, Modify</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">🖥️</div>
+                            <h4>Destination Server</h4>
+                            <p>Request process karta hai</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">🔄</div>
+                            <h4>Proxy Server</h4>
+                            <p>Response intercept karta hai</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">💻</div>
+                            <h4>Client</h4>
+                            <p>Response receive karta hai</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-header">Traffic Flow Example</div>
+                <div class="code-example">Without Proxy:
+Client → Destination Server → Client
+
+With Proxy:
+Client → Proxy → Destination Server → Proxy → Client
+
+Proxy Benefits:
+✓ Intercept traffic
+✓ Modify requests/responses
+✓ Hide client IP
+✓ Cache responses
+✓ Filter content
+✓ Monitor traffic</div>
+            </div>
+
+            <div class="section">
+                <h2>✨ Proxy Server Ki Khasusiyat</h2>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="icon">🎭</div>
+                        <h4>1. Intermediation</h4>
+                        <p>Aapke browser/tool (client) aur API server (destination) ke darmiyan baitha hota hai. Network traffic ko <strong>intercept, inspect, modify, aur forward</strong> kar sakta hai.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">👤</div>
+                        <h4>2. Anonymity</h4>
+                        <p>Proxies aapke asal <strong>IP address ko chupa</strong> sakte hain, jisse yeh lagta hai ke request proxy server ke IP se aa rahi hai. Privacy aur IP-based restrictions bypass karne ke liye useful.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">💾</div>
+                        <h4>3. Caching</h4>
+                        <p>Request kiye jaane wale resources ki copies <strong>store</strong> kar sakte hain. Doosre requests ke liye cache se serve karte hain, jo <strong>speed</strong> aur <strong>bandwidth</strong> bachati hai.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🛡️</div>
+                        <h4>4. Filtering & Security</h4>
+                        <p>Security policies nafiz karne, bad-niyat content ko filter karne, websites ko block karne, ya vulnerabilities ke liye traffic ka <strong>muaina</strong> karne ke liye istemal hote hain.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">⚖️</div>
+                        <h4>5. Load Balancing</h4>
+                        <p>Aane wale network traffic ko mutaddid backend servers ke darmiyan <strong>taqseem</strong> kar sakte hain taake koi ek server overload na ho.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h4>6. Monitoring & Logging</h4>
+                        <p>Proxy se guzarnewale tamam traffic ko <strong>log aur monitor</strong> kiya ja sakta hai, jo security analysis aur troubleshooting ke liye zaroori hai.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔢 Proxy Servers Ki Iqsam</h2>
+
+                <div class="types-section">
+                    <h3>3 Main Types</h3>
+
+                    <div class="type-card forward">
+                        <h4>1. Forward Proxy (سامنے کا پراکسی)</h4>
+                        <p><strong>Kya hai:</strong> Client aur Internet ke darmiyan baithta hai. Client ki behalf par requests forward karta hai.</p>
+                        <br>
+                        <p><strong>Kaam:</strong></p>
+                        <ul>
+                            <li>Client ke IP address ko hide karta hai</li>
+                            <li>Content filtering aur access control</li>
+                            <li>Bandwidth saving through caching</li>
+                            <li>Organizational internet access control</li>
+                        </ul>
+                        <div class="code-example" style="margin-top: 15px;">Client → Forward Proxy → Internet → Destination
+
+Example: Company proxy jo employees ki internet access control karta hai</div>
+                    </div>
+
+                    <div class="type-card reverse">
+                        <h4>2. Reverse Proxy (الٹا پراکسی)</h4>
+                        <p><strong>Kya hai:</strong> Web server ke saamne baithta hai. Server ki behalf par clients se requests receive karta hai.</p>
+                        <br>
+                        <p><strong>Kaam:</strong></p>
+                        <ul>
+                            <li>Load balancing across multiple servers</li>
+                            <li>SSL termination aur encryption</li>
+                            <li>Caching static content</li>
+                            <li>Backend servers ko protect karna</li>
+                            <li>DDoS protection</li>
+                        </ul>
+                        <div class="code-example" style="margin-top: 15px;">Client → Internet → Reverse Proxy → Backend Servers
+
+Example: Nginx ya Apache acting as reverse proxy</div>
+                    </div>
+
+                    <div class="type-card transparent">
+                        <h4>3. Transparent Proxy (شفاف پراکسی)</h4>
+                        <p><strong>Kya hai:</strong> Client ko pata nahi chalta ke proxy use ho raha hai. Automatic traffic interception.</p>
+                        <br>
+                        <p><strong>Kaam:</strong></p>
+                        <ul>
+                            <li>Content filtering without client configuration</li>
+                            <li>Bandwidth monitoring</li>
+                            <li>Caching for network optimization</li>
+                            <li>Network-level control</li>
+                        </ul>
+                        <div class="code-example" style="margin-top: 15px;">Client thinks: Client → Destination
+Reality: Client → Transparent Proxy → Destination
+
+Example: ISP level content filtering</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔒 API Hacking Ke Tanazur Mein Proxy Servers</h2>
+
+                <div class="hacking-importance">
+                    <h2>Kyun Nihayat Ahem Hain?</h2>
+                    <p style="text-align: center; color: #2c3e50; font-size: 1.1em; margin-bottom: 25px;">Proxy servers ko samajhna API hacking ke liye <strong>nihayat ahem</strong> hai:</p>
+
+                    <div class="importance-grid">
+                        <div class="importance-card">
+                            <div class="icon">🔍</div>
+                            <h4>1. Traffic Ko Rokna</h4>
+                            <p><strong>Burp Suite</strong> jaise tools local proxy servers ke tor par kaam karte hain.</p>
+                            <ul>
+                                <li>Browser/client aur API ke darmiyan HTTP/HTTPS requests rokna</li>
+                                <li>Responses ko intercept karna</li>
+                                <li>API kaise kaam karta hai analyze karna</li>
+                                <li>Parameters ki shanakht karna</li>
+                                <li>Vulnerabilities talash karna</li>
+                            </ul>
+                        </div>
+
+                        <div class="importance-card">
+                            <div class="icon">✏️</div>
+                            <h4>2. Requests Mein Tabdeeli</h4>
+                            <p>Ek baar roke jane ke baad, requests ko API tak bhejne se pehle <strong>tabdeel</strong> kiya ja sakta hai.</p>
+                            <ul>
+                                <li><strong>Parameter Tampering:</strong> Values modify karna</li>
+                                <li><strong>Malicious Payloads:</strong> SQL injection ya XSS daalna</li>
+                                <li><strong>Headers Modification:</strong> Authentication bypass</li>
+                                <li><strong>Cookies Tampering:</strong> Session manipulation</li>
+                                <li><strong>Method Changes:</strong> GET ko POST mein change</li>
+                            </ul>
+                        </div>
+
+                        <div class="importance-card">
+                            <div class="icon">📊</div>
+                            <h4>3. Responses Ka Tajziya</h4>
+                            <p>API se aane wale responses ka <strong>tajziya</strong> karna:</p>
+                            <ul>
+                                <li><strong>Sensitive Data Leakage:</strong> Exposed credentials, keys</li>
+                                <li><strong>Error Messages:</strong> System information disclosure</li>
+                                <li><strong>Ghair Mutawaqqe Rawaiye:</strong> Unexpected behaviors</li>
+                                <li><strong>Response Patterns:</strong> Success/failure indicators</li>
+                                <li><strong>Hidden Fields:</strong> Debug information</li>
+                            </ul>
+                        </div>
+
+                        <div class="importance-card">
+                            <div class="icon">🚫</div>
+                            <h4>4. Controls Ko Bypass Karna</h4>
+                            <p>Attackers mukhtalif techniques istemal karte hain:</p>
+                            <ul>
+                                <li><strong>Proxy Chains:</strong> Multiple proxies ka istemal</li>
+                                <li><strong>IP Rotation:</strong> IP addresses ko rotate karna</li>
+                                <li><strong>Rate Limiting Bypass:</strong> Multiple IPs se requests</li>
+                                <li><strong>Geo-restrictions:</strong> Location-based blocks bypass</li>
+                                <li><strong>WAF Bypass:</strong> Web Application Firewall se bachna</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🛠️ API Hacking Tools (Proxy-Based)</h2>
+
+                <div class="tools-section">
+                    <h3>Popular Proxy Tools</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="icon">🔴</div>
+                            <h4>Burp Suite</h4>
+                            <p>Sab se popular web security testing tool. Complete proxy functionality, intercepting, modifying, aur analyzing ke liye.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">⚡</div>
+                            <h4>OWASP ZAP</h4>
+                            <p>Open-source security scanner. Automated vulnerability detection aur manual testing dono ke liye.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">🦊</div>
+                            <h4>Fiddler</h4>
+                            <p>Web debugging proxy. HTTP/HTTPS traffic capture aur analysis ke liye powerful tool.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">🔵</div>
+                            <h4>mitmproxy</h4>
+                            <p>Console-based proxy. Python scripting support ke saath automation ke liye ideal.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">🌐</div>
+                            <h4>Charles Proxy</h4>
+                            <p>Cross-platform proxy. Mobile app testing aur SSL proxying ke liye useful.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">📱</div>
+                            <h4>Proxyman</h4>
+                            <p>Modern debugging tool. macOS aur iOS app testing ke liye designed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚔️ Common Attack Vectors Through Proxies</h2>
+
+                <div class="attack-vectors">
+                    <h3>Proxy Se Possible Attacks</h3>
+
+                    <div class="attack-item">
+                        <h5>1. Man-in-the-Middle (MITM) Attacks</h5>
+                        <p>Proxy ka istemal kar ke communication ko intercept aur modify karna. SSL/TLS certificates ko bypass kar ke encrypted traffic ko decrypt karna.</p>
+                        <div class="code-example">Attacker Proxy intercepts:
+Client ⇄ Malicious Proxy ⇄ Server
+
+Both parties think they're communicating securely!</div>
+                    </div>
+
+                    <div class="attack-item">
+                        <h5>2. Request Tampering</h5>
+                        <p>API requests ko modify kar ke malicious payloads inject karna, parameters change karna, ya authentication bypass karna.</p>
+                        <div class="code-example">Original: GET /api/users/123
+Modified: GET /api/users/1' OR '1'='1
+
+← SQL Injection via proxy manipulation!</div>
+                    </div>
+
+                    <div class="attack-item">
+                        <h5>3. Session Hijacking</h5>
+                        <p>Proxy se session tokens ya cookies capture kar ke unauthorized access hasil karna.</p>
+                        <div class="code-example">Captured Cookie:
+Set-Cookie: sessionid=abc123; Path=/
+
+Attacker uses this to impersonate user!</div>
+                    </div>
+
+                    <div class="attack-item">
+                        <h5>4. Rate Limiting Bypass</h5>
+                        <p>Multiple proxy servers ya rotating IPs istemal kar ke API rate limits ko bypass karna.</p>
+                        <div class="code-example">Request 1: Proxy IP 1.2.3.4
+Request 2: Proxy IP 5.6.7.8
+Request 3: Proxy IP 9.10.11.12
+
+← Different IPs = Rate limit bypassed!</div>
+                    </div>
+
+                    <div class="attack-item">
+                        <h5>5. Content Injection</h5>
+                        <p>Proxy ke through responses mein malicious content inject karna jaise XSS payloads.</p>
+                        <div class="code-example">Original Response: {"name": "Ali"}
+Injected: {"name": "&lt;script&gt;alert(1)&lt;/script&gt;"}
+
+← XSS payload injected via proxy!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 With vs Without Proxy</h2>
+
+                <div class="comparison-visual">
+                    <h3>Comparison</h3>
+                    <div class="comparison-grid">
+                        <div class="comparison-box">
+                            <h4>❌ Without Proxy</h4>
+                            <div class="code-example" style="margin-top: 15px;">Direct Connection:
+Client ⟷ Server
+
+Problems:
+✗ No traffic inspection
+✗ Can't modify requests
+✗ No response analysis
+✗ Limited control
+✗ Real IP exposed
+✗ No caching</div>
+                        </div>
+
+                        <div class="comparison-box">
+                            <h4>✅ With Proxy</h4>
+                            <div class="code-example" style="margin-top: 15px;">Proxied Connection:
+Client ⟷ Proxy ⟷ Server
+
+Benefits:
+✓ Complete traffic inspection
+✓ Modify anything
+✓ Detailed analysis
+✓ Full control
+✓ IP anonymity
+✓ Caching enabled</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔧 Proxy Configuration Example</h2>
+
+                <div class="code-header">Burp Suite Configuration</div>
+                <div class="code-example">1. Burp Suite Setup:
+   - Start Burp Suite
+   - Proxy tab → Options
+   - Listen on: 127.0.0.1:8080
+
+2. Browser Configuration:
+   - Go to Browser Settings
+   - Network Settings → Manual Proxy
+   - HTTP Proxy: 127.0.0.1
+   - Port: 8080
+   - Enable for HTTPS too
+
+3. SSL Certificate:
+   - Visit: http://burp
+   - Download CA Certificate
+   - Install in browser/OS
+
+4. Start Intercepting:
+   - Proxy tab → Intercept
+   - Turn Intercept ON
+   - Browse to target API
+   - All traffic now visible in Burp!</div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+
+                <div class="definition-box">
+                    <h3>Key Takeaways:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #11998e; font-weight: bold;">→</span>
+                            <strong>Proxy Server:</strong> Intermediary between client and destination server
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #11998e; font-weight: bold;">→</span>
+                            <strong>Main Functions:</strong> Intercept, Inspect, Modify, Forward, Cache, Filter
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #11998e; font-weight: bold;">→</span>
+                            <strong>Types:</strong> Forward Proxy, Reverse Proxy, Transparent Proxy
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #11998e; font-weight: bold;">→</span>
+                            <strong>API Hacking:</strong> Traffic interception, request modification, response analysis
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #11998e; font-weight: bold;">→</span>
+                            <strong>Tools:</strong> Burp Suite, OWASP ZAP, Fiddler, mitmproxy
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #11998e; font-weight: bold;">→</span>
+                            <strong>Attacks:</strong> MITM, Request Tampering, Session Hijacking, Rate Limiting Bypass
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #11998e; font-weight: bold;">→</span>
+                            <strong>Security:</strong> Essential tool for both attackers and defenders
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>🎯 Conclusion:</strong> Proxy servers network management ke liye bhi aur hamla awaron ke liye bhi API ke sath communication par <strong>numaya control aur nazar rakhne</strong> ke liye ek nihayat ahem juz hai. Burp Suite jaise tools ke bagair modern API security testing almost <strong>namumkin</strong> hai!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Proxy Servers - HTTP Protocol</p>
+        </div>
+    </div>
+</body>
+</html>

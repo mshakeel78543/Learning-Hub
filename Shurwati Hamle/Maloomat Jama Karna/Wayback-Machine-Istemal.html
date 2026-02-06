@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wayback Machine Istemal Karna - Maloomat Jama Karna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #11998e;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .intro-section h2 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .intro-section code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .section h2 {
+            color: #4facfe;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #00b894;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 4px solid #4facfe;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight-box h4 {
+            color: #0984e3;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-list li:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-list strong {
+            color: #4facfe;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .info-list code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .benefits-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #fd79a8;
+        }
+
+        .benefits-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .benefit-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #fd79a8;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-card h3 {
+            color: #fd79a8;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .benefit-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .benefit-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .benefit-card ul li {
+            margin: 8px 0;
+        }
+
+        .benefit-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .usage-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .usage-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .usage-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .usage-card h3 {
+            color: #6c5ce7;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .usage-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .usage-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #4facfe;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #4facfe;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+        }
+
+        .targets-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .targets-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .target-item {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .target-item strong {
+            color: #e17055;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .target-item code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .step-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-box h4 {
+            color: #00b894;
+            margin-bottom: 10px;
+        }
+
+        .step-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .step-box ol {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .step-box ol li {
+            margin: 8px 0;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #667eea;
+        }
+
+        .conclusion h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .benefits-section, .usage-section, .targets-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏰ Wayback Machine Istemal Karna</h1>
+            <p>Waqt Mein Peechey Ja Kar Chhupe Hue Raaz Dhoondhna</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Maloomat Jama Karna</a> /
+            <span>Wayback Machine Istemal Karna</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Wayback Machine Kya Hai?</h2>
+                <p>
+                    <strong>Wayback Machine</strong>, jise Internet Archive ne banaya hai, World Wide Web ka ek digital archive hai. Yeh aapko yeh dekhne ki ijazat deta hai ke websites (aur unki bunyadi files) waqt ke saath kaise badli hain.
+                </p>
+                <p>
+                    "Wayback Machine Istemal Karna" (Using the Wayback Machine) API hacking ke "Maloomat Jama Karna" (Information Gathering) marhale mein istemal hone wala ek tareeqa hai.
+                </p>
+                <p>
+                    Ek API hacker ke liye, yeh reconnaissance ke liye ek qeemti tool hai kyunke yeh waqt mein peechey ja kar target ki web presence ke bare mein tareekhi data jama karne mein madad karta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Website:</strong> <code>https://web.archive.org</code>
+                </p>
+            </div>
+
+            <div class="benefits-section">
+                <h2><span class="icon">💎</span>API Hacking Ke Liye Kaise Faidamand Hai?</h2>
+
+                <div class="benefit-card">
+                    <h3>1. Purane Endpoints Aur Documentation Dhundhna</h3>
+                    <p>
+                        APIs, websites ki tarah, waqt ke saath evolve hote hain. Purane versions mein aisi kamzoriyan ho sakti hain jo naye versions mein theek kar di gai hon. Wayback Machine ek website ke maazi ke snapshots faraham kar sakti hai, jis se yeh cheezein saamne aati hain:
+                    </p>
+                    <ul>
+                        <li><strong>Deprecated API endpoints:</strong> Aise endpoints jo ab active taur par istemal ya document nahi hote lekin phir bhi live aur kamzor ho sakte hain.</li>
+                        <li><strong>Pichli API documentation:</strong> Documentation ke purane versions mein endpoints, parameters, ya authentication methods ke bare mein tafseelat ho sakti hain jo ab publically available nahi hain lekin phir bhi exploit ki ja sakti hain.</li>
+                        <li><strong>Chhupe hue ya bhool gaye resources:</strong> Files, directories, ya API paths jo kabhi public the lekin baad mein hata diye gaye ya restricted kar diye gaye.</li>
+                    </ul>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>2. Sensitive Information Talaash Karna</h3>
+                    <p>
+                        Kabhi kabhi, sensitive maloomat jaise API keys, developer comments, ya internal configurations galti se website ke purane version ya uski mutaliqa files mein expose ho gaye hon, aur Wayback Machine ne use archive kar liya ho.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <p>Purani JavaScript files mein hardcoded API keys:</p>
+                        <code>const API_KEY = "sk-123456789abcdef";</code>
+                        <p>Purani config files mein database credentials:</p>
+                        <code>db_password: "admin123"</code>
+                    </div>
+                </div>
+
+                <div class="benefit-card">
+                    <h3>3. API Evolution Ko Samajhna</h3>
+                    <p>
+                        API ki documentation ya mutaliqa web content mein hone wali tabdeeliyon ko dekh kar, ek hamlawar uske development patterns, ghaflat ke mumkina ilaqon, ya waqt ke saath developers ki taraf se ki gai aam ghaltiyon ke bare mein jankari haasil kar sakta hai.
+                    </p>
+                </div>
+            </div>
+
+            <div class="usage-section">
+                <h2><span class="icon">🛠️</span>API Hacking Mein Iska Istemal Kaise Hota Hai?</h2>
+                <p>
+                    Ek hamlawar aam taur par Wayback Machine ki website par jata hai aur apne target ka domain enter karta hai. Phir woh website ke mukhtalif archived versions ko dekhta hai.
+                </p>
+
+                <div class="step-box">
+                    <h4>📋 Basic Steps:</h4>
+                    <ol>
+                        <li><code>https://web.archive.org</code> par jayein</li>
+                        <li>Target domain enter karein (masalan: <code>api.example.com</code>)</li>
+                        <li>Timeline dekh kar mukhtalif dates select karein</li>
+                        <li>Archived snapshots ko analyze karein</li>
+                        <li>Sensitive information ya purane endpoints dhoondhein</li>
+                    </ol>
+                </div>
+
+                <div class="usage-card">
+                    <h3>Automation Ke Liye Tools</h3>
+                    <p>
+                        Manual searching ke ilawa, automated tools bhi available hain:
+                    </p>
+                    <ul>
+                        <li><code>waybackurls</code> - Command line tool jo URLs extract karta hai</li>
+                        <li><code>gau (GetAllUrls)</code> - Multiple sources se URLs fetch karta hai</li>
+                        <li><code>waybackpack</code> - Complete website download karne ke liye</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="targets-section">
+                <h2><span class="icon">🎯</span>Khaas Tawajjo Dene Wali Cheezein</h2>
+                <p>
+                    Jab Wayback Machine istemal kar rahe hon, to in specific targets par focus karein:
+                </p>
+
+                <div class="target-item">
+                    <strong>1. robots.txt Files</strong>
+                    <p>
+                        Yeh files aksar directories aur files ki list deti hain jinhe web crawlers ko index nahi karna chahiye. Kabhi kabhi, yeh "disallowed" paths chhupi hui API endpoints ya administrative interfaces ko zahir kar sakte hain.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 robots.txt Example:</h4>
+                        <code>Disallow: /admin/</code>
+                        <code>Disallow: /api/v1/internal/</code>
+                        <code>Disallow: /backup/</code>
+                        <code>Disallow: /dev-api/</code>
+                    </div>
+                </div>
+
+                <div class="target-item">
+                    <strong>2. JavaScript Files</strong>
+                    <p>
+                        In mein aksar hardcoded API endpoints, API keys, ya aisa logic ho sakta hai jo yeh zahir karta hai ke API front end ke saath kaise interact karta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 JS Files Mein Dhoondhein:</h4>
+                        <code>- API endpoints URLs</code>
+                        <code>- Authentication tokens</code>
+                        <code>- API keys aur secrets</code>
+                        <code>- Internal function names</code>
+                    </div>
+                </div>
+
+                <div class="target-item">
+                    <strong>3. Swagger/OpenAPI Documentation</strong>
+                    <p>
+                        Agar site ki public API documentation pehle thi, toh Wayback Machine ne use archive kar liya hoga, jo available endpoints aur unke mutawaqqo parameters ke bare mein bohat si maloomat faraham karta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Documentation Files:</h4>
+                        <code>/swagger.json</code>
+                        <code>/api-docs</code>
+                        <code>/openapi.yaml</code>
+                        <code>/docs/api</code>
+                    </div>
+                </div>
+
+                <div class="target-item">
+                    <strong>4. Developer Blogs Ya Forums</strong>
+                    <p>
+                        Archived versions mein aisi discussions ya posts mil sakti hain jo ghalti se API ke andaruni kaamon ke bare mein tafseelat zahir kar dain.
+                    </p>
+                </div>
+
+                <div class="target-item">
+                    <strong>5. Configuration Files</strong>
+                    <p>
+                        Purane configuration files mein database connections, API keys, aur doosri sensitive information ho sakti hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Common Config Files:</h4>
+                        <code>.env</code>
+                        <code>config.json</code>
+                        <code>settings.xml</code>
+                        <code>database.yml</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">📊</span>Practical Example - Step by Step</h2>
+                
+                <div class="step-box">
+                    <h4>Scenario: API Endpoints Dhoondhna</h4>
+                    <ol>
+                        <li><strong>Target identify karein:</strong> Maan lo aap <code>api.example.com</code> ko analyze kar rahe hain</li>
+                        <li><strong>Wayback Machine par search karein:</strong> <code>https://web.archive.org</code> par ja kar URL enter karein</li>
+                        <li><strong>Timeline explore karein:</strong> 2-3 saal purane snapshots dekhein</li>
+                        <li><strong>Documentation dhoondhein:</strong> <code>/docs</code>, <code>/api-docs</code> paths check karein</li>
+                        <li><strong>JavaScript files analyze karein:</strong> Purani JS files mein endpoints search karein</li>
+                        <li><strong>robots.txt check karein:</strong> Disallowed paths dekhein</li>
+                        <li><strong>Findings document karein:</strong> Saari discovered endpoints ki list banayein</li>
+                        <li><strong>Current site par test karein:</strong> Purane endpoints ko current API par try karein</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    <strong>Wayback Machine</strong> ka istemal karna waqt mein peechey ja kar target ki web presence ke bare mein tareekhi data jama karne jaisa hai, jo aksar bhool gaye ya chhupi hui API attack surfaces ko saamne la sakta hai. Yeh passive reconnaissance ka ek taqatwar tareeqa hai jo kisi bhi direct interaction ke bagair valuable information provide karta hai.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">⚠️</span>Limitations Aur Considerations</h2>
+                
+                <ul class="info-list">
+                    <li>
+                        <strong>Incomplete Archives</strong>
+                        <p>Har page ya har date archived nahi hota. Important content miss ho sakta hai.</p>
+                    </li>
+
+                    <li>
+                        <strong>Dynamic Content</strong>
+                        <p>JavaScript-heavy sites ya dynamic content properly archive nahi hota.</p>
+                    </li>
+
+                    <li>
+                        <strong>Authentication Required Pages</strong>
+                        <p>Login ke peeche ki content Wayback Machine archive nahi kar sakti.</p>
+                    </li>
+
+                    <li>
+                        <strong>robots.txt Respect</strong>
+                        <p>Wayback Machine robots.txt ko respect karta hai, to kuch content archive hi nahi hota.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Wayback Machine information gathering phase ka ek unique aur powerful tool hai. Yeh aapko time machine ki tarah kaam karne deta hai - aap dekh sakte hain ke target website ya API pehle kaisa tha, kya expose tha, aur developers ne kya mistakes ki thin.
+                </p>
+                <p style="margin-top: 15px;">
+                    Purane documentation, deprecated endpoints, accidentally exposed secrets, aur historical changes ko analyze kar ke aap aise vulnerabilities dhoondh sakte hain jo current analysis se nazar nahi aate. Yeh passive reconnaissance technique hai jo bina kisi direct interaction ke valuable intelligence provide karti hai.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

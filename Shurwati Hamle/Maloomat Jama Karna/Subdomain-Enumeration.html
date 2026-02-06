@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subdomain Enumeration - Maloomat Jama Karna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #4facfe;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #fa709a;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .section h2 {
+            color: #4facfe;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #fa709a;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 4px solid #fa709a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight-box h4 {
+            color: #d63031;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-list li:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-list strong {
+            color: #fa709a;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .info-list code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .methods-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .methods-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .method-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .method-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .method-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .method-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .method-card ul li {
+            margin: 8px 0;
+        }
+
+        .method-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .tools-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .tools-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tools-list li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-list strong {
+            color: #e17055;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #4facfe;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #667eea;
+        }
+
+        .conclusion h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .methods-section, .tools-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Subdomain Enumeration</h1>
+            <p>Target Domain Se Munsalik Saare Subdomains Ko Dhoondhna</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Maloomat Jama Karna</a> /
+            <span>Subdomain Enumeration</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Subdomain Enumeration Kya Hai?</h2>
+                <p>
+                    "API Hacking" roadmap mein, "Shurwati Hamle" (Initial Attacks) section ke andar aur khaas taur par "Maloomat Jama Karna" (Information Gathering) topic mein aapko "Subdomain Enumeration" milega.
+                </p>
+                <p>
+                    <strong>Subdomain Enumeration</strong> ka matlab hai ek target domain se munsalik (associated) saare mumkin subdomains ko dhoondhna. Ye API hacking (aur aam web application penetration testing) ke reconnaissance phase ka ek bohot zaroori hissa hai.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">📌</span>Subdomain Kya Hai?</h2>
+                <p>
+                    Is amal ko shuru karne se pehle, ye samajhna zaroori hai ke subdomain kya hota hai. Subdomain ek aisa domain hota hai jo kisi bade domain ka hissa ho.
+                </p>
+                
+                <div class="example-box">
+                    <h4>💡 Misaal:</h4>
+                    <p>Agar <code>example.com</code> ek main domain hai, toh ye sab uske subdomains hain:</p>
+                    <p>
+                        <code>api.example.com</code><br>
+                        <code>dev.example.com</code><br>
+                        <code>admin.example.com</code><br>
+                        <code>blog.example.com</code>
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">⚡</span>API Hacking Ke Liye Subdomain Enumeration Kyun Zaroori Hai?</h2>
+                <p>
+                    APIs aksar khaas subdomains par host kiye jaate hain. Subdomains ki enumeration kar ke, ek hacker ye kar sakta hai:
+                </p>
+                
+                <ul class="info-list">
+                    <li>
+                        <strong>1. Chhupe Hue API Endpoints Dhoondhna</strong>
+                        <p>Aksar companiyan apni APIs ko <code>api.example.com</code>, <code>dev-api.example.com</code>, ya aur bhi kam zahir (less obvious) subdomains par host karti hain. Inhe dhoondhne se naye hamle ke raaste (attack surfaces) mil sakte hain.</p>
+                    </li>
+
+                    <li>
+                        <strong>2. Development/Staging Environments Ka Pata Lagana</strong>
+                        <p><code>dev.example.com</code>, <code>staging.example.com</code>, ya <code>test.example.com</code> jaise subdomains par aksar applications ya APIs ke development ya staging versions host hote hain. Ye environments aam taur par kam mehfooz hote hain, inmein debugging features enable ho sakte hain, ya aisi hasas maloomat ho sakti hain jo publically access nahi honi chahiye.</p>
+                    </li>
+
+                    <li>
+                        <strong>3. Bhule Hue Ya Chhode Hue Systems Dhoondhna</strong>
+                        <p>Kabhi kabhi purane ya bhule hue subdomains online reh jaate hain jin par outdated software, galat configurations, ya unpatched vulnerabilities ho sakti hain, jo hamle ka aasaan rasta faraham karti hain.</p>
+                    </li>
+
+                    <li>
+                        <strong>4. Mukhtalif Services Ki Pehchan</strong>
+                        <p>Mukhtalif subdomains mukhtalif services ko host kar sakte hain, aur har ek mein apni alag vulnerabilities ho sakti hain.</p>
+                    </li>
+
+                    <li>
+                        <strong>5. Hamle Ke Scope Ko Badhana</strong>
+                        <p>Aap jitne zyada subdomains dhoondhenge, aapka potential attack surface utna hi badhega, aur vulnerability milne ke chances bhi zyada honge.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="methods-section">
+                <h2><span class="icon">🛠️</span>Subdomain Enumeration Kaise Ki Jaati Hai?</h2>
+                <p>
+                    Subdomain enumeration karne ke kai tareeqe hain, jinhe aksar behtar nataij ke liye ek saath istemal kiya jata hai:
+                </p>
+
+                <div class="method-card">
+                    <h3>1. Brute-Forcing</h3>
+                    <p>
+                        Ismein common subdomain names (jaise ke www, api, dev, admin, mail, blog) ki dictionary ka istemal kiya jata hai aur har naam ko target domain ke saath resolve karne ki koshish ki jaati hai.
+                    </p>
+                    <p>
+                        <strong>Tools:</strong> <code>ffuf</code>, <code>gobuster</code>, ya <code>sublist3r</code> jaise tools is amal ko automatic kar sakte hain.
+                    </p>
+                </div>
+
+                <div class="method-card">
+                    <h3>2. Search Engine Dorking (maslan Google Dorking)</h3>
+                    <p>
+                        Google ya doosre search engines par advanced search operators ka istemal karne se subdomains zahir ho sakte hain jo index hue hain.
+                    </p>
+                    <div class="example-box">
+                        <h4>Misaal:</h4>
+                        <p><code>site:*.example.com</code></p>
+                        <p><code>site:example.com -inurl:www</code></p>
+                        <p>Ye queries index kiye gaye subdomains ko dhoondhne mein madad kar sakte hain.</p>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>3. DNS Records</h3>
+                    <p><strong>Zone Transfers:</strong></p>
+                    <p>
+                        Agar ek DNS server galat configure kiya gaya hai, toh woh ek "zone transfer" ki darkhwast (request) ko ijazat de sakta hai, jo ek domain ke saare DNS records (subdomains samet) ki mukammal list faraham karta hai. (Ab security behtar hone ki wajah se ye kam hota hai).
+                    </p>
+                    
+                    <p style="margin-top: 15px;"><strong>Brute-forcing DNS Records:</strong></p>
+                    <p>
+                        Common DNS record types (A, AAAA, CNAME, MX, NS) ko potential subdomains ke liye query karna.
+                    </p>
+                    
+                    <p style="margin-top: 15px;"><strong>Reverse DNS Lookups:</strong></p>
+                    <p>
+                        Kabhi kabhi, target ke IP ranges par reverse DNS lookup karne se munsalik subdomains zahir ho sakte hain.
+                    </p>
+                </div>
+
+                <div class="method-card">
+                    <h3>4. Certificate Transparency Logs</h3>
+                    <p>
+                        Jab kisi domain ke liye SSL/TLS certificate jari hota hai, toh use aam taur par public Certificate Transparency (CT) logs mein record kiya jata hai. Ye logs aksar un saare subdomains par mushtamil hote hain jin ke liye certificate jari kiya gaya tha.
+                    </p>
+                    <p>
+                        <strong>Websites:</strong> <code>crt.sh</code> ya <code>certspotter.com</code> jaisi websites in logs ko query karne ki ijazat deti hain.
+                    </p>
+                </div>
+
+                <div class="method-card">
+                    <h3>5. Public Data Sources & Archives</h3>
+                    
+                    <p><strong>Wayback Machine (archive.org):</strong></p>
+                    <p>
+                        Ye service websites ke versions ko waqt ke saath archive karti hai. Ye aise subdomains ko zahir kar sakti hai jo pehle active the, bhale hi ab woh live na hon.
+                    </p>
+                    
+                    <p style="margin-top: 15px;"><strong>VirusTotal:</strong></p>
+                    <p>
+                        Ye service aksar aise domains aur subdomains ke baare mein maloomat ikatthi karti hai jo malware se munsalik hain ya unke scanning infrastructure ne dekhe hain.
+                    </p>
+                    
+                    <p style="margin-top: 15px;"><strong>Shodan:</strong></p>
+                    <p>
+                        Jabke ye bunyadi taur par internet se jude devices ke liye ek search engine hai, Shodan specific IP addresses ya technologies se munsalik subdomains ko bhi zahir kar sakta hai.
+                    </p>
+                </div>
+
+                <div class="method-card">
+                    <h3>6. Virtual Host Enumeration</h3>
+                    <p>
+                        Kabhi kabhi, kai subdomains ek hi IP address par host kiye ja sakte hain (virtual hosts). Ek hi IP par mukhtalif Host headers ke saath requests bhej kar, aap aise mazeed subdomains dhoondh sakte hain jo DNS ke zariye publically resolve nahi hote lekin phir bhi active hain.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tools-section">
+                <h2><span class="icon">🔧</span>Subdomain Enumeration Ke Liye Tools</h2>
+                
+                <ul class="tools-list">
+                    <li>
+                        <strong>Burp Suite</strong>
+                        <p>"Target" tab aur mukhtalif extensions aapko browse karte waqt subdomains dhoondhne mein madad kar sakte hain.</p>
+                    </li>
+
+                    <li>
+                        <strong>Sublist3r, Subfinder, Amass</strong>
+                        <p>Automated subdomain enumeration ke liye khaas tools jo kayi techniques istemal karte hain.</p>
+                    </li>
+
+                    <li>
+                        <strong>OWASP Amass</strong>
+                        <p>Asset discovery ke liye ek taqatwar, comprehensive tool, jismein subdomains bhi shamil hain.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    Mukhtasar yeh ke, <strong>subdomain enumeration</strong> API hacking mein ek bunyadi qadam hai kyunki yeh ek organization ke web assets ke mukammal scope ki nishandahi karne mein madad karta hai, jismein mumkinah taur par kamzor API endpoints ya development environments shamil ho sakte hain jo warna chhupe rehte.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Subdomain Enumeration reconnaissance phase ka ek critical hissa hai. Ye aapko target organization ki puri digital footprint samajhne mein madad karta hai. Subdomains dhoondhne se aap chhupe hue APIs, development environments, aur purane bhule hue systems tak pahunch sakte hain jo security vulnerabilities ka source ban sakte hain.
+                </p>
+                <p style="margin-top: 15px;">
+                    Yaad rakhein: Information gathering jitni achi hogi, aapke attack strategies utni hi targeted aur effective hongi. Is liye subdomain enumeration par time lagana bohot zaroori hai.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

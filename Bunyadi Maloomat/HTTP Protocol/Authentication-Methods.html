@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Methods - HTTP Protocol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #764ba2;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .definition-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 8px solid #667eea;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .definition-box h3 {
+            color: #667eea;
+            font-size: 1.6em;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .definition-box p {
+            font-size: 1.1em;
+            color: #2c3e50;
+            line-height: 1.9;
+        }
+
+        .methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .method-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-left: 8px solid;
+            transition: transform 0.3s;
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .method-card.basic {
+            border-left-color: #3498db;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+
+        .method-card.apikey {
+            border-left-color: #f39c12;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        }
+
+        .method-card.bearer {
+            border-left-color: #27ae60;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .method-card.session {
+            border-left-color: #9b59b6;
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+        }
+
+        .method-card.mtls {
+            border-left-color: #e74c3c;
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        }
+
+        .method-card.oauth {
+            border-left-color: #1abc9c;
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+        }
+
+        .method-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .method-card h4 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .method-card.basic h4 { color: #3498db; }
+        .method-card.apikey h4 { color: #f39c12; }
+        .method-card.bearer h4 { color: #27ae60; }
+        .method-card.session h4 { color: #9b59b6; }
+        .method-card.mtls h4 { color: #e74c3c; }
+        .method-card.oauth h4 { color: #1abc9c; }
+
+        .method-card .tag {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .method-card.basic .tag { background: #3498db; color: white; }
+        .method-card.apikey .tag { background: #f39c12; color: white; }
+        .method-card.bearer .tag { background: #27ae60; color: white; }
+        .method-card.session .tag { background: #9b59b6; color: white; }
+        .method-card.mtls .tag { background: #e74c3c; color: white; }
+        .method-card.oauth .tag { background: #1abc9c; color: white; }
+
+        .method-card p {
+            color: #2c3e50;
+            text-align: left;
+            margin-bottom: 12px;
+        }
+
+        .method-card .subsection {
+            margin: 15px 0;
+        }
+
+        .method-card .subsection h5 {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .method-card.basic .subsection h5 { color: #3498db; }
+        .method-card.apikey .subsection h5 { color: #f39c12; }
+        .method-card.bearer .subsection h5 { color: #27ae60; }
+        .method-card.session .subsection h5 { color: #9b59b6; }
+        .method-card.mtls .subsection h5 { color: #e74c3c; }
+        .method-card.oauth .subsection h5 { color: #1abc9c; }
+
+        .method-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .method-card ul li {
+            padding: 6px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #2c3e50;
+        }
+
+        .method-card ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .method-card.basic ul li::before { color: #3498db; }
+        .method-card.apikey ul li::before { color: #f39c12; }
+        .method-card.bearer ul li::before { color: #27ae60; }
+        .method-card.session ul li::before { color: #9b59b6; }
+        .method-card.mtls ul li::before { color: #e74c3c; }
+        .method-card.oauth ul li::before { color: #1abc9c; }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: bold;
+            margin-bottom: -15px;
+        }
+
+        .code-header.basic { background: #3498db; }
+        .code-header.apikey { background: #f39c12; }
+        .code-header.bearer { background: #27ae60; }
+        .code-header.session { background: #9b59b6; }
+        .code-header.mtls { background: #e74c3c; }
+        .code-header.oauth { background: #1abc9c; }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.05em;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #2c3e50;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .security-level {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .security-level.low { background: #e74c3c; color: white; }
+        .security-level.medium { background: #f39c12; color: white; }
+        .security-level.high { background: #27ae60; color: white; }
+        .security-level.very-high { background: #2c3e50; color: white; }
+
+        .vulnerabilities-section {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 8px solid #c0392b;
+        }
+
+        .vulnerabilities-section h2 {
+            color: #c0392b;
+            text-align: center;
+            margin: 0 0 25px 0;
+            border: none;
+            display: block;
+        }
+
+        .vulnerability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .vulnerability-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #c0392b;
+        }
+
+        .vulnerability-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .vulnerability-card h4 {
+            color: #c0392b;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .vulnerability-card p {
+            color: #2c3e50;
+            text-align: left;
+        }
+
+        .vulnerability-card ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .vulnerability-card ul li {
+            padding: 6px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .vulnerability-card ul li::before {
+            content: "⚠";
+            position: absolute;
+            left: 0;
+            color: #c0392b;
+        }
+
+        .flow-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .flow-diagram h3 {
+            color: #667eea;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flow-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 140px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .flow-box .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .flow-box h4 {
+            font-size: 1em;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .flow-box p {
+            color: white;
+            font-size: 0.85em;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #667eea;
+        }
+
+        .best-practices {
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .best-practices h3 {
+            color: #1e3c72;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .practices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .practice-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #1e3c72;
+        }
+
+        .practice-card .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .practice-card h5 {
+            color: #1e3c72;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .practice-card p {
+            color: #2c3e50;
+            text-align: left;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .methods-grid,
+            .vulnerability-grid,
+            .practices-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-steps {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #333;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Authentication Methods</h1>
+            <p>Shanakht Ke Tareeqay</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> → <span>Bunyadi Maloomat</span> → <span>HTTP Protocol</span> → Authentication Methods</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p><strong>Authentication Methods</strong> woh mukhtalif tareeqay hain jin se ek API kisi user ya client application ki <strong>shanakht (identity)</strong> ki tasdeeq karti hai jo uske resources tak rasai haasil karne ki koshish kar raha hai.</p>
+                
+                <p>Yeh bilkul waisa hai jaise kisi <strong>mahdood (restricted) ilaqay</strong> mein dakhil hone se pehle kisi ka <strong>ID card check</strong> karna.</p>
+
+                <p>Iska maqsad yeh yakeeni banana hai ke sirf <strong>jayaz aur ikhtiyar-yaafta (authorized)</strong> idaray hi API ke saath interact kar saken.</p>
+            </div>
+
+            <div class="section">
+                <h2>📖 Authentication Kya Hai?</h2>
+
+                <div class="definition-box">
+                    <h3>Definition:</h3>
+                    <p><strong>Authentication</strong> woh process hai jis se verify kiya jata hai ke user ya application wahi hai jo wo hone ka <strong>daawa</strong> kar raha hai.</p>
+                    <br>
+                    <p>Yeh <strong>Authorization</strong> se mukhtalif hai:</p>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>Authentication:</strong> "Aap KAUN hain?" - Identity verification
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>Authorization:</strong> "Aapko KYA karne ki ijazat hai?" - Permission verification
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flow-diagram">
+                    <h3>🔄 Authentication Flow</h3>
+                    <div class="flow-steps">
+                        <div class="flow-box">
+                            <div class="icon">💻</div>
+                            <h4>Client</h4>
+                            <p>Request + Credentials</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">🔍</div>
+                            <h4>Verify</h4>
+                            <p>Check Identity</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">✅</div>
+                            <h4>Validated</h4>
+                            <p>Identity Confirmed</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">🎫</div>
+                            <h4>Token/Session</h4>
+                            <p>Access Granted</p>
+                        </div>
+
+                        <div class="flow-arrow">→</div>
+
+                        <div class="flow-box">
+                            <div class="icon">🖥️</div>
+                            <h4>API Access</h4>
+                            <p>Protected Resources</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔑 Common Authentication Methods</h2>
+
+                <div class="methods-grid">
+                    <!-- Basic Authentication -->
+                    <div class="method-card basic">
+                        <div class="icon">🔵</div>
+                        <span class="tag">BASIC AUTH</span>
+                        <h4>1. Basic Authentication</h4>
+
+                        <div class="subsection">
+                            <h5>Yeh Kaise Kaam Karta Hai:</h5>
+                            <p>Client har request ke saath <strong>username aur password</strong> (aksar <strong>base64 encoded</strong>) Authorization header mein bhejta hai.</p>
+                        </div>
+
+                        <div class="code-header basic">Request Example</div>
+                        <div class="code-example">GET /api/users HTTP/1.1
+Host: api.example.com
+Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
+
+# Base64 encoded: username:password
+# Decoded: username:password</div>
+
+                        <div class="subsection">
+                            <h5>Istemal:</h5>
+                            <ul>
+                                <li>Saada, simple implementation</li>
+                                <li>Internal APIs ke liye</li>
+                                <li>Quick prototyping</li>
+                                <li>Legacy systems</li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>⚠️ Security Note:</h5>
+                            <p style="color: #e74c3c; font-weight: bold;">Tanha itna secure nahin! Agar HTTPS par istemal na ho toh <strong>eavesdropping</strong> ka shikaar ho sakta hai. Base64 encoding encryption NAHI hai!</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>Pros & Cons:</h5>
+                            <p><strong>✓ Pros:</strong> Simple, widely supported, easy to implement</p>
+                            <p><strong>✗ Cons:</strong> Insecure without HTTPS, credentials sent with every request</p>
+                        </div>
+                    </div>
+
+                    <!-- API Keys -->
+                    <div class="method-card apikey">
+                        <div class="icon">🔑</div>
+                        <span class="tag">API KEYS</span>
+                        <h4>2. API Keys</h4>
+
+                        <div class="subsection">
+                            <h5>Yeh Kaise Kaam Karta Hai:</h5>
+                            <p>Ek <strong>munfarid (unique) string ya token</strong> (API key) banaya jata hai aur client ko diya jata hai. Phir yeh key har API request ke saath bheji jaati hai.</p>
+                        </div>
+
+                        <div class="code-header apikey">Request Example</div>
+                        <div class="code-example"># Method 1: Header
+GET /api/data HTTP/1.1
+Host: api.example.com
+X-API-Key: abc123xyz456def789ghi012
+
+# Method 2: Query Parameter
+GET /api/data?api_key=abc123xyz456def789ghi012 HTTP/1.1
+Host: api.example.com
+
+# Method 3: Request Body (rare)
+POST /api/data HTTP/1.1
+Host: api.example.com
+Content-Type: application/json
+
+{
+  "api_key": "abc123xyz456def789ghi012",
+  "data": "..."
+}</div>
+
+                        <div class="subsection">
+                            <h5>Istemal:</h5>
+                            <ul>
+                                <li>Public APIs (Google Maps, Stripe)</li>
+                                <li>Usage tracking aur rate limiting</li>
+                                <li>Saada access control</li>
+                                <li>Application-level authentication</li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>⚠️ Security Note:</h5>
+                            <p style="color: #e74c3c; font-weight: bold;">Agar ek API key <strong>compromise</strong> ho jaaye, toh key rakhne wala koi bhi shakhs API tak rasai haasil kar sakta hai! Application ko access deti hai, kisi khaas user ko nahin.</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>Pros & Cons:</h5>
+                            <p><strong>✓ Pros:</strong> Simple, good for tracking, easy rotation</p>
+                            <p><strong>✗ Cons:</strong> Can be exposed in URLs/logs, no user-level auth</p>
+                        </div>
+                    </div>
+
+                    <!-- Bearer Tokens / JWT -->
+                    <div class="method-card bearer">
+                        <div class="icon">🎫</div>
+                        <span class="tag">BEARER TOKEN / JWT</span>
+                        <h4>3. Bearer Tokens (OAuth 2.0 / JWT)</h4>
+
+                        <div class="subsection">
+                            <h5>Yeh Kaise Kaam Karta Hai:</h5>
+                            <p>Jab ek user kamyabi se <strong>authenticate</strong> ho jata hai, server ek <strong>"bearer token"</strong> jari karta hai. Phir yeh token har agle request mein Authorization header mein <code>Bearer &lt;token&gt;</code> ke taur par shamil kiya jata hai.</p>
+                        </div>
+
+                        <div class="code-header bearer">JWT Token Example</div>
+                        <div class="code-example"># Login Request
+POST /api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "ali",
+  "password": "secret123"
+}
+
+# Server Response
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaSIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+}
+
+# Subsequent Requests
+GET /api/profile HTTP/1.1
+Host: api.example.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</div>
+
+                        <div class="subsection">
+                            <h5>JWT Structure:</h5>
+                            <p>JSON Web Token (JWT) teen parts par mushtamil hota hai:</p>
+                            <ul>
+                                <li><strong>Header:</strong> Algorithm aur token type</li>
+                                <li><strong>Payload:</strong> Claims (user data, expiry, etc.)</li>
+                                <li><strong>Signature:</strong> Cryptographically signed</li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>Istemal:</h5>
+                            <ul>
+                                <li>Modern web applications</li>
+                                <li>Mobile apps</li>
+                                <li>Single Page Applications (SPAs)</li>
+                                <li>Microservices authentication</li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>⚠️ Security Note:</h5>
+                            <p style="color: #e74c3c; font-weight: bold;">Bearer tokens <strong>kisi bhi shakhs</strong> ko rasai dete hain jiske paas woh hon! Inhe <strong>securely store</strong> karne aur <strong>HTTPS</strong> par transmit karne ki zaroorat hai. Token expiry set karein!</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>Pros & Cons:</h5>
+                            <p><strong>✓ Pros:</strong> Stateless, scalable, contains claims, widely adopted</p>
+                            <p><strong>✗ Cons:</strong> Can't revoke easily, size larger than session ID</p>
+                        </div>
+                    </div>
+
+                    <!-- Session-based Authentication -->
+                    <div class="method-card session">
+                        <div class="icon">🍪</div>
+                        <span class="tag">SESSION AUTH</span>
+                        <h4>4. Session-based Authentication</h4>
+
+                        <div class="subsection">
+                            <h5>Yeh Kaise Kaam Karta Hai:</h5>
+                            <p>Jab ek user login karta hai, server ek <strong>munfarid session ID</strong> banata hai aur usay client ko wapas bhejta hai (aam taur par <strong>cookie</strong> ke taur par). Phir client har agle request ke saath yeh session ID bhejta hai.</p>
+                        </div>
+
+                        <div class="code-header session">Session Flow</div>
+                        <div class="code-example"># 1. Login
+POST /api/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "ali",
+  "password": "secret123"
+}
+
+# 2. Server Response (Set Cookie)
+HTTP/1.1 200 OK
+Set-Cookie: sessionid=abc123xyz456; Path=/; HttpOnly; Secure
+
+# 3. Subsequent Requests (Cookie Auto-sent)
+GET /api/profile HTTP/1.1
+Host: api.example.com
+Cookie: sessionid=abc123xyz456
+
+# Server-side:
+# Session Store: { "abc123xyz456": { "user_id": 123, "username": "ali" } }</div>
+
+                        <div class="subsection">
+                            <h5>Istemal:</h5>
+                            <ul>
+                                <li>Traditional web applications</li>
+                                <li>Multi-page applications</li>
+                                <li>Server-rendered apps</li>
+                                <li>Banking/financial applications</li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>⚠️ Security Note:</h5>
+                            <p style="color: #e74c3c; font-weight: bold;">Agar sahi tareeqay se implement na ho toh <strong>session hijacking, fixation, aur CSRF</strong> jaise hamlon ka shikaar ho sakta hai! HttpOnly aur Secure flags zaroori hain.</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>Pros & Cons:</h5>
+                            <p><strong>✓ Pros:</strong> Server control, easy revocation, small session ID</p>
+                            <p><strong>✗ Cons:</strong> Requires server storage, not scalable for distributed systems</p>
+                        </div>
+                    </div>
+
+                    <!-- Mutual TLS -->
+                    <div class="method-card mtls">
+                        <div class="icon">🔒</div>
+                        <span class="tag">mTLS</span>
+                        <h4>5. Mutual TLS (mTLS)</h4>
+
+                        <div class="subsection">
+                            <h5>Yeh Kaise Kaam Karta Hai:</h5>
+                            <p>Client aur server <strong>dono</strong> ek doosre ko <strong>digital certificates</strong> pesh karte hain taake apni shanakht ki tasdeeq kar saken. Yeh transport layer par ek mehfooz, authenticated connection qaim karta hai.</p>
+                        </div>
+
+                        <div class="code-header mtls">mTLS Flow</div>
+                        <div class="code-example"># Standard TLS/SSL:
+Client → Server: "Hello"
+Server → Client: Server Certificate
+Client verifies server
+
+# Mutual TLS (mTLS):
+Client → Server: "Hello"
+Server → Client: Server Certificate
+Client → Server: Client Certificate
+Both verify each other!
+
+# Certificate Exchange:
+1. Server requests client certificate
+2. Client sends its certificate + private key signature
+3. Server verifies client certificate against trusted CAs
+4. Secure, authenticated connection established</div>
+
+                        <div class="subsection">
+                            <h5>Istemal:</h5>
+                            <ul>
+                                <li>High-security environments</li>
+                                <li>Microservices architectures</li>
+                                <li>Inter-service communication</li>
+                                <li>Banking/government systems</li>
+                                <li>IoT device authentication</li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>⚠️ Security Note:</h5>
+                            <p style="color: #27ae60; font-weight: bold;">Bohat <strong>mazboot authentication</strong> faraham karta hai lekin isay set up aur manage karna ziyada <strong>pecheeda</strong> hota hai. Certificate management critical hai.</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>Pros & Cons:</h5>
+                            <p><strong>✓ Pros:</strong> Very secure, strong authentication, no credentials in requests</p>
+                            <p><strong>✗ Cons:</strong> Complex setup, certificate management overhead</p>
+                        </div>
+                    </div>
+
+                    <!-- OAuth 2.0 -->
+                    <div class="method-card oauth">
+                        <div class="icon">🔐</div>
+                        <span class="tag">OAUTH 2.0</span>
+                        <h4>6. OAuth 2.0</h4>
+
+                        <div class="subsection">
+                            <h5>Yeh Kaise Kaam Karta Hai:</h5>
+                            <p><strong>OAuth 2.0</strong> ek authorization framework hai jo third-party applications ko user ke resources tak <strong>limited access</strong> dene ki ijazat deti hai bagair password share kiye.</p>
+                        </div>
+
+                        <div class="code-header oauth">OAuth 2.0 Flow</div>
+                        <div class="code-example"># Authorization Code Flow:
+
+# 1. User Authorization Request
+https://auth.example.com/oauth/authorize?
+  response_type=code&
+  client_id=abc123&
+  redirect_uri=https://app.com/callback&
+  scope=read_profile
+
+# 2. User Approves → Server Redirects
+https://app.com/callback?code=xyz789
+
+# 3. Exchange Code for Token
+POST /oauth/token HTTP/1.1
+Host: auth.example.com
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code&
+code=xyz789&
+client_id=abc123&
+client_secret=secret456&
+redirect_uri=https://app.com/callback
+
+# 4. Server Response
+{
+  "access_token": "eyJhbGci...",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "refresh_xyz",
+  "scope": "read_profile"
+}
+
+# 5. Use Access Token
+GET /api/profile HTTP/1.1
+Authorization: Bearer eyJhbGci...</div>
+
+                        <div class="subsection">
+                            <h5>OAuth 2.0 Roles:</h5>
+                            <ul>
+                                <li><strong>Resource Owner:</strong> User (data ka malik)</li>
+                                <li><strong>Client:</strong> Application (access chahta hai)</li>
+                                <li><strong>Authorization Server:</strong> Tokens issue karta hai</li>
+                                <li><strong>Resource Server:</strong> Protected data store karta hai</li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>Istemal:</h5>
+                            <ul>
+                                <li>Social login (Google, Facebook, GitHub)</li>
+                                <li>Third-party integrations</li>
+                                <li>Mobile app authentication</li>
+                                <li>API access delegation</li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>⚠️ Security Note:</h5>
+                            <p style="color: #e74c3c; font-weight: bold;">OAuth 2.0 <strong>authentication protocol nahi</strong> hai, balkay <strong>authorization framework</strong> hai! OpenID Connect (OIDC) OAuth 2.0 par based authentication layer hai.</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h5>Pros & Cons:</h5>
+                            <p><strong>✓ Pros:</strong> Delegated access, no password sharing, flexible scopes</p>
+                            <p><strong>✗ Cons:</strong> Complex implementation, multiple flows to understand</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Comparison Table</h2>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Security Level</th>
+                            <th>Complexity</th>
+                            <th>Use Case</th>
+                            <th>Stateless?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Basic Auth</strong></td>
+                            <td><span class="security-level low">Low</span></td>
+                            <td>Very Simple</td>
+                            <td>Internal APIs, Quick prototyping</td>
+                            <td>✓ Yes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Keys</strong></td>
+                            <td><span class="security-level medium">Medium</span></td>
+                            <td>Simple</td>
+                            <td>Public APIs, App-level auth</td>
+                            <td>✓ Yes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bearer Tokens (JWT)</strong></td>
+                            <td><span class="security-level high">High</span></td>
+                            <td>Medium</td>
+                            <td>Modern web/mobile apps</td>
+                            <td>✓ Yes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Session-based</strong></td>
+                            <td><span class="security-level high">High</span></td>
+                            <td>Medium</td>
+                            <td>Traditional web apps</td>
+                            <td>✗ No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mutual TLS</strong></td>
+                            <td><span class="security-level very-high">Very High</span></td>
+                            <td>Complex</td>
+                            <td>High-security, Microservices</td>
+                            <td>✓ Yes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OAuth 2.0</strong></td>
+                            <td><span class="security-level high">High</span></td>
+                            <td>Complex</td>
+                            <td>Third-party access, Social login</td>
+                            <td>✓ Yes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>⚠️ Common Vulnerabilities</h2>
+
+                <div class="vulnerabilities-section">
+                    <h2>🔴 Authentication Se Mutalliq Kamzoriyaan</h2>
+
+                    <div class="vulnerability-grid">
+                        <div class="vulnerability-card">
+                            <div class="icon">🔑</div>
+                            <h4>1. Weak Credentials</h4>
+                            <p>Kamzor ya default credentials ka istemal:</p>
+                            <ul>
+                                <li>Default passwords (admin/admin)</li>
+                                <li>Simple passwords (123456, password)</li>
+                                <li>Hardcoded credentials in code</li>
+                                <li>No password complexity requirements</li>
+                            </ul>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">🚪</div>
+                            <h4>2. Broken Authentication</h4>
+                            <p>Authentication logic ki ghalat implementation:</p>
+                            <ul>
+                                <li>No rate limiting on login attempts</li>
+                                <li>Predictable session IDs</li>
+                                <li>Session fixation vulnerabilities</li>
+                                <li>Improper logout implementation</li>
+                            </ul>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">🔓</div>
+                            <h4>3. Token Vulnerabilities</h4>
+                            <p>Compromise shuda ya weak tokens:</p>
+                            <ul>
+                                <li>JWT without signature verification</li>
+                                <li>Exposed API keys in client code</li>
+                                <li>Long-lived tokens without expiry</li>
+                                <li>Tokens in URL parameters</li>
+                            </ul>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">⚙️</div>
+                            <h4>4. Misconfiguration</h4>
+                            <p>Ghalat security settings:</p>
+                            <ul>
+                                <li>Missing HTTPS enforcement</li>
+                                <li>Insecure cookie flags (no HttpOnly)</li>
+                                <li>Weak JWT algorithms (none, HS256 with weak secret)</li>
+                                <li>CORS misconfiguration</li>
+                            </ul>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">🎭</div>
+                            <h4>5. Session Attacks</h4>
+                            <p>Session management ki kamzoriyaan:</p>
+                            <ul>
+                                <li>Session hijacking via XSS</li>
+                                <li>Session fixation attacks</li>
+                                <li>No session timeout</li>
+                                <li>Session data in URLs</li>
+                            </ul>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">🔍</div>
+                            <h4>6. Information Disclosure</h4>
+                            <p>Authentication process mein maloomat leak:</p>
+                            <ul>
+                                <li>Different responses for valid/invalid users</li>
+                                <li>Verbose error messages</li>
+                                <li>Timing attacks possible</li>
+                                <li>User enumeration via responses</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>✅ Best Practices</h2>
+
+                <div class="best-practices">
+                    <h3>Security Best Practices</h3>
+                    <div class="practices-grid">
+                        <div class="practice-card">
+                            <div class="icon">🔒</div>
+                            <h5>1. Always Use HTTPS</h5>
+                            <p>Credentials aur tokens ko hamesha <strong>encrypted connection</strong> par bhejein. HTTP par kabhi sensitive data na bhejein.</p>
+                        </div>
+
+                        <div class="practice-card">
+                            <div class="icon">💪</div>
+                            <h5>2. Strong Password Policy</h5>
+                            <p>Password complexity requirements enforce karein: minimum length, uppercase, lowercase, numbers, symbols.</p>
+                        </div>
+
+                        <div class="practice-card">
+                            <div class="icon">⏰</div>
+                            <h5>3. Token Expiration</h5>
+                            <p>Har token ke liye <strong>expiry time</strong> set karein. Access tokens short-lived (15-60 min), refresh tokens long-lived.</p>
+                        </div>
+
+                        <div class="practice-card">
+                            <div class="icon">🔄</div>
+                            <h5>4. Token Rotation</h5>
+                            <p>API keys aur secrets ko regularly <strong>rotate</strong> karein. Compromised keys ko immediately revoke karein.</p>
+                        </div>
+
+                        <div class="practice-card">
+                            <div class="icon">🚦</div>
+                            <h5>5. Rate Limiting</h5>
+                            <p>Login endpoints par <strong>rate limiting</strong> implement karein taake brute force attacks prevent hon.</p>
+                        </div>
+
+                        <div class="practice-card">
+                            <div class="icon">🍪</div>
+                            <h5>6. Secure Cookies</h5>
+                            <p>Session cookies mein hamesha <strong>HttpOnly</strong>, <strong>Secure</strong>, aur <strong>SameSite</strong> flags set karein.</p>
+                        </div>
+
+                        <div class="practice-card">
+                            <div class="icon">🔐</div>
+                            <h5>7. Multi-Factor Auth (MFA)</h5>
+                            <p>Sensitive operations ke liye <strong>2FA/MFA</strong> implement karein for extra security layer.</p>
+                        </div>
+
+                        <div class="practice-card">
+                            <div class="icon">📊</div>
+                            <h5>8. Logging & Monitoring</h5>
+                            <p>Authentication attempts, failures, aur suspicious activities ko <strong>log aur monitor</strong> karein.</p>
+                        </div>
+
+                        <div class="practice-card">
+                            <div class="icon">🔍</div>
+                            <h5>9. Input Validation</h5>
+                            <p>User credentials ko properly <strong>validate aur sanitize</strong> karein SQL injection prevent karne ke liye.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 API Hacking Se Talluq</h2>
+
+                <div class="highlight-box">
+                    <p><strong>Authentication Methods ko samajhna API hacking ke liye bohat zaroori hai</strong> kyunke kamzoriyan aksar in wajahat se paida hoti hain:</p>
+                </div>
+
+                <div class="vulnerability-grid" style="margin-top: 25px;">
+                    <div class="vulnerability-card">
+                        <div class="icon">🔓</div>
+                        <h4>Authentication Bypass</h4>
+                        <p>Authentication logic ko bypass kar ke unauthorized access:</p>
+                        <ul>
+                            <li>SQL injection in login forms</li>
+                            <li>JWT signature bypass</li>
+                            <li>Session fixation</li>
+                            <li>Weak password reset mechanism</li>
+                        </ul>
+                    </div>
+
+                    <div class="vulnerability-card">
+                        <div class="icon">🎭</div>
+                        <h4>Token Manipulation</h4>
+                        <p>Tokens ko modify kar ke privileges escalate karna:</p>
+                        <ul>
+                            <li>JWT payload tampering</li>
+                            <li>Algorithm confusion attacks</li>
+                            <li>Token replay attacks</li>
+                            <li>Forged signatures</li>
+                        </ul>
+                    </div>
+
+                    <div class="vulnerability-card">
+                        <div class="icon">🔑</div>
+                        <h4>Credential Stuffing</h4>
+                        <p>Leaked credentials ka istemal:</p>
+                        <ul>
+                            <li>Automated login attempts</li>
+                            <li>Using leaked password databases</li>
+                            <li>No account lockout mechanism</li>
+                            <li>Weak CAPTCHA implementation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <p><strong>🎓 Learning Path:</strong> Roadmap mein <strong>"Authentication Bypass"</strong> aur <strong>"Session Token Manipulation"</strong> jaise topics shamil hain, jo in authentication mechanisms ki kamzoriyon ka faida uthane se mutalliq hain. Pehle authentication methods ko samajhna, phir unke vulnerabilities exploit karna seekhna!</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+
+                <div class="definition-box">
+                    <h3>Key Takeaways:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>Authentication:</strong> Identity verification - "Aap kaun hain?"
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>6 Main Methods:</strong> Basic Auth, API Keys, Bearer Tokens, Sessions, mTLS, OAuth 2.0
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>Security Levels:</strong> Basic Auth (Low) → mTLS (Very High)
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>Common Vulnerabilities:</strong> Weak credentials, broken auth, token issues
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>Best Practices:</strong> HTTPS, token expiry, rate limiting, secure cookies
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>JWT:</strong> Most popular modern approach - stateless, scalable
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>OAuth 2.0:</strong> Authorization framework, not authentication protocol
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #667eea; font-weight: bold;">→</span>
+                            <strong>API Hacking:</strong> Authentication bypass, token manipulation, credential stuffing
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <p><strong>🎯 Conclusion:</strong> Authentication methods ko samajhna API security ki <strong>bunyad</strong> hai. Har method ki strengths aur weaknesses ko jaan kar, aap behtar tareeqe se <strong>secure APIs</strong> bana sakte hain aur <strong>vulnerabilities</strong> ko identify kar sakte hain. API hacking mein in methods ki kamzoriyon ko exploit karna aik ahem skill hai!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Authentication Methods - HTTP Protocol</p>
+        </div>
+    </div>
+</body>
+</html>

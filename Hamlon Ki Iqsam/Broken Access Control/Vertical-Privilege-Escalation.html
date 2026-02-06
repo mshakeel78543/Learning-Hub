@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Privilege Escalation - Broken Access Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #f093fb;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .intro-section strong {
+            color: #d63031;
+        }
+
+        .concept-box {
+            background: white;
+            border: 2px solid #f5576c;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .concept-box h4 {
+            color: #f5576c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .concept-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .concept-box ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .concept-box ul li {
+            margin: 6px 0;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #f5576c;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .section strong {
+            color: #667eea;
+        }
+
+        .privilege-levels {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .privilege-levels h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .level-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .level-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .level-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .level-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .level-card ul li {
+            margin: 8px 0;
+        }
+
+        .scenarios-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .scenarios-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .scenario-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .scenario-card h3 {
+            color: #e17055;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .scenario-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .scenario-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .scenario-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #e17055;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #e17055;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .impact-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .impact-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .impact-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .impact-card strong {
+            color: #6c5ce7;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .impact-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .impact-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .impact-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .defense-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #f5576c;
+        }
+
+        .conclusion h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .privilege-levels, .scenarios-section, .impact-section, .defense-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔺 Vertical Privilege Escalation</h1>
+            <p>Kam Ikhtiyarat Se Zyada Ikhtiyarat Tak - Admin Level Access</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Hamlon Ki Iqsam</a> /
+            <a href="index.html">Broken Access Control</a> /
+            <span>Vertical Privilege Escalation</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Vertical Privilege Escalation Kya Hai?</h2>
+                <p>
+                    <strong>"Vertical Privilege Escalation"</strong> API Hacking roadmap ke "Broken Access Control" section mein ek nihayat ahem topic hai.
+                </p>
+                <p>
+                    Seedhay alfaz mein, <strong>Vertical Privilege Escalation</strong> us waqt hota hai jab ek kam privileges wala user (yaani, kam ikhtiyarat wala shakhs) un functions ya data tak rasai hasil kar leta hai jo aam taur par zyada privileges walay users ke liye mehfooz hotay hain. Sochiye ek mamooli user account achanak aise kaam karne lagay jo sirf administrator ko karne chahiye.
+                </p>
+
+                <div class="concept-box">
+                    <h4>🎭 Simple Misaal</h4>
+                    <p>
+                        Ek office building mein sochiye jahan mukhtalif levels ki access cards hain:
+                    </p>
+                    <ul>
+                        <li><strong>Regular Employee Card (Blue):</strong> Sirf apna cabin aur common areas</li>
+                        <li><strong>Manager Card (Green):</strong> Team areas aur meeting rooms</li>
+                        <li><strong>Admin Card (Red):</strong> Server room, CEO office, aur sab jagah</li>
+                    </ul>
+                    <p style="margin-top: 10px;">
+                        Agar ek regular employee (Blue card holder) kisi tareeqe se server room mein enter kar jaaye (jo sirf Red card holders ke liye hai), to yeh <strong>Vertical Privilege Escalation</strong> hai - usne apne ikhtiyarat ko "vertically" upar ki taraf barha liya!
+                    </p>
+                </div>
+
+                <div class="danger-box">
+                    <h4>🚨 Horizontal vs Vertical - Farq Samajhiye</h4>
+                    <ul>
+                        <li><strong>Horizontal Escalation:</strong> Same level ke doosre user ke resources (User A → User B ka data)</li>
+                        <li><strong>Vertical Escalation:</strong> Neeche se upar ki level (Regular User → Admin privileges)</li>
+                    </ul>
+                    <p style="margin-top: 10px;">
+                        Vertical escalation generally zyada khatarnak hai kyunki attacker ko puri system par control mil sakta hai!
+                    </p>
+                </div>
+            </div>
+
+            <div class="privilege-levels">
+                <h2><span class="icon">📊</span>Privilege Levels (Ikhtiyarat Ki Satah)</h2>
+                <p>
+                    Zyada tar applications, APIs samet, mukhtalif qisam ke users hotay hain jin ke paas alag-alag ikhtiyarat hotay hain:
+                </p>
+
+                <div class="level-card">
+                    <h3>1. Regular User / Guest User</h3>
+                    <p>
+                        Sabse basic level - limited permissions aur restricted access.
+                    </p>
+                    <ul>
+                        <li>Apni profile dekh aur edit kar sakta hai</li>
+                        <li>Public content access kar sakta hai</li>
+                        <li>Basic bunyadi requests kar sakta hai</li>
+                        <li>Sirf apne data tak rasai</li>
+                        <li>System settings change nahi kar sakta</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Regular User Endpoints:</h4>
+                        <code>GET /api/my/profile</code>
+                        <code>PUT /api/my/profile</code>
+                        <code>GET /api/posts (public posts only)</code>
+                        <code>POST /api/comments</code>
+                    </div>
+                </div>
+
+                <div class="level-card">
+                    <h3>2. Premium User / Pro User</h3>
+                    <p>
+                        Mid-level privileges - zyada features aur extended access.
+                    </p>
+                    <ul>
+                        <li>Advanced features tak rasai</li>
+                        <li>Zyada data storage ya bandwidth</li>
+                        <li>Priority support</li>
+                        <li>Additional API rate limits</li>
+                        <li>Export/download features</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Premium User Endpoints:</h4>
+                        <code>GET /api/analytics/advanced</code>
+                        <code>POST /api/export/data</code>
+                        <code>GET /api/premium/features</code>
+                    </div>
+                </div>
+
+                <div class="level-card">
+                    <h3>3. Moderator / Manager</h3>
+                    <p>
+                        Content moderation aur team management capabilities.
+                    </p>
+                    <ul>
+                        <li>User-generated content ko moderate kar sakta hai</li>
+                        <li>Comments/posts delete kar sakta hai</li>
+                        <li>Users ko warn ya suspend kar sakta hai</li>
+                        <li>Team members ke activities dekh sakta hai</li>
+                        <li>Reports aur analytics access</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Moderator Endpoints:</h4>
+                        <code>DELETE /api/posts/{post_id}</code>
+                        <code>PUT /api/users/{user_id}/suspend</code>
+                        <code>GET /api/reports/flagged-content</code>
+                    </div>
+                </div>
+
+                <div class="level-card">
+                    <h3>4. Administrator / Super Admin</h3>
+                    <p>
+                        <strong>Highest level</strong> - complete system control aur sabhi resources tak rasai.
+                    </p>
+                    <ul>
+                        <li>Sabhi users ko manage kar sakta hai</li>
+                        <li>Sabhi data tak unrestricted access</li>
+                        <li>System settings aur configurations tabdeel kar sakta hai</li>
+                        <li>Database operations perform kar sakta hai</li>
+                        <li>Security policies define kar sakta hai</li>
+                        <li>API keys aur credentials manage kar sakta hai</li>
+                        <li>Complete audit logs dekh sakta hai</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Admin Endpoints:</h4>
+                        <code>GET /api/admin/users (all users)</code>
+                        <code>DELETE /api/admin/users/{user_id}</code>
+                        <code>PUT /api/admin/settings</code>
+                        <code>GET /api/admin/logs</code>
+                        <code>POST /api/admin/database/backup</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scenarios-section">
+                <h2><span class="icon">🔓</span>Kaise Hota Hai - Aam Scenarios</h2>
+                <p>
+                    Vertical privilege escalation mukhtalif tareeqon se ho sakta hai:
+                </p>
+
+                <div class="scenario-card">
+                    <h3>1. Inadequate Authorization Checks (Na Mukammal Ijazat Ke Checks)</h3>
+                    <p>
+                        Server ho sakta hai sirf process ke shuru mein authorization check kare, lekin har aglay qadam ya har endpoint ke liye nahi. Hamla awar ibtadai check ko bypass kar ke seedha administrator-only function ko call kar sakta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Vulnerable Code Example:</h4>
+                        <code>// Sirf login check hai, role check nahi</code>
+                        <code>app.delete('/api/admin/users/:id', (req, res) => {</code>
+                        <code>  if (!req.session.userId) {</code>
+                        <code>    return res.status(401).json({error: 'Not authenticated'});</code>
+                        <code>  }</code>
+                        <code>  // ❌ Admin role check missing!</code>
+                        <code>  db.deleteUser(req.params.id);</code>
+                        <code>  res.json({success: true});</code>
+                        <code>});</code>
+                        <p style="margin-top: 10px;">Is code mein koi bhi authenticated user (even regular user) admin endpoint ko access kar sakta hai!</p>
+                    </div>
+
+                    <ul>
+                        <li>Endpoint par sirf authentication check, authorization nahi</li>
+                        <li>Role-based checks missing</li>
+                        <li>Permission verification ka absence</li>
+                        <li>Client-side checks par over-reliance</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>2. Parameter Tampering (Parameters Mein Hera Pheri)</h3>
+                    <p>
+                        Hamla awar apni request mein kisi parameter ko tabdeel kar sakta hai (maslan, <code>user_role=standard</code> ko <code>user_role=admin</code> mein ya <code>id=123</code> ko <code>id=admin_user_id</code> mein badal kar) taake API ko dhoka de kar zyada ikhtiyarat hasil kar sakay.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Parameter Tampering Example:</h4>
+                        <p>POST request body mein:</p>
+                        <code>POST /api/updateUser</code>
+                        <code>{</code>
+                        <code>  "user_id": "123",</code>
+                        <code>  "name": "Hacker",</code>
+                        <code>  "role": "admin"  // ⚠️ Attacker ne role admin set kiya!</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px;">Ya URL mein:</p>
+                        <code>GET /api/dashboard?role=admin&user_id=123</code>
+                    </div>
+
+                    <ul>
+                        <li>Role parameters manipulate karna</li>
+                        <li>Permission flags ko true set karna</li>
+                        <li>Hidden form fields change karna</li>
+                        <li>Cookie values mein role modify karna</li>
+                        <li>JSON payload mein privilege levels badalna</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>3. Direct Access to Admin Endpoints (Admin Endpoints Tak Barahe Raast Rasai)</h3>
+                    <p>
+                        Kabhi kabhi, developers administrative API endpoints ko protect karna bhool jatay hain, ya woh sirf client-side checks par bharosa karte hain (jo asaani se bypass ho jatay hain). Hamla awar in endpoints ko dhoondh nikal sakta hai (directory brute-forcing ya documentation analyze kar ke) aur un par barahe raast requests bhej sakta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Unprotected Admin Endpoints:</h4>
+                        <code>// Client-side mein admin panel hidden hai</code>
+                        <code>// Lekin endpoints public hain:</code>
+                        <code>GET /api/admin/users</code>
+                        <code>POST /api/admin/create-user</code>
+                        <code>DELETE /api/admin/delete-account/{id}</code>
+                        <code>GET /api/admin/system-config</code>
+                        <p style="margin-top: 10px;">Attacker directly in URLs ko hit karke admin functions access kar sakta hai!</p>
+                    </div>
+
+                    <ul>
+                        <li>Admin panels sirf UI mein hidden (API exposed)</li>
+                        <li>Predictable admin endpoint URLs</li>
+                        <li>Documentation mein admin endpoints visible</li>
+                        <li>Directory brute-forcing se discovery</li>
+                        <li>Robots.txt ya sitemap mein endpoints listed</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>4. Manipulating Session Tokens/Cookies (Session Tokens/Cookies Mein Hera Pheri)</h3>
+                    <p>
+                        Agar session tokens user roles se theek tarah se nahi juray hotay ya woh qabil-e-pehchan hotay hain, to hamla awar session token ko bana ya tabdeel kar ke zyada-privileged user ki naqal kar sakta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Cookie Manipulation:</h4>
+                        <code>// Original cookie (regular user):</code>
+                        <code>session_id=user_123_standard</code>
+                        <code>role=user</code>
+                        <code>is_admin=false</code>
+                        <code></code>
+                        <code>// Attacker manipulates:</code>
+                        <code>session_id=user_123_standard</code>
+                        <code>role=admin</code>
+                        <code>is_admin=true</code>
+                    </div>
+
+                    <ul>
+                        <li>Weak cookie encryption</li>
+                        <li>Client-side mein role stored</li>
+                        <li>Predictable session tokens</li>
+                        <li>JWT payload tampering (weak signature)</li>
+                        <li>Session fixation attacks</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>5. API Version Exploitation</h3>
+                    <p>
+                        Purani API versions mein vulnerabilities ho sakti hain jo naye versions mein fix ho chuki hain. Attacker deliberately purani version use karke admin access hasil kar sakta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Version-based Vulnerability:</h4>
+                        <code>// v2 (secure - with role checks):</code>
+                        <code>GET /api/v2/users - ✅ Role verified</code>
+                        <code></code>
+                        <code>// v1 (vulnerable - no role checks):</code>
+                        <code>GET /api/v1/users - ❌ No role verification</code>
+                        <p style="margin-top: 10px;">Attacker v1 use karke admin data access kar sakta hai!</p>
+                    </div>
+
+                    <ul>
+                        <li>Legacy API versions still active</li>
+                        <li>Security patches sirf new version mein</li>
+                        <li>Backward compatibility issues</li>
+                        <li>Old endpoints not properly deprecated</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>6. Mass Assignment Vulnerabilities</h3>
+                    <p>
+                        Jab application user input ko directly database mein save kar deti hai baghair validate kiye ke kon se fields update ho sakte hain.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Mass Assignment Attack:</h4>
+                        <code>PUT /api/profile</code>
+                        <code>{</code>
+                        <code>  "name": "Hacker",</code>
+                        <code>  "email": "hacker@evil.com",</code>
+                        <code>  "role": "admin",  // ⚠️ Should not be updatable!</code>
+                        <code>  "is_verified": true,</code>
+                        <code>  "account_type": "premium"</code>
+                        <code>}</code>
+                    </div>
+
+                    <ul>
+                        <li>No whitelist of allowed fields</li>
+                        <li>Direct binding of user input to models</li>
+                        <li>Missing field-level authorization</li>
+                        <li>Automatic ORM updates vulnerable</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">📝</span>Real-World Misaal - Blog Platform</h2>
+                <p>
+                    Ek blog platform ke API ko dekhte hain jo vertical privilege escalation se vulnerable hai:
+                </p>
+
+                <div class="example-box">
+                    <h4>💡 Scenario Description:</h4>
+                    <p><strong>Normal Behavior:</strong></p>
+                    <code>// Regular user apni posts edit kar sakta hai:</code>
+                    <code>PUT /api/posts/123</code>
+                    <code>Authorization: Bearer user_token_123</code>
+                    <code>{ "title": "My Post", "content": "..." }</code>
+                    <code></code>
+                    <p><strong>Admin Behavior:</strong></p>
+                    <code>// Administrator koi bhi post edit kar sakta hai:</code>
+                    <code>PUT /api/posts/456</code>
+                    <code>Authorization: Bearer admin_token</code>
+                    <code>{ "title": "Any Post", "content": "..." }</code>
+                </div>
+
+                <div class="danger-box">
+                    <h4>🚨 Vulnerability:</h4>
+                    <p>
+                        Vertical privilege escalation ki vulnerability us waqt maujood hogi jab ek regular user <code>PUT /api/posts/456</code> (jahan 456 kisi aur user ki post ID hai) jaisi request bhej sakay aur API usay edit karne ki ijazat de de, halaanke woh post 456 ka malik nahi hai aur na hi administrator hai.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        Is surat mein, regular user ne us khaas amal ke liye apne ikhtiyarat ko administrator ki satah tak "barha" (escalate) liya hai.
+                    </p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Attack in Action:</h4>
+                    <code>// Regular user (ID: 123) tries to edit admin post:</code>
+                    <code>PUT /api/posts/999</code>
+                    <code>Authorization: Bearer user_token_123</code>
+                    <code>{</code>
+                    <code>  "title": "Hacked Post!",</code>
+                    <code>  "content": "This site is compromised"</code>
+                    <code>}</code>
+                    <code></code>
+                    <p>Agar API proper authorization check nahi karta, to yeh successful ho jayega!</p>
+                </div>
+            </div>
+
+            <div class="impact-section">
+                <h2><span class="icon">💥</span>Yeh Itna Khatarnak Kyun Hai?</h2>
+                <p>
+                    Vertical Privilege Escalation sab se shadeed vulnerabilities mein se ek hai kyunke yeh in cheezon ka ba'is ban sakta hai:
+                </p>
+
+                <div class="impact-card">
+                    <strong>1. Application Ka Mukammal Compromise</strong>
+                    <p>
+                        Attacker ko puri application par admin-level control mil sakta hai:
+                    </p>
+                    <ul>
+                        <li>Complete system takeover possible</li>
+                        <li>All users ke accounts control kar sakta hai</li>
+                        <li>Application settings aur configurations modify kar sakta hai</li>
+                        <li>Security measures disable kar sakta hai</li>
+                        <li>Backdoors install kar sakta hai future access ke liye</li>
+                        <li>Other admins ko delete ya demote kar sakta hai</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>2. Sensitive Data Tak Ghair-Qanooni Rasai</strong>
+                    <p>
+                        Confidential information jo sirf privileged users ke liye honi chahiye:
+                    </p>
+                    <ul>
+                        <li>Doosre users ki zaati maloomat (Personal Identifiable Information - PII)</li>
+                        <li>Financial records aur transaction history</li>
+                        <li>Business secrets aur intellectual property</li>
+                        <li>API keys aur credentials</li>
+                        <li>Database dumps</li>
+                        <li>System logs aur audit trails</li>
+                        <li>Customer data aur payment information</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>3. Data Mein Hera Pheri Ya Usay Tabah Karna</strong>
+                    <p>
+                        Unauthorized modifications aur data destruction:
+                    </p>
+                    <ul>
+                        <li>Critical data delete kar sakta hai</li>
+                        <li>User accounts modify ya sabotage kar sakta hai</li>
+                        <li>Content tamper kar sakta hai (defacement)</li>
+                        <li>Financial transactions manipulate kar sakta hai</li>
+                        <li>Audit logs clear kar sakta hai tracks hide karne ke liye</li>
+                        <li>Database corruption ya destruction</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>4. Administrative Control Par Qabza Karna</strong>
+                    <p>
+                        Complete administrative privileges haasil karna:
+                    </p>
+                    <ul>
+                        <li>Naye admin accounts create kar sakta hai</li>
+                        <li>Legitimate admins ko demote ya remove kar sakta hai</li>
+                        <li>System settings control kar sakta hai</li>
+                        <li>Security policies disable kar sakta hai</li>
+                        <li>Monitoring aur alerting systems off kar sakta hai</li>
+                        <li>Persistent access establish kar sakta hai</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>5. Compliance Aur Legal Issues</strong>
+                    <p>
+                        Regulatory violations aur legal consequences:
+                    </p>
+                    <ul>
+                        <li>GDPR violations (heavy fines - up to €20 million)</li>
+                        <li>HIPAA violations (healthcare data breaches)</li>
+                        <li>PCI-DSS non-compliance (payment data exposure)</li>
+                        <li>SOX violations (financial reporting integrity)</li>
+                        <li>Lawsuits from affected customers</li>
+                        <li>Regulatory investigations aur penalties</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>6. Reputation Damage Aur Business Loss</strong>
+                    <p>
+                        Company reputation aur financial impact:
+                    </p>
+                    <ul>
+                        <li>Customer trust ka complete loss</li>
+                        <li>Media coverage aur public embarrassment</li>
+                        <li>Stock price decline</li>
+                        <li>Customer churn aur revenue loss</li>
+                        <li>Partner relationships damage</li>
+                        <li>Brand value destruction</li>
+                        <li>Competitive disadvantage</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Real-World Examples</h4>
+                <p>
+                    Major companies mein vertical privilege escalation ki wajah se hui incidents:
+                </p>
+                <ul>
+                    <li><strong>Uber (2016):</strong> God Mode feature misused - drivers aur riders ko real-time track karna</li>
+                    <li><strong>GitLab (2018):</strong> API vulnerability se regular users ko admin privileges mil gayi</li>
+                    <li><strong>Imgur (2019):</strong> Authorization bypass se users ko admin panel access mil gaya</li>
+                    <li><strong>Shopify (2020):</strong> Staff accounts compromised, customer data accessed</li>
+                    <li><strong>SolarWinds (2020):</strong> Supply chain attack mein privilege escalation use hua</li>
+                    <li><strong>Microsoft Exchange (2021):</strong> ProxyShell vulnerabilities se admin access</li>
+                </ul>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>Is Se Bachne Ke Liye - Defenses Aur Best Practices</h2>
+                <p>
+                    Vertical privilege escalation ko rokne ke liye, server-side par mazboot access control checks nihayat zaroori hain:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Comprehensive Authorization Checks (Mukammal Ijazat Ki Janch)</strong>
+                    <p>
+                        Har request par complete authorization verification implement karen:
+                    </p>
+                    <ul>
+                        <li>Authentication (user kon hai) + Authorization (user ko kya karne ki ijazat hai)</li>
+                        <li>Har endpoint par role-based checks mandatory</li>
+                        <li>Resource-level permissions verify karen</li>
+                        <li>Middleware use karen consistent checks ke liye</li>
+                        <li>Default deny approach - explicitly allow karna zaroori</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Proper Implementation:</h4>
+                        <code>// Secure code with proper authorization:</code>
+                        <code>app.delete('/api/admin/users/:id', requireAuth, requireAdmin, (req, res) => {</code>
+                        <code>  // Step 1: Authentication check (requireAuth middleware)</code>
+                        <code>  // Step 2: Admin role check (requireAdmin middleware)</code>
+                        <code>  </code>
+                        <code>  const targetUserId = req.params.id;</code>
+                        <code>  const currentUser = req.session.user;</code>
+                        <code>  </code>
+                        <code>  // Step 3: Additional checks</code>
+                        <code>  if (currentUser.role !== 'admin') {</code>
+                        <code>    return res.status(403).json({error: 'Forbidden'});</code>
+                        <code>  }</code>
+                        <code>  </code>
+                        <code>  // Step 4: Prevent self-deletion</code>
+                        <code>  if (targetUserId === currentUser.id) {</code>
+                        <code>    return res.status(400).json({error: 'Cannot delete yourself'});</code>
+                        <code>  }</code>
+                        <code>  </code>
+                        <code>  // Now safe to proceed</code>
+                        <code>  db.deleteUser(targetUserId);</code>
+                        <code>  res.json({success: true});</code>
+                        <code>});</code>
+                    </div>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Role-Based Access Control (RBAC) Implementation</strong>
+                    <p>
+                        Comprehensive role management system implement karen:
+                    </p>
+                    <ul>
+                        <li>Clear role hierarchy define karen</li>
+                        <li>Granular permissions assign karen har role ko</li>
+                        <li>Permission matrices maintain karen</li>
+                        <li>Role inheritance properly manage karen</li>
+                        <li>Dynamic role assignment with audit logging</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 RBAC Structure:</h4>
+                        <code>const roles = {</code>
+                        <code>  guest: ['read:public'],</code>
+                        <code>  user: ['read:public', 'read:own', 'write:own'],</code>
+                        <code>  moderator: ['read:all', 'write:own', 'delete:flagged'],</code>
+                        <code>  admin: ['read:all', 'write:all', 'delete:all', 'manage:users']</code>
+                        <code>};</code>
+                    </div>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Secure Session Management</strong>
+                    <p>
+                        Session tokens ko properly secure karen:
+                    </p>
+                    <ul>
+                        <li>Server-side session storage use karen</li>
+                        <li>Cryptographically strong tokens generate karen</li>
+                        <li>Session mein sensitive data (roles) store karen, client par nahi</li>
+                        <li>Session expiry aur timeout implement karen</li>
+                        <li>Re-authentication for sensitive operations</li>
+                        <li>Session hijacking protection (HttpOnly, Secure flags)</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. Input Validation Aur Sanitization</strong>
+                    <p>
+                        User input ko thoroughly validate karen:
+                    </p>
+                    <ul>
+                        <li>Whitelist approach - sirf allowed fields accept karen</li>
+                        <li>Role aur privilege parameters ko user se accept na karen</li>
+                        <li>Mass assignment vulnerabilities se bachen</li>
+                        <li>Type checking aur range validation</li>
+                        <li>Parameterized queries use karen SQL injection se bachne ke liye</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Safe Input Handling:</h4>
+                        <code>// Whitelist of allowed fields:</code>
+                        <code>const allowedFields = ['name', 'email', 'bio'];</code>
+                        <code></code>
+                        <code>app.put('/api/profile', (req, res) => {</code>
+                        <code>  const updates = {};</code>
+                        <code>  </code>
+                        <code>  // Only accept whitelisted fields</code>
+                        <code>  for (let field of allowedFields) {</code>
+                        <code>    if (req.body[field] !== undefined) {</code>
+                        <code>      updates[field] = req.body[field];</code>
+                        <code>    }</code>
+                        <code>  }</code>
+                        <code>  </code>
+                        <code>  // Role, is_admin, etc. ignored</code>
+                        <code>  db.updateUser(req.session.userId, updates);</code>
+                        <code>});</code>
+                    </div>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Principle of Least Privilege</strong>
+                    <p>
+                        Minimum necessary permissions hi den:
+                    </p>
+                    <ul>
+                        <li>Users ko sirf unke kaam ke liye zaroori permissions</li>
+                        <li>Temporary elevated access for specific tasks</li>
+                        <li>Regular privilege audits aur reviews</li>
+                        <li>Unused privileges ko revoke karen</li>
+                        <li>Service accounts ke liye bhi least privilege</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. API Endpoint Protection</strong>
+                    <p>
+                        Har endpoint ko properly secure karen:
+                    </p>
+                    <ul>
+                        <li>Admin endpoints ko alag namespace mein rakhein (<code>/api/admin/*</code>)</li>
+                        <li>Rate limiting implement karen</li>
+                        <li>IP whitelisting for admin endpoints</li>
+                        <li>Additional authentication factors for sensitive operations</li>
+                        <li>API gateway use karen centralized security ke liye</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Comprehensive Logging Aur Monitoring</strong>
+                    <p>
+                        Har authorization attempt ko log karen:
+                    </p>
+                    <ul>
+                        <li>Failed authorization attempts track karen</li>
+                        <li>Privilege escalation attempts ko immediately alert karen</li>
+                        <li>Audit trail maintain karen (who did what when)</li>
+                        <li>Anomaly detection systems implement karen</li>
+                        <li>SIEM (Security Information and Event Management) integration</li>
+                        <li>Regular log reviews aur analysis</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Regular Security Testing</strong>
+                    <p>
+                        Continuous security assessment:
+                    </p>
+                    <ul>
+                        <li>Penetration testing regularly conduct karen</li>
+                        <li>Automated security scanning tools use karen</li>
+                        <li>Code reviews with security focus</li>
+                        <li>Bug bounty programs run karen</li>
+                        <li>Red team exercises</li>
+                        <li>Vulnerability assessments</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>9. Secure Development Practices</strong>
+                    <p>
+                        Development phase se hi security ko integrate karen:
+                    </p>
+                    <ul>
+                        <li>Security training for developers</li>
+                        <li>Secure coding standards aur guidelines</li>
+                        <li>Security review in code review process</li>
+                        <li>Threat modeling during design phase</li>
+                        <li>Security testing in CI/CD pipeline</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>10. Defense in Depth Strategy</strong>
+                    <p>
+                        Multiple layers of security implement karen:
+                    </p>
+                    <ul>
+                        <li>Web Application Firewall (WAF)</li>
+                        <li>Network segmentation</li>
+                        <li>Intrusion Detection/Prevention Systems (IDS/IPS)</li>
+                        <li>Regular security updates aur patches</li>
+                        <li>Backup aur disaster recovery plans</li>
+                        <li>Incident response procedures</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Testing Warning - Ethical Considerations</h4>
+                <p>
+                    Vertical privilege escalation vulnerabilities ko test karte waqt:
+                </p>
+                <ul>
+                    <li>Hamesha explicit permission lein testing se pehle</li>
+                    <li>Production environments par testing na karen</li>
+                    <li>Authorized penetration testing ya bug bounty programs ke context mein hi test karen</li>
+                    <li>Discovered vulnerabilities ko immediately report karen</li>
+                    <li>Responsible disclosure practices follow karen</li>
+                </ul>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Key Takeaway</h4>
+                <p>
+                    Vertical Privilege Escalation se bachne ka sabse ahem usool yeh hai: <strong>"Har request par, har resource ke liye, mangne walay user ke asal role aur permissions ki bunyad par sahih tareeqay se authorization verify karen."</strong>
+                </p>
+                <p style="margin-top: 10px;">
+                    Authentication sirf yeh batata hai ke user kaun hai. Authorization yeh confirm karta hai ke us user ko specific action perform karne ki ijazat hai ya nahi. Dono zaroori hain!
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa (Conclusion)</h3>
+                <p>
+                    <strong>Vertical Privilege Escalation</strong> ek critical security vulnerability hai jo kam-privileged users ko admin-level access dene ka baais ban sakti hai. Yeh horizontal privilege escalation se zyada khatarnak hai kyunki iska impact complete system compromise tak ja sakta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Is vulnerability ki root cause aksar inadequate authorization checks, parameter tampering, aur unprotected admin endpoints hain. Har endpoint par comprehensive role-based access control aur proper authorization verification implement karna zaroori hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Yaad rakhein:</strong> Client-side validation kabhi bhi security measure nahi hai - wo sirf user experience ke liye hai. Security hamesha server-side enforce karni chahiye, aur har request ko independent tareeke se validate karna chahiye.
+                </p>
+                <p style="margin-top: 15px;">
+                    Defense in depth strategy apnayein - multiple layers of security, comprehensive logging, regular testing, aur security-focused development practices se hi aap apni application ko properly secure kar sakte hain!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

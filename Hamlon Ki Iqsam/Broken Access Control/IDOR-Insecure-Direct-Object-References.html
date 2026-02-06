@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDOR - Insecure Direct Object References</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #f7971e;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #f7971e;
+        }
+
+        .intro-section h2 {
+            color: #d35400;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .intro-section strong {
+            color: #d35400;
+        }
+
+        .concept-box {
+            background: white;
+            border: 2px solid #f7971e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .concept-box h4 {
+            color: #f7971e;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .concept-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .concept-box ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .concept-box ul li {
+            margin: 6px 0;
+        }
+
+        .concept-box code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #f7971e;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .section strong {
+            color: #667eea;
+        }
+
+        .definition-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .definition-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .def-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .def-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .def-card h3 {
+            color: #e17055;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .def-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .def-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .def-card ul li {
+            margin: 8px 0;
+        }
+
+        .scenarios-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .scenarios-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .scenario-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .scenario-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .scenario-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .scenario-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .scenario-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #00b894;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #00b894;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .impact-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .impact-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .impact-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .impact-card strong {
+            color: #6c5ce7;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .impact-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .impact-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .impact-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .defense-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #f7971e;
+        }
+
+        .conclusion h3 {
+            color: #d35400;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .definition-section, .scenarios-section, .impact-section, .defense-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔓 IDOR - Insecure Direct Object References</h1>
+            <p>Seedha Object Reference - Ghair Mehfooz Rasai</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Hamlon Ki Iqsam</a> /
+            <a href="index.html">Broken Access Control</a> /
+            <span>IDOR - Insecure Direct Object References</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 IDOR Kya Hai?</h2>
+                <p>
+                    <strong>"Insecure Direct Object References" (IDOR)</strong> web application security mein aik aam kamzori hai, jo "Broken Access Control" ke category mein aati hai jesa ke API Hacking roadmap mein bataya gaya hai.
+                </p>
+                <p>
+                    Yeh tab hota hai jab koi application user ki taraf se di gayi input ko objects (jaise database records, files, ya deegar resources) tak rasai ke liye seedhe (directly) istemal karti hai, <strong>baghair sahi authorization checks ke</strong>.
+                </p>
+
+                <div class="concept-box">
+                    <h4>🎭 Simple Misaal Se Samjhiye</h4>
+                    <p>
+                        Sochiye aik library hai jahan har student ko ek locker milta hai jismein unki personal books hain. Har locker par ek number likha hai (1, 2, 3, 4...).
+                    </p>
+                    <p style="margin-top: 10px;">
+                        <strong>Normal System:</strong> Aap librarian ko apna student ID card dikhate hain, woh verify karta hai, aur phir aapko sirf <em>aapka</em> locker khol kar deta hai.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        <strong>IDOR Vulnerability:</strong> Lockers ki keys freely available hain aur har key par sirf number likha hai. Aap key #5 use kar ke kisi aur student ki locker khol sakte hain kyunki koi check nahi kar raha ke woh locker aapki hai ya nahi!
+                    </p>
+                    <p style="margin-top: 10px;">
+                        Yahi concept web applications mein hota hai - URL mein <code>user_id=123</code> ko <code>user_id=124</code> kar do aur doosre user ka data dekh lo!
+                    </p>
+                </div>
+            </div>
+
+            <div class="definition-section">
+                <h2><span class="icon">📚</span>IDOR Ki Tafseel - Definition</h2>
+                <p>
+                    "Insecure Direct Object References" ko teen parts mein samajhte hain:
+                </p>
+
+                <div class="def-card">
+                    <h3>1. Direct Object Reference (Seedha Object Ka Hawala)</h3>
+                    <p>
+                        Iska matlab hai jab aik application kisi internal implementation object ka seedha reference zahir karti hai.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        Maslan, "item_id=123" jaisi generic ID istemal karne ke bajaye, yeh database primary key ya seedha filename istemal kar sakti hai:
+                    </p>
+                    <ul>
+                        <li><code>user_profile?id=5</code> - Database row ID directly exposed</li>
+                        <li><code>document.php?file=invoice.pdf</code> - Direct filename exposed</li>
+                        <li><code>/api/orders/1001</code> - Sequential order numbers</li>
+                        <li><code>/download?path=/uploads/user123/secret.pdf</code> - Direct file path</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Direct Reference Examples:</h4>
+                        <code>https://bank.com/account?id=45678</code>
+                        <code>https://shop.com/order?order_id=1234</code>
+                        <code>https://hospital.com/patient?record_id=9876</code>
+                        <p style="margin-top: 10px;">In sab mein IDs directly visible aur predictable hain!</p>
+                    </div>
+                </div>
+
+                <div class="def-card">
+                    <h3>2. Insecure (Ghair Mehfooz)</h3>
+                    <p>
+                        <strong>"Insecure"</strong> is liye hai ke application yeh verify karne mein nakam rehti hai ke kya authenticated user waqai us khaas object tak rasai ka ikhtiyar rakhta hai jiski woh request kar raha hai.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        Application user ki di hui ID par bharosa karti hai <strong>baghair kisi access control check ke</strong>.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Insecure Implementation:</h4>
+                        <code>// ❌ BAD CODE - No authorization check</code>
+                        <code>app.get('/api/profile/:id', (req, res) => {</code>
+                        <code>  const userId = req.params.id;</code>
+                        <code>  const profile = db.getProfile(userId);</code>
+                        <code>  res.json(profile);</code>
+                        <code>});</code>
+                        <p style="margin-top: 10px;">Yahan koi bhi user kisi bhi ID ko access kar sakta hai!</p>
+                    </div>
+                </div>
+
+                <div class="def-card">
+                    <h3>3. Object (Cheez Ya Resource)</h3>
+                    <p>
+                        "Object" se murad wo koi bhi resource hai jisko application access ya manipulate karti hai:
+                    </p>
+                    <ul>
+                        <li><strong>Database Records:</strong> User profiles, orders, transactions</li>
+                        <li><strong>Files:</strong> Documents, images, PDFs, reports</li>
+                        <li><strong>API Resources:</strong> Endpoints, data entities</li>
+                        <li><strong>System Resources:</strong> Configuration files, logs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">🔍</span>Yeh Kaise Hota Hai - Real Example</h2>
+                <p>
+                    Chaliye ek banking application ki misaal se samajhte hain:
+                </p>
+
+                <div class="example-box">
+                    <h4>💡 Banking Application Scenario:</h4>
+                    <p><strong>Step 1: Normal User Login</strong></p>
+                    <code>User "Ahmed" logs in with account ID: 1001</code>
+                    <code></code>
+                    <p><strong>Step 2: Ahmed Apni Transaction History Dekhta Hai</strong></p>
+                    <code>URL: https://bank.com/transactions?account_id=1001</code>
+                    <code>Response: Ahmed ki transactions show hoti hain ✅</code>
+                    <code></code>
+                    <p><strong>Step 3: IDOR Attack - Ahmed URL Change Karta Hai</strong></p>
+                    <code>URL: https://bank.com/transactions?account_id=1002</code>
+                    <code></code>
+                    <p><strong>Step 4: Vulnerability Exploit</strong></p>
+                    <code>Agar IDOR kamzori mojood hai, to:</code>
+                    <code>Response: Account 1002 (Ali ki account) ki transactions show hoti hain! ❌</code>
+                </div>
+
+                <div class="danger-box">
+                    <h4>🚨 Kya Hua?</h4>
+                    <p>
+                        Ahmed ne sirf URL mein <code>account_id</code> parameter ko 1001 se 1002 mein tabdeel kar diya (agar usay kisi doosre user ki account ID maloom ho). Application URL se <code>account_id</code> ko seedhe data hasil karne ke liye istemal karti hai <strong>baghair yeh dekhe ke logged-in user us khaas account_id ka malik hai ya usay dekhne ki ijazat hai</strong>.
+                    </p>
+                </div>
+
+                <h3>Attack Ka Process:</h3>
+                <ul>
+                    <li><strong>Reconnaissance:</strong> Attacker valid object IDs dhoondhta hai (sequential numbers, predictable patterns)</li>
+                    <li><strong>Manipulation:</strong> URL ya request parameters mein IDs change karta hai</li>
+                    <li><strong>Exploitation:</strong> Unauthorized data access kar leta hai</li>
+                    <li><strong>Automation:</strong> Script bana kar thousands of IDs try kar sakta hai</li>
+                </ul>
+            </div>
+
+            <div class="scenarios-section">
+                <h2><span class="icon">🎯</span>Aam Scenarios Jahan IDORs Milte Hain</h2>
+
+                <div class="scenario-card">
+                    <h3>1. Doosre Users Ke Data Tak Rasai</h3>
+                    <p>
+                        Doosre users ke profiles, messages, orders, ya deegar sensitive maloomat dekhna.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Examples:</h4>
+                        <code>GET /api/users/123/profile</code>
+                        <code>GET /api/messages/inbox/456</code>
+                        <code>GET /api/orders/7890/details</code>
+                        <code>GET /api/medical-records/patient/555</code>
+                    </div>
+
+                    <ul>
+                        <li><strong>Social Media:</strong> Kisi bhi user ki private messages padh lena</li>
+                        <li><strong>E-commerce:</strong> Doosre users ki order history aur payment details</li>
+                        <li><strong>Healthcare:</strong> Patient medical records unauthorized access</li>
+                        <li><strong>Banking:</strong> Account statements aur transaction details</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>2. Doosre Users Ke Accounts Mein Tabdeeli</h3>
+                    <p>
+                        Kisi doosre user ka password, email address, ya deegar settings tabdeel karna.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Examples:</h4>
+                        <code>PUT /api/users/123/update</code>
+                        <code>POST /api/users/456/change-password</code>
+                        <code>DELETE /api/users/789/account</code>
+                        <code>POST /api/users/111/reset-password</code>
+                    </div>
+
+                    <ul>
+                        <li>Email address change kar ke account takeover</li>
+                        <li>Password reset karna without authorization</li>
+                        <li>User settings modify karna</li>
+                        <li>Privacy settings change karna</li>
+                        <li>Two-factor authentication disable karna</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>3. Sensitive Files Tak Rasai</h3>
+                    <p>
+                        Aisay documents download ya view karna jo sirf khaas users ya administrators ke liye accessible hone chahiye.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Examples:</h4>
+                        <code>GET /download?file=confidential_report.pdf</code>
+                        <code>GET /documents/invoice_12345.pdf</code>
+                        <code>GET /api/files/user123/private_doc.docx</code>
+                        <code>GET /uploads/payroll_2024.xlsx</code>
+                    </div>
+
+                    <ul>
+                        <li>Confidential business reports</li>
+                        <li>Personal documents (ID cards, passports)</li>
+                        <li>Financial statements aur invoices</li>
+                        <li>Legal contracts aur agreements</li>
+                        <li>Source code aur proprietary files</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>4. Database Records Mein Tabdeeli</h3>
+                    <p>
+                        Kisi aur ke order ka status tabdeel karna ya record update karna.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Examples:</h4>
+                        <code>PUT /api/orders/1234/cancel</code>
+                        <code>POST /api/tickets/5678/close</code>
+                        <code>DELETE /api/posts/9012/remove</code>
+                        <code>PUT /api/bookings/3456/modify</code>
+                    </div>
+
+                    <ul>
+                        <li>E-commerce orders cancel ya modify karna</li>
+                        <li>Support tickets ko close karna</li>
+                        <li>Bookings aur reservations change karna</li>
+                        <li>Content delete ya edit karna</li>
+                        <li>Status fields manipulate karna</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>5. Administrative Functions Access</h3>
+                    <p>
+                        Admin-only resources tak unauthorized access through predictable IDs.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Examples:</h4>
+                        <code>GET /api/admin/users/all</code>
+                        <code>GET /api/reports/financial/2024</code>
+                        <code>GET /api/logs/system/access.log</code>
+                        <code>DELETE /api/admin/users/123/delete</code>
+                    </div>
+
+                    <ul>
+                        <li>Admin dashboards access karna</li>
+                        <li>System logs aur audit trails</li>
+                        <li>Configuration files modify karna</li>
+                        <li>User management functions</li>
+                        <li>Financial reports aur analytics</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="impact-section">
+                <h2><span class="icon">💥</span>Yeh Khatarnak Kyun Hai?</h2>
+                <p>
+                    IDOR kamzoriyan in cheezon ka ba'is ban sakti hain:
+                </p>
+
+                <div class="impact-card">
+                    <strong>1. Information Disclosure (Maloomat Ka Inkishaf)</strong>
+                    <p>
+                        Hackers sensitive personal ya business data tak rasai hasil kar sakte hain:
+                    </p>
+                    <ul>
+                        <li>Personal Identifiable Information (PII) - names, addresses, phone numbers</li>
+                        <li>Financial data - credit cards, bank accounts, transactions</li>
+                        <li>Health records - medical history, prescriptions</li>
+                        <li>Business secrets - contracts, pricing, strategies</li>
+                        <li>Private communications - emails, messages, chats</li>
+                        <li>Authentication credentials - passwords, API keys</li>
+                        <li>Complete database dumps possible through automation</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>2. Data Tampering (Data Mein Hera Pheri)</strong>
+                    <p>
+                        Hackers doosre users ke data ko tabdeel kar sakte hain:
+                    </p>
+                    <ul>
+                        <li>Profile information modify karna</li>
+                        <li>Financial records alter karna</li>
+                        <li>Order details change karna</li>
+                        <li>Content manipulation (posts, comments, reviews)</li>
+                        <li>Status fields ko modify karna</li>
+                        <li>Timestamps aur audit trails ko corrupt karna</li>
+                        <li>Critical business data ko sabotage karna</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>3. Account Takeover (Account Par Qabza)</strong>
+                    <p>
+                        Sakht mamlaat mein, IDOR doosri kamzoriyon ke sath mil kar mukammal account compromise ka ba'is ban sakta hai:
+                    </p>
+                    <ul>
+                        <li>Email address change through IDOR</li>
+                        <li>Password reset tokens access karna</li>
+                        <li>Security questions/answers modify karna</li>
+                        <li>Two-factor authentication disable karna</li>
+                        <li>Recovery options ko takeover karna</li>
+                        <li>Complete account control haasil karna</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>4. Privilege Escalation (Ikhtiyarat Mein Izafa)</strong>
+                    <p>
+                        Aik hacker aisay resources tak rasai hasil kar sakta hai jin ke liye uske paas mojood ikhtiyarat se zyada ki zaroorat hoti hai:
+                    </p>
+                    <ul>
+                        <li>Regular user se premium features access</li>
+                        <li>User se moderator privileges</li>
+                        <li>Moderator se admin access</li>
+                        <li>Admin panel unauthorized access</li>
+                        <li>System-level resources ko access karna</li>
+                        <li>Complete application takeover possible</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>5. Mass Data Breach</strong>
+                    <p>
+                        Automated scripts ke zariye bulk data extraction:
+                    </p>
+                    <ul>
+                        <li>Sequential ID enumeration (1, 2, 3, 4...)</li>
+                        <li>Thousands of records download in minutes</li>
+                        <li>Complete customer database theft</li>
+                        <li>Dark web par data selling</li>
+                        <li>Competitive intelligence gathering</li>
+                        <li>Identity theft aur fraud</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>6. Compliance & Legal Issues</strong>
+                    <p>
+                        Regulatory violations aur legal consequences:
+                    </p>
+                    <ul>
+                        <li>GDPR violations - €20 million ya 4% of global revenue fine</li>
+                        <li>HIPAA violations - healthcare data breaches</li>
+                        <li>PCI-DSS non-compliance - payment card data exposure</li>
+                        <li>Customer lawsuits aur class action</li>
+                        <li>Regulatory investigations</li>
+                        <li>Business license revocation possible</li>
+                        <li>Reputation damage aur customer trust loss</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Real-World IDOR Incidents</h4>
+                <p>
+                    Major companies mein IDOR vulnerabilities ki wajah se hui incidents:
+                </p>
+                <ul>
+                    <li><strong>Facebook (2013):</strong> Graph API IDOR se user data accessible</li>
+                    <li><strong>Instagram (2016):</strong> Private photos accessible through IDOR</li>
+                    <li><strong>Uber (2016):</strong> Rider trip history accessible through trip IDs</li>
+                    <li><strong>USPS (2018):</strong> 60 million user accounts data exposed via IDOR</li>
+                    <li><strong>Starbucks (2019):</strong> IDOR vulnerability in rewards program</li>
+                    <li><strong>T-Mobile (2020):</strong> Customer data accessible through account numbers</li>
+                    <li><strong>Peloton (2021):</strong> User profiles aur workout data exposed</li>
+                </ul>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>IDORs Ko Kaise Roka Jaye - Defense Strategies</h2>
+                <p>
+                    IDORs ke khilaf bunyadi hifazat mazboot access control hai:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Mazboot Authorization Checks Lagana</strong>
+                    <p>
+                        Har request ke liye jo user-supplied ID ki bunyad par kisi object tak rasai karti hai, application ko zaroor yeh verify karna chahiye ke kya mojooda authenticated user us khaas object par woh action karne ka ikhtiyar rakhta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Secure Implementation:</h4>
+                        <code>// ✅ GOOD CODE - With authorization check</code>
+                        <code>app.get('/api/profile/:id', requireAuth, (req, res) => {</code>
+                        <code>  const requestedId = req.params.id;</code>
+                        <code>  const currentUserId = req.session.userId;</code>
+                        <code>  </code>
+                        <code>  // Check if user owns this resource</code>
+                        <code>  if (requestedId !== currentUserId) {</code>
+                        <code>    return res.status(403).json({error: 'Access denied'});</code>
+                        <code>  }</code>
+                        <code>  </code>
+                        <code>  const profile = db.getProfile(requestedId);</code>
+                        <code>  res.json(profile);</code>
+                        <code>});</code>
+                    </div>
+
+                    <ul>
+                        <li>Har endpoint par ownership verification</li>
+                        <li>Resource-level access control</li>
+                        <li>User permissions check against resource</li>
+                        <li>Role-based access control (RBAC)</li>
+                        <li>Attribute-based access control (ABAC)</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Indirect References Istemal Karein</strong>
+                    <p>
+                        Database IDs ya filenames ko seedhe zahir karne ke bajaye, aik mapping ya obfuscated, per-user, non-sequential IDs istemal karein. Is se attackers ke liye valid object IDs ko guess karna mushkil ho jata hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Indirect Reference Implementation:</h4>
+                        <code>// Instead of direct IDs:</code>
+                        <code>GET /api/documents/123  ❌</code>
+                        <code></code>
+                        <code>// Use UUIDs or random tokens:</code>
+                        <code>GET /api/documents/a7f8d9e2-4b3c-11ed-bdc3-0242ac120002  ✅</code>
+                        <code></code>
+                        <code>// Or session-based mapping:</code>
+                        <code>GET /api/documents/temp_ref_xyz123  ✅</code>
+                    </div>
+
+                    <ul>
+                        <li><strong>UUIDs/GUIDs:</strong> Globally unique identifiers use karen</li>
+                        <li><strong>Random tokens:</strong> Cryptographically secure random strings</li>
+                        <li><strong>Session mapping:</strong> Per-session reference maps maintain karen</li>
+                        <li><strong>Hashed IDs:</strong> Database IDs ko hash karke expose karen</li>
+                        <li><strong>Encrypted IDs:</strong> IDs ko encrypt kar ke URLs mein use karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Tamaam Input Ko Validate Karein</strong>
+                    <p>
+                        Yaqeeni banayein ke user ki taraf se di gayi koi bhi input jo objects ko reference karne ke liye istemal hoti hai, usay mukammal tor par validate kiya jaye.
+                    </p>
+
+                    <ul>
+                        <li><strong>Type validation:</strong> Expected data type check karen</li>
+                        <li><strong>Format validation:</strong> ID format ko verify karen</li>
+                        <li><strong>Range validation:</strong> Acceptable ranges define karen</li>
+                        <li><strong>Whitelist approach:</strong> Sirf allowed values accept karen</li>
+                        <li><strong>Sanitization:</strong> Malicious input ko clean karen</li>
+                        <li><strong>Length limits:</strong> Input size restrictions enforce karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. Principle of Least Privilege</strong>
+                    <p>
+                        Users ko sirf minimum required access den:
+                    </p>
+                    <ul>
+                        <li>Default deny policy implement karen</li>
+                        <li>Explicit permissions required for each resource</li>
+                        <li>Time-based access restrictions</li>
+                        <li>Context-aware access control</li>
+                        <li>Regular permission audits</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Multi-Layer Security</strong>
+                    <p>
+                        Multiple defense mechanisms implement karen:
+                    </p>
+                    <ul>
+                        <li><strong>Authentication:</strong> User identity verify karen</li>
+                        <li><strong>Authorization:</strong> Resource access permissions check karen</li>
+                        <li><strong>Rate limiting:</strong> Automated enumeration attacks ko prevent karen</li>
+                        <li><strong>IP filtering:</strong> Suspicious IPs ko block karen</li>
+                        <li><strong>Monitoring:</strong> Unusual access patterns detect karen</li>
+                        <li><strong>Alerting:</strong> Security team ko notify karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. Secure API Design</strong>
+                    <p>
+                        API endpoints ko secure design patterns ke sath banayein:
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Secure API Patterns:</h4>
+                        <code>// Instead of exposing IDs in URLs:</code>
+                        <code>GET /api/users/123/profile  ❌</code>
+                        <code></code>
+                        <code>// Use context-based endpoints:</code>
+                        <code>GET /api/my/profile  ✅</code>
+                        <code>GET /api/me  ✅</code>
+                        <code></code>
+                        <code>// Server determines user from session</code>
+                    </div>
+
+                    <ul>
+                        <li>RESTful best practices follow karen</li>
+                        <li>OAuth 2.0 for authorization</li>
+                        <li>JWT tokens with proper validation</li>
+                        <li>API versioning for security updates</li>
+                        <li>Comprehensive API documentation with security notes</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Logging Aur Monitoring</strong>
+                    <p>
+                        Comprehensive security monitoring implement karen:
+                    </p>
+                    <ul>
+                        <li>Har access attempt ko log karen (successful + failed)</li>
+                        <li>Unusual patterns detect karen (rapid ID enumeration)</li>
+                        <li>Failed authorization attempts track karen</li>
+                        <li>Real-time alerting system</li>
+                        <li>Audit trails maintain karen</li>
+                        <li>SIEM integration for centralized monitoring</li>
+                        <li>Regular log analysis aur review</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Security Testing</strong>
+                    <p>
+                        Regular security assessments conduct karen:
+                    </p>
+                    <ul>
+                        <li><strong>Penetration testing:</strong> IDOR vulnerabilities specifically test karen</li>
+                        <li><strong>Code reviews:</strong> Authorization logic ko verify karen</li>
+                        <li><strong>Automated scanning:</strong> Security tools use karen</li>
+                        <li><strong>Bug bounty programs:</strong> External researchers involve karen</li>
+                        <li><strong>Continuous testing:</strong> CI/CD mein security tests integrate karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>9. Developer Training</strong>
+                    <p>
+                        Development team ko security awareness:
+                    </p>
+                    <ul>
+                        <li>IDOR vulnerabilities ki understanding</li>
+                        <li>Secure coding practices training</li>
+                        <li>Real-world breach case studies</li>
+                        <li>Security code review skills</li>
+                        <li>OWASP Top 10 awareness</li>
+                        <li>Regular security workshops</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>10. Framework Security Features</strong>
+                    <p>
+                        Modern frameworks ki built-in security features use karen:
+                    </p>
+                    <ul>
+                        <li>Laravel: Policy-based authorization</li>
+                        <li>Django: Object-level permissions</li>
+                        <li>Spring Security: Method-level security</li>
+                        <li>Ruby on Rails: CanCanCan authorization</li>
+                        <li>Express.js: Authorization middleware</li>
+                        <li>ASP.NET: Role-based authorization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Testing Ke Liye Important Note</h4>
+                <p>
+                    IDOR vulnerabilities ko test karte waqt:
+                </p>
+                <ul>
+                    <li>Hamesha explicit permission lein testing se pehle</li>
+                    <li>Production environments par directly test na karen</li>
+                    <li>Test accounts use karen, real user data ko touch na karen</li>
+                    <li>Automated scripts carefully use karen (rate limiting respect karen)</li>
+                    <li>Discovered vulnerabilities ko immediately report karen</li>
+                    <li>Responsible disclosure practices follow karen</li>
+                    <li>Legal boundaries ke andar rahen</li>
+                </ul>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Baat - Key Takeaway</h4>
+                <p>
+                    <strong>IDOR prevention ka golden rule:</strong> "Kabhi bhi user-supplied input (IDs, filenames, etc.) par directly trust na karen. Hamesha verify karen ke current authenticated user ko us specific resource tak access ki authorization hai ya nahi."
+                </p>
+                <p style="margin-top: 10px;">
+                    Authentication sirf bataata hai ke user kaun hai. Authorization verify karta hai ke us user ko kya karne ki ijazat hai. IDOR vulnerabilities authorization failures ki wajah se hoti hain!
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa (Conclusion)</h3>
+                <p>
+                    <strong>Insecure Direct Object References (IDOR)</strong> web applications aur APIs mein sabse zyada common aur dangerous vulnerabilities mein se ek hai. Yeh "Broken Access Control" category mein OWASP Top 10 ka hissa hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    IDOR ki root cause lack of proper authorization checks hai. Developers authentication implement kar dete hain (user identity verify karna) lekin authorization bhool jate hain (user ko specific resource access ki permission hai ya nahi).
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Prevention strategies:</strong> Har endpoint par comprehensive authorization checks, indirect references (UUIDs/tokens), input validation, least privilege principle, aur multi-layer security implement karen. Developer training aur regular security testing bhi zaroori hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Yaad rakhein: Ek simple IDOR vulnerability millions of users ke data ko expose kar sakti hai. Is liye har endpoint, har resource, aur har action ke liye proper authorization verification implement karna nihayat zaroori hai!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

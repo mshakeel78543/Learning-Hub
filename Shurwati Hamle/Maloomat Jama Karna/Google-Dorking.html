@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Dorking - Maloomat Jama Karna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #fa709a;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #fa709a;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .operators-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .operators-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .operator-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .operator-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .operator-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .operator-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .operator-card code {
+            background: #f1f3f5;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #00b894;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #00b894;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .usecases-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .usecases-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .usecase-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .usecase-card h3 {
+            color: #e17055;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .usecase-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .usecase-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .usecase-card ul li {
+            margin: 8px 0;
+        }
+
+        .usecase-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .dork-example {
+            background: #e9ecef;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 3px solid #e17055;
+        }
+
+        .dork-example code {
+            color: #495057;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 3px 0;
+        }
+
+        .ethical-section {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .ethical-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .ethical-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .ethical-card strong {
+            color: #6c5ce7;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .ethical-card p {
+            color: #2d3436;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .tips-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .tips-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .tips-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-section li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tips-section strong {
+            color: #00b894;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #fa709a;
+        }
+
+        .conclusion h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .operators-section, .usecases-section, .ethical-section, .tips-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔎 Google Dorking</h1>
+            <p>Advanced Search Operators Se Chhupe Hue Raaz Dhoondhna</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Maloomat Jama Karna</a> /
+            <span>Google Dorking</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Google Dorking Kya Hai?</h2>
+                <p>
+                    <strong>"Google Dorking"</strong> (jise Google Hacking bhi kehte hain) ek aisi technique hai jismein Google (ya doosre search engines) ke advanced operators aur search queries ko istemal karte hue khaas, aksar sensitive, maloomat (information) ko talaash kiya jata hai jo websites par publicly maujood ho.
+                </p>
+                <p>
+                    API Hacking ke context mein, yeh ek bohot hi asardar reconnaissance (maloomat jama karna) method hai jise target APIs, web servers, aur in se mutaliq infrastructure ke baare mein jaankari jama karne ke liye istemal kiya jata hai.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">⚙️</span>Yeh Kaise Kaam Karta Hai?</h2>
+                <p>
+                    Google ka search engine bohot badi miqdar mein maloomat ko index karta hai. Khaas search operators ka istemal karke, aap apni search results ko narrow down kar sakte hain taake khaas qism ki files, exposed directories, configuration files, error messages, ya yahan tak ke API keys aur credentials ko dhoond saken jo developers ne ghalti se public chor diye hon.
+                </p>
+            </div>
+
+            <div class="operators-section">
+                <h2><span class="icon">🛠️</span>Aam Google Dorking Operators</h2>
+                <p>
+                    Yahan kuch zaroori operators hain jo Google Dorking mein istemal hote hain:
+                </p>
+
+                <div class="operator-card">
+                    <h3>1. site:</h3>
+                    <p>
+                        Aapki search ko ek khaas domain tak mehdood karta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>site:example.com "admin panel"</code>
+                        <p style="margin-top: 10px; color: #2d3436;">Sirf example.com par "admin panel" talaash karega</p>
+                    </div>
+                </div>
+
+                <div class="operator-card">
+                    <h3>2. inurl:</h3>
+                    <p>
+                        Aise pages dhundta hai jahan ek khaas lafz ya phrase URL mein maujood ho.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>inurl:admin login.php</code>
+                        <p style="margin-top: 10px; color: #2d3436;">Aise URLs dhundhega jin mein "admin" aur "login.php" ho</p>
+                    </div>
+                </div>
+
+                <div class="operator-card">
+                    <h3>3. intitle:</h3>
+                    <p>
+                        Aise pages dhundta hai jahan ek khaas lafz ya phrase page ke title mein maujood ho.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>intitle:"index of" config</code>
+                        <p style="margin-top: 10px; color: #2d3436;">Directory listings ko dekhega jinke title mein "config" ho</p>
+                    </div>
+                </div>
+
+                <div class="operator-card">
+                    <h3>4. filetype:</h3>
+                    <p>
+                        Khaas qism ki files (jaise pdf, doc, xls, txt) ko talaash karta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>filetype:env DB_PASSWORD</code>
+                        <p style="margin-top: 10px; color: #2d3436;">.env files dhundhega jin mein database passwords ho sakte hain</p>
+                    </div>
+                </div>
+
+                <div class="operator-card">
+                    <h3>5. cache:</h3>
+                    <p>
+                        Ek page ka cached version dikhata hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>cache:example.com</code>
+                    </div>
+                </div>
+
+                <div class="operator-card">
+                    <h3>6. link:</h3>
+                    <p>
+                        Aise pages dhundta hai jo ek khaas URL se link karte hain.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>link:example.com</code>
+                    </div>
+                </div>
+
+                <div class="operator-card">
+                    <h3>7. - (minus sign)</h3>
+                    <p>
+                        Search results se ek lafz ko nikal deta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>site:example.com "password" -forum</code>
+                        <p style="margin-top: 10px; color: #2d3436;">example.com par "password" dhundhega lekin forum ke results nikal dega</p>
+                    </div>
+                </div>
+
+                <div class="operator-card">
+                    <h3>8. OR</h3>
+                    <p>
+                        Search queries ko combine karta hai (aise pages dhundta hai jin mein dono mein se koi ek lafz ho).
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>site:example.com (API_KEY OR API_SECRET)</code>
+                    </div>
+                </div>
+
+                <div class="operator-card">
+                    <h3>9. "" (quotation marks)</h3>
+                    <p>
+                        Ek exact phrase ko talaash karta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <code>site:example.com "This is a secret key"</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="usecases-section">
+                <h2><span class="icon">⚡</span>API Hacking Ke Liye Yeh Kyun Zaroori Hai?</h2>
+                <p>
+                    API hacking ke "Maloomat Jama Karna" (Information Gathering) marhale mein, Google Dorking aapko yeh cheezein uncover karne mein madad karta hai:
+                </p>
+
+                <div class="usecase-card">
+                    <h3>1. Exposed API Keys Aur Credentials</h3>
+                    <p>
+                        Developers kabhi-kabhi API keys ya sensitive credentials ko public accessible files ya code mein hardcode kar dete hain, jinhein search engines index kar sakte hain.
+                    </p>
+                    <div class="dork-example">
+                        <h4 style="color: #e17055; margin-bottom: 8px;">🔍 Dork Examples:</h4>
+                        <code>site:target.com "X-API-Key"</code>
+                        <code>site:target.com "Authorization: Bearer"</code>
+                        <code>site:target.com "api_key" OR "apikey"</code>
+                        <code>site:github.com target.com "API_KEY"</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>2. API Documentation</h3>
+                    <p>
+                        Aap public ya internal API documentation dhoond sakte hain jo publically expose hone ke liye nahi thi, aur is se endpoints, parameters, aur authentication methods ka inkishaf ho sakta hai.
+                    </p>
+                    <div class="dork-example">
+                        <h4 style="color: #e17055; margin-bottom: 8px;">🔍 Dork Examples:</h4>
+                        <code>site:target.com filetype:pdf "api documentation"</code>
+                        <code>site:target.com inurl:swagger</code>
+                        <code>site:target.com inurl:api-docs</code>
+                        <code>site:target.com "openapi.json"</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>3. Error Messages Aur Debug Information</h3>
+                    <p>
+                        Tafseeli error messages kabhi-kabhi internal system information, database structures, ya application logic ko expose kar sakte hain.
+                    </p>
+                    <div class="dork-example">
+                        <h4 style="color: #e17055; margin-bottom: 8px;">🔍 Dork Examples:</h4>
+                        <code>site:target.com "stack trace"</code>
+                        <code>site:target.com "SQL syntax error"</code>
+                        <code>site:target.com "Warning: mysql_"</code>
+                        <code>site:target.com "Fatal error"</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>4. Configuration Files</h3>
+                    <p>
+                        Configuration files mein sensitive settings, database connection strings, ya internal network details ho sakte hain.
+                    </p>
+                    <div class="dork-example">
+                        <h4 style="color: #e17055; margin-bottom: 8px;">🔍 Dork Examples:</h4>
+                        <code>site:target.com filetype:env</code>
+                        <code>site:target.com inurl:config.php</code>
+                        <code>site:target.com filetype:xml "database"</code>
+                        <code>site:target.com ".env" DB_PASSWORD</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>5. Directory Listings</h3>
+                    <p>
+                        Open directory listings development files, backup files, ya doosri sensitive maloomat ko zaahir kar sakte hain jo publically accessible nahi honi chahiye.
+                    </p>
+                    <div class="dork-example">
+                        <h4 style="color: #e17055; margin-bottom: 8px;">🔍 Dork Examples:</h4>
+                        <code>site:target.com intitle:"index of" /dev</code>
+                        <code>site:target.com intitle:"index of" /backup</code>
+                        <code>site:target.com intitle:"index of" /admin</code>
+                        <code>site:target.com intitle:"index of" .git</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>6. Subdomains</h3>
+                    <p>
+                        Jabke yeh direct dorking nahi hai, Google subdomains ko uncover karne mein madad kar sakta hai jo mukhtalif API versions ya mutaliqa services host kar sakte hain.
+                    </p>
+                    <div class="dork-example">
+                        <h4 style="color: #e17055; margin-bottom: 8px;">🔍 Dork Examples:</h4>
+                        <code>site:*.target.com -www</code>
+                        <code>site:*.target.com "api"</code>
+                        <code>site:*.target.com inurl:dev</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-section">
+                <h2><span class="icon">💡</span>Advanced Tips Aur Combinations</h2>
+                <ul>
+                    <li>
+                        <strong>Multiple Operators Combine Karein</strong>
+                        <p><code>site:target.com filetype:pdf inurl:api "credentials"</code></p>
+                    </li>
+
+                    <li>
+                        <strong>GitHub Par Secrets Dhoondhein</strong>
+                        <p><code>site:github.com "target.com" "password" OR "api_key"</code></p>
+                    </li>
+
+                    <li>
+                        <strong>Pastebin Ya Paste Sites Check Karein</strong>
+                        <p><code>site:pastebin.com "target.com" password</code></p>
+                    </li>
+
+                    <li>
+                        <strong>Development/Staging Environments</strong>
+                        <p><code>site:target.com (inurl:dev OR inurl:staging OR inurl:test)</code></p>
+                    </li>
+
+                    <li>
+                        <strong>Backup Files Dhoondhein</strong>
+                        <p><code>site:target.com ext:bak OR ext:old OR ext:backup</code></p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Pro Tip</h4>
+                <p>
+                    Google Dorking ko aur effective banane ke liye, mukhtalif operators ko combine karein aur creative queries banayein. Kabhi kabhi thodi si creativity se bohot valuable information mil sakti hai.
+                </p>
+            </div>
+
+            <div class="ethical-section">
+                <h2><span class="icon">⚠️</span>Khatrat Aur Akhlaqi Iqdar</h2>
+                <p>
+                    Jabke Google Dorking penetration testers aur ethical hackers ke liye ek taqatwar tool hai, yeh yaad rakhna zaroori hai:
+                </p>
+
+                <div class="ethical-card">
+                    <strong>1. Qanooniyat (Legality)</strong>
+                    <p>
+                        Search engines ke zariye publicly available maloomat tak rasai hasil karna aam taur par ghair-qanooni nahi hai. Taham, us maloomat ka ghair-majazi rasai hasil karne ya vulnerabilities ko exploit karne ke liye istemal karna ghair-qanooni hai.
+                    </p>
+                </div>
+
+                <div class="ethical-card">
+                    <strong>2. Ethical Hacking</strong>
+                    <p>
+                        Hamesha yaqeeni banayen ke aapke paas kisi bhi system par vulnerabilities ko identify ya exploit karne ki saaf ijazat (maslan, bug bounty program ya penetration test ke liye client se) mojood ho.
+                    </p>
+                </div>
+
+                <div class="ethical-card">
+                    <strong>3. Responsible Disclosure</strong>
+                    <p>
+                        Agar aap koi vulnerability ya sensitive information discover karte hain, to responsible disclosure ka tareeqa follow karein. Organization ko pehle inform karein before public disclosure.
+                    </p>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Tanbih (Warning)</h4>
+                    <p>
+                        Google Dorking sirf authorized testing ke liye istemal karein. Unauthorized access ya malicious purposes ke liye istemal karna illegal hai aur serious legal consequences ho sakte hain.
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">📚</span>Further Resources</h2>
+                <p>
+                    Google Dorking ke liye kuch useful resources:
+                </p>
+                <ul style="margin-left: 20px; margin-top: 15px; color: #2d3436;">
+                    <li style="margin: 10px 0;"><strong>Google Hacking Database (GHDB):</strong> Exploit-DB par ready-made dorks ki large database</li>
+                    <li style="margin: 10px 0;"><strong>Google Advanced Search:</strong> Google ki official advanced search page</li>
+                    <li style="margin: 10px 0;"><strong>DorkSearch:</strong> Pre-made dorks search karne ka tool</li>
+                    <li style="margin: 10px 0;"><strong>OSINT Framework:</strong> OSINT techniques aur tools ka collection</li>
+                </ul>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Google Dorking API hacking ke ibtedai reconnaissance marhale mein ek bohot ahem qadam hai. Search queries ko maharat se banakar, aap qeemti clues aur mumkina kamzoriyon ko uncover kar sakte hain jo foran zaahir nahi hotin.
+                </p>
+                <p style="margin-top: 15px;">
+                    Yeh technique aapko exposed API keys, sensitive documentation, error messages, configuration files, aur doosri valuable information dhoondhne mein madad karti hai. Lekin hamesha yaad rakhein ke is tool ka istemal ethical aur legal boundaries ke andar hi karna hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Yaad rakhein:</strong> Information gathering ka maqsad security ko behtar banana hai, na ke nuksaan pohanchana. Hamesha responsible aur ethical approach follow karein.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

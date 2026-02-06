@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLS aur SSL - HTTP Protocol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.95;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #2c5364;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #2c5364;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #2c5364;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #1e3c72;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #1e3c72;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #2c5364;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .definition-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-left: 8px solid #2c5364;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .definition-box h3 {
+            color: white;
+            font-size: 1.6em;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .definition-box p {
+            font-size: 1.1em;
+            color: white;
+            line-height: 1.9;
+        }
+
+        .comparison-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .comparison-section h3 {
+            color: #e67e22;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .comparison-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid;
+        }
+
+        .comparison-card.ssl {
+            border-left-color: #e74c3c;
+        }
+
+        .comparison-card.tls {
+            border-left-color: #27ae60;
+        }
+
+        .comparison-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .comparison-card h4 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .comparison-card.ssl h4 {
+            color: #e74c3c;
+        }
+
+        .comparison-card.tls h4 {
+            color: #27ae60;
+        }
+
+        .comparison-card p {
+            color: #555;
+            text-align: left;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+        }
+
+        .comparison-card ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #2c3e50;
+        }
+
+        .comparison-card.ssl ul li::before {
+            content: "✗";
+            position: absolute;
+            left: 0;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .comparison-card.tls ul li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .handshake-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .handshake-section h3 {
+            color: #2c5364;
+            text-align: center;
+            margin: 0 0 30px 0;
+            padding: 0;
+            border: none;
+            font-size: 1.8em;
+        }
+
+        .handshake-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .handshake-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .step-content {
+            flex: 1;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-content h4 {
+            color: #1e3c72;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .step-content p {
+            color: #2c3e50;
+            text-align: left;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h4 {
+            color: #1e3c72;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #2c3e50;
+            text-align: left;
+        }
+
+        .importance-section {
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .importance-section h3 {
+            color: #1e3c72;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .importance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .importance-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #2c5364;
+        }
+
+        .importance-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .importance-card h4 {
+            color: #2c5364;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .importance-card p {
+            color: #2c3e50;
+            text-align: left;
+        }
+
+        .hacking-section {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 8px solid #c0392b;
+        }
+
+        .hacking-section h2 {
+            color: #c0392b;
+            text-align: center;
+            margin: 0 0 25px 0;
+            border: none;
+            display: block;
+        }
+
+        .vulnerability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .vulnerability-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #c0392b;
+        }
+
+        .vulnerability-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .vulnerability-card h4 {
+            color: #c0392b;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .vulnerability-card p {
+            color: #2c3e50;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .vulnerability-card ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .vulnerability-card ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .vulnerability-card ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            background: #2c5364;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: bold;
+            margin-bottom: -15px;
+        }
+
+        .visual-diagram {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            color: white;
+        }
+
+        .visual-diagram h3 {
+            color: white;
+            text-align: center;
+            margin: 0 0 30px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .diagram-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .diagram-box {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 150px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .diagram-box .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .diagram-box h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .diagram-box p {
+            color: white;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .diagram-arrow {
+            font-size: 2em;
+            color: white;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 5px solid #2c5364;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #2c5364;
+            font-size: 1.1em;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .tools-section h3 {
+            color: white;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
+
+        .tool-card:hover {
+            transform: scale(1.05);
+        }
+
+        .tool-card .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .tool-card h4 {
+            color: white;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .tool-card p {
+            color: #f0f0f0;
+            text-align: left;
+        }
+
+        .certificate-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .certificate-section h3 {
+            color: #2c5364;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .certificate-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #2c5364;
+        }
+
+        .certificate-card h5 {
+            color: #2c5364;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .certificate-card p {
+            color: #2c3e50;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .diagram-flow {
+                flex-direction: column;
+            }
+
+            .diagram-arrow {
+                transform: rotate(90deg);
+            }
+
+            .features-grid,
+            .importance-grid,
+            .vulnerability-grid,
+            .tools-grid,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .version-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .version-table th {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .version-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #2c3e50;
+        }
+
+        .version-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .version-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .status-deprecated {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .status-current {
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 TLS aur SSL</h1>
+            <p>Transport Layer Security & Secure Sockets Layer</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> → <span>Bunyadi Maloomat</span> → <span>HTTP Protocol</span> → TLS aur SSL</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p><strong>TLS aur SSL</strong> (Transport Layer Security aur Secure Sockets Layer) aise <strong>cryptographic protocols</strong> hain jo computer network par <strong>secure communication</strong> faraham karne ke liye banaye gaye hain.</p>
+                
+                <p>API hacking ke silsile mein, inhein samajhna bohot zaroori hai kyunki APIs aksar in protocols par depend karti hain taake <strong>data ko safar ke dauran mehfooz</strong> rakha jaa sake.</p>
+
+                <p>Yeh protocols <strong>encryption, authentication, aur integrity</strong> provide karte hain, jo secure communication ki bunyad hain.</p>
+            </div>
+
+            <div class="section">
+                <h2>📖 SSL aur TLS Kya Hain?</h2>
+
+                <div class="comparison-section">
+                    <h3>SSL vs TLS Comparison</h3>
+                    <div class="comparison-grid">
+                        <div class="comparison-card ssl">
+                            <div class="icon">🔓</div>
+                            <h4>SSL (Secure Sockets Layer)</h4>
+                            <p><strong>Kya hai:</strong> Netscape ne banaya hua asli protocol tha. Web communication ko secure karne ke liye bohot use hota tha.</p>
+                            <br>
+                            <p><strong>Status:</strong> <span class="status-deprecated">DEPRECATED ❌</span></p>
+                            <ul>
+                                <li>SSL 1.0 - Kabhi release nahi hua</li>
+                                <li>SSL 2.0 - 1995 (Retired)</li>
+                                <li>SSL 3.0 - 1996 (Retired)</li>
+                                <li>Security flaws ki wajah se abandoned</li>
+                                <li>Vulnerable to multiple attacks</li>
+                            </ul>
+                        </div>
+
+                        <div class="comparison-card tls">
+                            <div class="icon">🔒</div>
+                            <h4>TLS (Transport Layer Security)</h4>
+                            <p><strong>Kya hai:</strong> SSL ka naya aur behtar version hai. SSL ke bohot se kamzorion ko door karta hai aur zyada secure hai.</p>
+                            <br>
+                            <p><strong>Status:</strong> <span class="status-current">CURRENT STANDARD ✓</span></p>
+                            <ul>
+                                <li>TLS 1.0 - 1999 (Deprecated)</li>
+                                <li>TLS 1.1 - 2006 (Deprecated)</li>
+                                <li>TLS 1.2 - 2008 (Secure)</li>
+                                <li>TLS 1.3 - 2018 (Most Secure)</li>
+                                <li>Modern systems ka standard</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ Important Note:</strong> Jab log aaj "SSL" ka zikr karte hain, to woh aksar darasal <strong>TLS</strong> ki baat kar rahe hote hain, kyunki zyada tar modern systems TLS hi istemal karte hain. Term "SSL" ab bhi commonly use hota hai, lekin actual implementation TLS hai.</p>
+                </div>
+
+                <div class="version-table">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Protocol Version</th>
+                                <th>Release Year</th>
+                                <th>Status</th>
+                                <th>Security Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>SSL 2.0</td>
+                                <td>1995</td>
+                                <td><span class="status-deprecated">Deprecated</span></td>
+                                <td>Insecure - Multiple vulnerabilities</td>
+                            </tr>
+                            <tr>
+                                <td>SSL 3.0</td>
+                                <td>1996</td>
+                                <td><span class="status-deprecated">Deprecated</span></td>
+                                <td>Insecure - POODLE attack</td>
+                            </tr>
+                            <tr>
+                                <td>TLS 1.0</td>
+                                <td>1999</td>
+                                <td><span class="status-deprecated">Deprecated</span></td>
+                                <td>Weak - Not recommended</td>
+                            </tr>
+                            <tr>
+                                <td>TLS 1.1</td>
+                                <td>2006</td>
+                                <td><span class="status-deprecated">Deprecated</span></td>
+                                <td>Weak - Not recommended</td>
+                            </tr>
+                            <tr>
+                                <td>TLS 1.2</td>
+                                <td>2008</td>
+                                <td><span class="status-current">Active</span></td>
+                                <td>Secure - Widely supported</td>
+                            </tr>
+                            <tr>
+                                <td>TLS 1.3</td>
+                                <td>2018</td>
+                                <td><span class="status-current">Recommended</span></td>
+                                <td>Most Secure - Latest standard</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔄 Yeh Kaise Kaam Karte Hain?</h2>
+
+                <div class="visual-diagram">
+                    <h3>🔐 Secure Communication Tunnel</h3>
+                    <p style="text-align: center; margin-bottom: 20px;">TLS/SSL aapke paighamon ke liye ek <strong>mehfooz, private tunnel</strong> ki tarah kaam karta hai.</p>
+                    <div class="diagram-flow">
+                        <div class="diagram-box">
+                            <div class="icon">💻</div>
+                            <h4>Client</h4>
+                            <p>Unencrypted Data</p>
+                        </div>
+
+                        <div class="diagram-arrow">→</div>
+
+                        <div class="diagram-box">
+                            <div class="icon">🔐</div>
+                            <h4>TLS Encryption</h4>
+                            <p>Secure Tunnel</p>
+                        </div>
+
+                        <div class="diagram-arrow">→</div>
+
+                        <div class="diagram-box">
+                            <div class="icon">🌐</div>
+                            <h4>Internet</h4>
+                            <p>Encrypted Data</p>
+                        </div>
+
+                        <div class="diagram-arrow">→</div>
+
+                        <div class="diagram-box">
+                            <div class="icon">🔓</div>
+                            <h4>TLS Decryption</h4>
+                            <p>Secure Tunnel</p>
+                        </div>
+
+                        <div class="diagram-arrow">→</div>
+
+                        <div class="diagram-box">
+                            <div class="icon">🖥️</div>
+                            <h4>Server</h4>
+                            <p>Unencrypted Data</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="handshake-section">
+                    <h3>🤝 TLS/SSL Handshake Process</h3>
+                    <div class="handshake-steps">
+                        <div class="handshake-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Client Hello</h4>
+                                <p>Client "hello" kehta hai aur batata hai ke woh <strong>kaun se TLS versions</strong> aur <strong>cipher suites</strong> support karta hai. Random data aur session ID bhi bhejta hai.</p>
+                                <div class="code-example" style="margin-top: 10px;">Client → Server:
+"Hello! Main TLS 1.2, TLS 1.3 support karta hun
+Cipher Suites: AES-256-GCM, ChaCha20-Poly1305"</div>
+                            </div>
+                        </div>
+
+                        <div class="handshake-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Server Hello</h4>
+                                <p>Server apne <strong>pasandeeda TLS version</strong>, <strong>cipher suite</strong> ke saath jawab deta hai aur apna <strong>digital certificate</strong> bhejta hai. Server bhi random data generate karta hai.</p>
+                                <div class="code-example" style="margin-top: 10px;">Server → Client:
+"Hello! Main TLS 1.3 use karunga
+Cipher Suite: AES-256-GCM
+Yeh mera Certificate hai (Public Key included)"</div>
+                            </div>
+                        </div>
+
+                        <div class="handshake-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Certificate Verification</h4>
+                                <p>Client server ke <strong>certificate ko verify</strong> karta hai. Certificate mein server ki <strong>public key</strong> hoti hai aur yeh ek bharosemand <strong>Certificate Authority (CA)</strong> se sign kiya hua hota hai.</p>
+                                <div class="code-example" style="margin-top: 10px;">Client checks:
+✓ Certificate valid hai?
+✓ CA trusted hai?
+✓ Domain name match karta hai?
+✓ Certificate expire nahi hua?</div>
+                            </div>
+                        </div>
+
+                        <div class="handshake-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Key Exchange</h4>
+                                <p>Agar certificate valid hota hai, to client aur server session ke liye ek <strong>shared secret key</strong> par agree karte hain. Yeh <strong>key exchange</strong> secure tareeqe se hota hai using asymmetric encryption.</p>
+                                <div class="code-example" style="margin-top: 10px;">Client + Server → Generate:
+Pre-master secret → Master secret → Session Keys
+(Using Diffie-Hellman or RSA)</div>
+                            </div>
+                        </div>
+
+                        <div class="handshake-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Secure Communication Begins</h4>
+                                <p>Handshake mukammal! Ab client aur server <strong>symmetric encryption</strong> ka istemal karke communicate karte hain using shared session key. Yeh kahin zyada tez hai!</p>
+                                <div class="code-example" style="margin-top: 10px;">All future messages:
+Encrypted with Shared Session Key
+✓ Fast symmetric encryption
+✓ Data confidentiality
+✓ Data integrity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔑 Key Concepts</h2>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="icon">🔐</div>
+                        <h4>Symmetric Encryption</h4>
+                        <p>Handshake ke baad, client aur server <strong>ek hi secret key</strong> ka istemal karte hain encryption aur decryption ke liye. Yeh bohot <strong>tez</strong> hai aur continuous data transfer ke liye ideal.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🔑</div>
+                        <h4>Asymmetric Encryption</h4>
+                        <p>Handshake mein <strong>public/private key pair</strong> ka istemal hota hai. Public key se encrypt kiya jata hai, private key se decrypt. Initial key exchange ke liye secure.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">✅</div>
+                        <h4>Data Integrity</h4>
+                        <p>TLS/SSL <strong>data integrity</strong> ko yaqeeni banata hai using <strong>HMAC</strong> (Hash-based Message Authentication Code). Safar ke dauran data mein koi tabdeeli detect ho jati hai.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📜</div>
+                        <h4>Digital Certificates</h4>
+                        <p>Server ki <strong>identity verify</strong> karne ke liye. Certificate Authority (CA) se sign kiya hua, jisme server ki public key aur identity maloomat hoti hai.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🎲</div>
+                        <h4>Cipher Suites</h4>
+                        <p>Algorithms ka set jo <strong>encryption, key exchange, aur authentication</strong> methods define karta hai. Maslan: TLS_AES_256_GCM_SHA384</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">⏱️</div>
+                        <h4>Session Keys</h4>
+                        <p>Har session ke liye <strong>unique temporary keys</strong> generate hote hain. Perfect Forward Secrecy (PFS) ensure karta hai ke past sessions compromise nahi hote.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 APIs Ke Liye Yeh Kyun Zaroori Hain?</h2>
+
+                <div class="importance-section">
+                    <h3>3 Main Security Benefits</h3>
+                    <div class="importance-grid">
+                        <div class="importance-card">
+                            <div class="icon">🔒</div>
+                            <h4>1. Confidentiality (Raazdaari)</h4>
+                            <p>API client aur API server ke darmiyan exchange hone wala <strong>sensitive data niji</strong> rahe:</p>
+                            <br>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Authentication tokens</strong> encrypted rahte hain
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Niji maloomat</strong> (personal data) safe hai
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Maali data</strong> (financial data) protected
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>API keys aur secrets</strong> hidden
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    Ghair-ikhtiyar shakhsiyat sun nahi sakti
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="importance-card">
+                            <div class="icon">✅</div>
+                            <h4>2. Integrity (Salamat Rehna)</h4>
+                            <p>API ko bheja gaya aur wahan se mila hua data <strong>transmission ke dauran tabdeel nahi</strong> hua:</p>
+                            <br>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Requests</strong> manipulate nahi ho sakti
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Responses</strong> tamper nahi ho sakti
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Data corruption</strong> detect ho jati hai
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>MITM attacks</strong> prevent hote hain
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    Hamlawaron ko data badalne se rokta hai
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="importance-card">
+                            <div class="icon">🎫</div>
+                            <h4>3. Authentication (Tasdeeq)</h4>
+                            <p>Server ka certificate client ke liye server ki <strong>tasdeeq</strong> karta hai:</p>
+                            <br>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    Client <strong>yaqeen</strong> kar sakta hai server legitimate hai
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Phishing attacks</strong> se bachao
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Fake servers</strong> identify ho jate hain
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    <strong>Domain validation</strong> automatic
+                                </li>
+                                <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                                    <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">→</span>
+                                    Naqli hamlawar se bachata hai
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📜 Digital Certificates</h2>
+
+                <div class="certificate-section">
+                    <h3>Certificate Components</h3>
+
+                    <div class="certificate-card">
+                        <h5>1. Subject (موضوع)</h5>
+                        <p>Certificate kis entity ke liye issue kiya gaya hai - domain name, organization name, location wagaira.</p>
+                        <div class="code-example" style="margin-top: 10px;">Subject: CN=api.example.com, O=Example Inc, C=US</div>
+                    </div>
+
+                    <div class="certificate-card">
+                        <h5>2. Issuer (جاری کنندہ)</h5>
+                        <p>Kaun se Certificate Authority (CA) ne certificate sign kiya hai. Trusted CAs mein Let's Encrypt, DigiCert, GlobalSign shamil hain.</p>
+                        <div class="code-example" style="margin-top: 10px;">Issuer: CN=Let's Encrypt Authority, O=Let's Encrypt, C=US</div>
+                    </div>
+
+                    <div class="certificate-card">
+                        <h5>3. Public Key (عوامی کلید)</h5>
+                        <p>Server ki public key jo encryption aur verification ke liye istemal hoti hai. Corresponding private key sirf server ke paas hai.</p>
+                        <div class="code-example" style="margin-top: 10px;">Public Key: RSA 2048-bit or ECDSA 256-bit</div>
+                    </div>
+
+                    <div class="certificate-card">
+                        <h5>4. Validity Period (مدت)</h5>
+                        <p>Certificate kab se kab tak valid hai. "Not Before" aur "Not After" dates specify hoti hain.</p>
+                        <div class="code-example" style="margin-top: 10px;">Valid From: Jan 1, 2024
+Valid Until: Jan 1, 2025</div>
+                    </div>
+
+                    <div class="certificate-card">
+                        <h5>5. Digital Signature (ڈیجیٹل دستخط)</h5>
+                        <p>CA ki private key se sign kiya hua. Client CA ki public key se verify kar sakta hai ke certificate genuine hai.</p>
+                        <div class="code-example" style="margin-top: 10px;">Signature Algorithm: SHA-256 with RSA Encryption</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚠️ API Hacking Se Iska Kya Talluq Hai?</h2>
+
+                <div class="hacking-section">
+                    <h2>🔴 Security Vulnerabilities aur Attack Vectors</h2>
+
+                    <div class="vulnerability-grid">
+                        <div class="vulnerability-card">
+                            <div class="icon">⚙️</div>
+                            <h4>1. Misconfigurations</h4>
+                            <p>TLS/SSL ghalat tarike se configure hone par vulnerabilities paida hoti hain:</p>
+                            <ul>
+                                <li><strong>Purane SSL versions:</strong> SSL 2.0, 3.0, TLS 1.0 use karna</li>
+                                <li><strong>Kamzor cipher suites:</strong> Weak algorithms allow karna</li>
+                                <li><strong>Expired certificates:</strong> Certificate validity check na karna</li>
+                                <li><strong>Self-signed certificates:</strong> Production mein use karna</li>
+                                <li><strong>Missing HSTS:</strong> HTTP Strict Transport Security na hona</li>
+                            </ul>
+                            <div class="code-example" style="margin-top: 15px;">Vulnerable Configuration:
+SSLProtocol +SSLv3 +TLSv1  ❌
+CipherSuite: RC4-SHA  ❌
+
+Secure Configuration:
+SSLProtocol -all +TLSv1.2 +TLSv1.3  ✓
+CipherSuite: ECDHE-RSA-AES256-GCM-SHA384  ✓</div>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">🔍</div>
+                            <h4>2. Proxying Traffic (MITM)</h4>
+                            <p><strong>Burp Suite</strong> jaise tools ek Man-in-the-Middle proxy ke taur par kaam karte hain:</p>
+                            <ul>
+                                <li><strong>Certificate Install:</strong> Burp ka CA certificate client par install karna</li>
+                                <li><strong>Traffic Intercept:</strong> HTTPS traffic ko decrypt aur inspect karna</li>
+                                <li><strong>Request Modify:</strong> Encrypted data ko modify karna</li>
+                                <li><strong>Response Analyze:</strong> Server responses ka tajziya karna</li>
+                                <li>Yeh batata hai ke kaise TLS bypass kiya ja sakta hai testing ke liye</li>
+                            </ul>
+                            <div class="code-example" style="margin-top: 15px;">Normal Flow:
+Client ⟷ [TLS Encrypted] ⟷ Server
+
+With Burp Suite:
+Client ⟷ [TLS] ⟷ Burp ⟷ [TLS] ⟷ Server
+         ↓ Burp sees everything ↓
+    Plaintext Data Visible!</div>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">📌</div>
+                            <h4>3. Certificate Pinning Bypass</h4>
+                            <p>Kuch applications <strong>certificate pinning</strong> implement karti hain MITM se bachne ke liye:</p>
+                            <ul>
+                                <li><strong>Kya hai:</strong> App sirf specific certificates ko trust karti hai</li>
+                                <li><strong>Purpose:</strong> Trusted CAs se bhi MITM prevent karna</li>
+                                <li><strong>Bypass:</strong> Advanced technique using tools like Frida, Objection</li>
+                                <li><strong>Root detection:</strong> Device rooted/jailbroken check karna</li>
+                                <li>Security testing ke liye zaruri skill</li>
+                            </ul>
+                            <div class="code-example" style="margin-top: 15px;">Certificate Pinning:
+App only trusts: SHA256(api.example.com cert)
+
+Bypass Techniques:
+1. Frida script injection
+2. SSL unpinning tools
+3. Patching the app
+4. Runtime hooking</div>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">💀</div>
+                            <h4>4. Known TLS/SSL Attacks</h4>
+                            <p>Famous attacks jo TLS/SSL vulnerabilities exploit karte hain:</p>
+                            <ul>
+                                <li><strong>POODLE:</strong> SSL 3.0 vulnerability (2014)</li>
+                                <li><strong>BEAST:</strong> TLS 1.0 CBC cipher attack (2011)</li>
+                                <li><strong>Heartbleed:</strong> OpenSSL memory leak (2014)</li>
+                                <li><strong>DROWN:</strong> SSLv2 protocol attack (2016)</li>
+                                <li><strong>FREAK:</strong> Export cipher vulnerability (2015)</li>
+                            </ul>
+                            <div class="code-example" style="margin-top: 15px;">Famous Vulnerabilities:
+CVE-2014-0160 (Heartbleed) - Memory leak
+CVE-2014-3566 (POODLE) - SSL 3.0 downgrade
+CVE-2016-0800 (DROWN) - SSLv2 attack
+CVE-2015-0204 (FREAK) - Weak export ciphers</div>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">⬇️</div>
+                            <h4>5. Downgrade Attacks</h4>
+                            <p>Attacker client aur server ko <strong>kamzor protocol</strong> use karne par majboor karta hai:</p>
+                            <ul>
+                                <li><strong>Protocol Downgrade:</strong> TLS 1.3 se TLS 1.0 tak</li>
+                                <li><strong>Cipher Downgrade:</strong> Strong se weak cipher tak</li>
+                                <li><strong>MITM Required:</strong> Handshake manipulation</li>
+                                <li><strong>Prevention:</strong> TLS_FALLBACK_SCSV mechanism</li>
+                                <li>Purane protocols disable karke rokna</li>
+                            </ul>
+                            <div class="code-example" style="margin-top: 15px;">Attack Scenario:
+1. Client offers: TLS 1.3, 1.2, 1.1, 1.0
+2. Attacker intercepts and removes: TLS 1.3, 1.2
+3. Server sees only: TLS 1.1, 1.0
+4. Connection downgrades to TLS 1.0
+5. Attacker exploits TLS 1.0 vulnerabilities</div>
+                        </div>
+
+                        <div class="vulnerability-card">
+                            <div class="icon">🔧</div>
+                            <h4>6. Implementation Flaws</h4>
+                            <p>Server-side ya client-side implementation ki ghaltiyaan:</p>
+                            <ul>
+                                <li><strong>Certificate Validation:</strong> Theek se verify na karna</li>
+                                <li><strong>Hostname Verification:</strong> Domain name match na karna</li>
+                                <li><strong>Mixed Content:</strong> HTTP aur HTTPS dono ka istemal</li>
+                                <li><strong>Insecure Renegotiation:</strong> Handshake mein kamzori</li>
+                                <li><strong>Forward Secrecy:</strong> PFS enable na hona</li>
+                            </ul>
+                            <div class="code-example" style="margin-top: 15px;">Common Implementation Mistakes:
+❌ curl_setopt(CURLOPT_SSL_VERIFYPEER, false);
+❌ ctx.set_verify_mode(ssl::verify_none);
+❌ <img src="http://..."> on HTTPS page
+
+✓ Always verify certificates
+✓ Enable hostname verification
+✓ Use HTTPS everywhere
+✓ Enable Forward Secrecy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🛠️ Testing Tools</h2>
+
+                <div class="tools-section">
+                    <h3>TLS/SSL Analysis Tools</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="icon">🔴</div>
+                            <h4>Burp Suite</h4>
+                            <p>HTTPS traffic ko intercept aur analyze karna. Certificate install karke MITM proxy ki tarah kaam karta hai.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">🔍</div>
+                            <h4>SSL Labs</h4>
+                            <p>Online tool server ki TLS configuration test karne ke liye. Detailed report aur grade (A+ to F) provide karta hai.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">🔧</div>
+                            <h4>testssl.sh</h4>
+                            <p>Command-line tool comprehensive TLS/SSL testing ke liye. Protocols, ciphers, vulnerabilities check karta hai.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">🦊</div>
+                            <h4>OpenSSL</h4>
+                            <p>Command-line toolkit certificates generate, verify aur test karne ke liye. s_client command se connections test karna.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">📊</div>
+                            <h4>Nmap</h4>
+                            <p>ssl-enum-ciphers script se supported ciphers aur protocols enumerate kar sakta hai.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <div class="icon">⚡</div>
+                            <h4>SSLyze</h4>
+                            <p>Python-based tool fast SSL/TLS scanning ke liye. Certificate validation aur configuration issues detect karta hai.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔧 Testing Commands</h2>
+
+                <div class="code-header">OpenSSL Commands</div>
+                <div class="code-example"># Connect to server and check certificate
+openssl s_client -connect api.example.com:443
+
+# Check specific TLS version
+openssl s_client -connect api.example.com:443 -tls1_2
+openssl s_client -connect api.example.com:443 -tls1_3
+
+# View certificate details
+openssl s_client -connect api.example.com:443 -showcerts
+
+# Test cipher suites
+openssl s_client -connect api.example.com:443 -cipher 'ECDHE-RSA-AES256-GCM-SHA384'
+
+# Check certificate expiry
+echo | openssl s_client -connect api.example.com:443 2>/dev/null | openssl x509 -noout -dates</div>
+
+                <div class="code-header" style="margin-top: 20px;">testssl.sh Usage</div>
+                <div class="code-example"># Full scan
+./testssl.sh https://api.example.com
+
+# Check specific vulnerabilities
+./testssl.sh --vulnerable https://api.example.com
+
+# Check protocols only
+./testssl.sh --protocols https://api.example.com
+
+# Check cipher suites
+./testssl.sh --ciphers https://api.example.com
+
+# Output to JSON
+./testssl.sh --json https://api.example.com</div>
+
+                <div class="code-header" style="margin-top: 20px;">Nmap SSL Scan</div>
+                <div class="code-example"># Enumerate SSL/TLS versions and ciphers
+nmap --script ssl-enum-ciphers -p 443 api.example.com
+
+# Check for SSL vulnerabilities
+nmap --script ssl-* -p 443 api.example.com
+
+# Specific vulnerability checks
+nmap --script ssl-heartbleed -p 443 api.example.com
+nmap --script ssl-poodle -p 443 api.example.com</div>
+            </div>
+
+            <div class="section">
+                <h2>✅ Best Practices</h2>
+
+                <div class="highlight-box">
+                    <h3 style="color: #2c5364; margin-bottom: 15px;">Security Best Practices:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">✓</span>
+                            <strong>Sirf TLS 1.2 aur 1.3 enable karein</strong> - Purane versions disable
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">✓</span>
+                            <strong>Strong cipher suites use karein</strong> - AES-256-GCM, ChaCha20-Poly1305
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">✓</span>
+                            <strong>Valid certificates use karein</strong> - Trusted CA se sign kiya hua
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">✓</span>
+                            <strong>HSTS enable karein</strong> - HTTP Strict Transport Security
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">✓</span>
+                            <strong>Certificate pinning implement karein</strong> - Mobile apps mein
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">✓</span>
+                            <strong>Forward Secrecy enable karein</strong> - Perfect Forward Secrecy (PFS)
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">✓</span>
+                            <strong>Regular certificate renewal</strong> - Expiry se pehle renew karein
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #2c5364; font-weight: bold;">✓</span>
+                            <strong>Monitor aur audit karein</strong> - Regular security assessments
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+
+                <div class="definition-box">
+                    <h3>Key Takeaways:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: white; font-weight: bold;">→</span>
+                            <strong>TLS/SSL:</strong> Cryptographic protocols jo secure communication provide karte hain
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: white; font-weight: bold;">→</span>
+                            <strong>SSL Deprecated:</strong> SSL 2.0, 3.0 ab insecure, TLS istemal karein
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: white; font-weight: bold;">→</span>
+                            <strong>Current Standard:</strong> TLS 1.2 (secure), TLS 1.3 (recommended)
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: white; font-weight: bold;">→</span>
+                            <strong>Handshake:</strong> 5-step process - Hello, Certificate, Verify, Key Exchange, Secure
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: white; font-weight: bold;">→</span>
+                            <strong>3 Main Benefits:</strong> Confidentiality, Integrity, Authentication
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: white; font-weight: bold;">→</span>
+                            <strong>Vulnerabilities:</strong> Misconfigurations, MITM, Certificate issues
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: white; font-weight: bold;">→</span>
+                            <strong>Testing:</strong> Burp Suite, SSL Labs, testssl.sh, OpenSSL
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: white; font-weight: bold;">→</span>
+                            <strong>Best Practice:</strong> TLS 1.2+, strong ciphers, valid certificates
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <p><strong>🎯 Conclusion:</strong> TLS aur SSL (jismein TLS mojooda standard hai) internet par communication, jismein <strong>API interactions</strong> bhi shamil hain, ko secure karne ke <strong>buniyadi protocols</strong> hain. Yeh data ki confidentiality aur integrity ko mehfooz rakhte hain aur servers ko authenticate karne mein madad karte hain, jisse yeh <strong>secure API design ka aham juzv</strong> ban jaate hain!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">TLS aur SSL - HTTP Protocol</p>
+        </div>
+    </div>
+</body>
+</html>

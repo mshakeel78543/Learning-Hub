@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brute Force Attacks - Authentication Bypass</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #4facfe;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .analogy-box {
+            background: white;
+            border: 2px solid #f5576c;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .analogy-box h4 {
+            color: #f5576c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .analogy-box p {
+            color: #2d3436;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .section h2 {
+            color: #4facfe;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #f5576c;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .types-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .types-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .type-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .type-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .type-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .type-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .type-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #00b894;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #00b894;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .targets-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .targets-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .target-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .target-card h3 {
+            color: #6c5ce7;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .target-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .target-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .risks-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .risks-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .risk-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-card strong {
+            color: #e17055;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .risk-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .tools-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .tool-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .tool-card p {
+            color: #2d3436;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .tool-card code {
+            background: #f1f3f5;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .defense-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #00b894;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .stats-box {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .stats-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .stats-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .stats-box li {
+            color: #0c5460;
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .stats-box li:before {
+            content: "⚡";
+            position: absolute;
+            left: 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #f5576c;
+        }
+
+        .key-point h4 {
+            color: #d63031;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #00b894;
+        }
+
+        .conclusion h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .types-section, .targets-section, .risks-section, .tools-section, .defense-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔨 Brute Force Attacks</h1>
+            <p>Systematically Har Combination Ko Azmaana</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Authentication Bypass</a> /
+            <span>Brute Force Attacks</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Brute Force Attack Kya Hai?</h2>
+                <p>
+                    <strong>"Brute Force Attack"</strong> ka topic "API Hacking" roadmap mein "Shurwati Hamle" (Initial Attacks) ke phase mein "Authentication Bypass" section ke andar aata hai.
+                </p>
+                <p>
+                    API security ke hawalay se, <strong>brute force attack</strong> credentials (jaise usernames aur passwords, ya API keys) ko crack karne ka ek tareeqa hai, jismein systematically har possible combination ko try kiya jata hai jab tak sahi wala mil na jaye.
+                </p>
+                
+                <div class="analogy-box">
+                    <h4>🔑 Simple Misaal</h4>
+                    <p>
+                        Ye aisa hai jaise aap chabiyon ke guchche mein har chabi ko azmaate hain jab tak woh lock kholne wali chabi na mil jaye. Attacker har possible password try karta rehta hai jab tak correct password nahi mil jata.
+                    </p>
+                </div>
+            </div>
+
+            <div class="stats-box">
+                <h4>📊 Interesting Facts</h4>
+                <ul>
+                    <li>Modern computers 1 second mein millions passwords try kar sakte hain</li>
+                    <li>4-digit PIN (10,000 combinations) seconds mein crack ho sakta hai</li>
+                    <li>8-character password (lowercase only) = 200 billion combinations</li>
+                    <li>80% brute force attacks 6 characters ya kam ke passwords target karte hain</li>
+                    <li>Rate limiting na hone par ek API 24 hours mein millions attempts face kar sakti hai</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">⚙️</span>Brute Force Attack Kaise Kaam Karta Hai?</h2>
+                
+                <h3>Automated Guessing</h3>
+                <p>
+                    Attackers automated tools ka istemal karte hain taake tezi se credentials ke liye bohot badi tadad mein guesses bhejein. Ye tools har second mein hazaron ya lakhon combinations try kar sakte hain.
+                </p>
+                <ul>
+                    <li>Scripts aur programs automatically run hote hain</li>
+                    <li>Parallel processing se speed increase hoti hai</li>
+                    <li>Wordlists aur algorithms ka combination</li>
+                    <li>24/7 operation possible hai</li>
+                </ul>
+
+                <h3>Process Flow</h3>
+                <ol style="margin-left: 20px; margin-top: 15px; color: #2d3436;">
+                    <li style="margin: 10px 0;"><strong>Target Selection:</strong> API endpoint identify karna (<code>/api/login</code>)</li>
+                    <li style="margin: 10px 0;"><strong>Wordlist Preparation:</strong> Possible passwords ki list tayar karna</li>
+                    <li style="margin: 10px 0;"><strong>Request Generation:</strong> Har password ke liye HTTP request banana</li>
+                    <li style="margin: 10px 0;"><strong>Response Analysis:</strong> Success ya failure determine karna</li>
+                    <li style="margin: 10px 0;"><strong>Iteration:</strong> Successful hone tak continue karna</li>
+                </ol>
+            </div>
+
+            <div class="types-section">
+                <h2><span class="icon">📋</span>Brute Force Attack Ki Types</h2>
+
+                <div class="type-card">
+                    <h3>1. Dictionary Attacks</h3>
+                    <p>
+                        Ye brute force ki ek qism hai jismein attacker aam istemal hone wale usernames aur passwords ki pehle se tayyar shuda list ka istemal karta hai.
+                    </p>
+                    <ul>
+                        <li>Common passwords ki pre-compiled lists</li>
+                        <li>Leaked password databases</li>
+                        <li>Language-specific wordlists</li>
+                        <li>Industry-specific terms</li>
+                    </ul>
+                    
+                    <div class="example-box">
+                        <h4>💡 Common Passwords Dictionary:</h4>
+                        <code>password</code>
+                        <code>password123</code>
+                        <code>admin</code>
+                        <code>letmein</code>
+                        <code>welcome</code>
+                        <code>qwerty123</code>
+                        <code>monkey</code>
+                    </div>
+                </div>
+
+                <div class="type-card">
+                    <h3>2. Credential Stuffing</h3>
+                    <p>
+                        Ismein doosre breaches se leaked username aur password pairs ka istemal karna shamil hai, ye soch kar ke users aksar apni credentials mukhtalif services par dobara istemal karte hain.
+                    </p>
+                    <ul>
+                        <li>Previous data breaches ka data use karna</li>
+                        <li>Email:Password combinations</li>
+                        <li>High success rate (5-10%)</li>
+                        <li>Multiple APIs par simultaneously test karna</li>
+                    </ul>
+                    
+                    <div class="example-box">
+                        <h4>💡 Process:</h4>
+                        <p>1. LinkedIn breach se 10M credentials leak</p>
+                        <p>2. Attacker in credentials ko banking API par try karta hai</p>
+                        <p>3. Password reuse ki wajah se 500K accounts compromise</p>
+                    </div>
+                </div>
+
+                <div class="type-card">
+                    <h3>3. Hybrid Attacks</h3>
+                    <p>
+                        Dictionary attacks ko numerical ya special character variations ke sath milana.
+                    </p>
+                    <ul>
+                        <li>Dictionary words + numbers: <code>password123</code></li>
+                        <li>Dictionary words + special chars: <code>password!</code></li>
+                        <li>Capitalization variations: <code>Password</code>, <code>PASSWORD</code></li>
+                        <li>Leet speak: <code>p@ssw0rd</code></li>
+                    </ul>
+                    
+                    <div class="example-box">
+                        <h4>💡 Variations Example:</h4>
+                        <code>summer → summer2023, Summer123, summer!, summ3r</code>
+                    </div>
+                </div>
+
+                <div class="type-card">
+                    <h3>4. Pure Brute Force</h3>
+                    <p>
+                        Har mumkin character combination ko try karna, jo behtar waqt talab ho sakta hai lekin agar koi doosre defenses maujood na hon toh sahi credential milne ki zamanat deta hai.
+                    </p>
+                    <ul>
+                        <li>All possible combinations systematically</li>
+                        <li>Start from simple (a, aa, aaa...)</li>
+                        <li>Move to complex combinations</li>
+                        <li>Time-consuming but guaranteed success (eventually)</li>
+                    </ul>
+                    
+                    <div class="example-box">
+                        <h4>💡 Time Estimates (for offline cracking):</h4>
+                        <p>4 chars (lowercase): 0.02 seconds</p>
+                        <p>6 chars (lowercase): 5 minutes</p>
+                        <p>8 chars (alphanumeric): 3 weeks</p>
+                        <p>12 chars (mixed): Centuries</p>
+                    </div>
+                </div>
+
+                <div class="type-card">
+                    <h3>5. Reverse Brute Force</h3>
+                    <p>
+                        Ek common password choose karein aur use multiple usernames ke saath try karein.
+                    </p>
+                    <ul>
+                        <li>Common password select karna: <code>password123</code></li>
+                        <li>Large username list ke saath try karna</li>
+                        <li>Account lockout bypass karne mein useful</li>
+                        <li>Large organizations mein effective</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="targets-section">
+                <h2><span class="icon">🎯</span>Brute Force Attack Ke Targets</h2>
+                <p>
+                    Bunyadi tor par brute force attacks ye targets karte hain:
+                </p>
+
+                <div class="target-card">
+                    <h3>1. Usernames Aur Passwords</h3>
+                    <p>
+                        Attackers API user accounts ke liye valid username/password pairs guess karne ki koshish karte hain.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Common Scenarios:</h4>
+                        <code>POST /api/login</code>
+                        <code>POST /api/auth/signin</code>
+                        <code>POST /api/v1/authenticate</code>
+                        <p style="margin-top: 10px;">Body: <code>{"username":"admin","password":"guess123"}</code></p>
+                    </div>
+                </div>
+
+                <div class="target-card">
+                    <h3>2. API Keys</h3>
+                    <p>
+                        Agar koi API authentication ke liye keys ka istemal karti hai, toh attackers valid API keys guess karne ki koshish kar sakte hain.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 API Key Patterns:</h4>
+                        <code>X-API-Key: XXXX-XXXX-XXXX-XXXX</code>
+                        <code>Authorization: Bearer eyJhbGc...</code>
+                        <p style="margin-top: 10px;">Agar key format predictable hai to brute force possible hai</p>
+                    </div>
+                </div>
+
+                <div class="target-card">
+                    <h3>3. OTP (One-Time Passwords)</h3>
+                    <p>
+                        Traditional brute force ke liye kam common hai, lekin attackers OTPs guess karne ki koshish kar sakte hain agar unke generation ya validation mein kamzorian hon.
+                    </p>
+                    <ul>
+                        <li>4-digit PIN: 10,000 combinations (asaani se try ho sakte hain)</li>
+                        <li>6-digit OTP: 1 million combinations (time limit mein mushkil)</li>
+                        <li>Time-based OTPs zyada secure hain</li>
+                        <li>SMS OTPs interception ka risk</li>
+                    </ul>
+                </div>
+
+                <div class="target-card">
+                    <h3>4. Session Tokens</h3>
+                    <p>
+                        Agar session tokens predictable pattern follow karte hain to unhe brute force kiya ja sakta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Vulnerable Token Examples:</h4>
+                        <code>session_id=12345 (sequential)</code>
+                        <code>token=userid_timestamp (predictable)</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">🔧</span>APIs Ke Saath Ye Kaise Kaam Karta Hai</h2>
+                <p>
+                    Attackers aam tor par ek API ke authentication endpoint par mukhtalif credential combinations ke sath baar baar HTTP requests bhejte hain, jab tak ek successful authentication response na mil jaye.
+                </p>
+
+                <div class="example-box">
+                    <h4>💡 Typical Attack Flow:</h4>
+                    <code>1. POST /api/login {"user":"admin","pass":"test1"} → 401 Unauthorized</code>
+                    <code>2. POST /api/login {"user":"admin","pass":"test2"} → 401 Unauthorized</code>
+                    <code>3. POST /api/login {"user":"admin","pass":"test3"} → 401 Unauthorized</code>
+                    <code>...</code>
+                    <code>1000. POST /api/login {"user":"admin","pass":"admin123"} → 200 OK</code>
+                    <p style="margin-top: 10px; color: #00b894;"><strong>Success!</strong> Credentials mil gaye</p>
+                </div>
+            </div>
+
+            <div class="risks-section">
+                <h2><span class="icon">⚠️</span>APIs Ke Liye Brute Force Attacks Kyun Khatra Hain?</h2>
+
+                <div class="risk-card">
+                    <strong>1. Weak Credentials</strong>
+                    <p>
+                        Agar koi API users ko kamzor ya aasani se guess hone wale passwords set karne deti hai, toh woh bohot zyada vulnerable ho jati hai. Dictionary attack se easily crack ho sakti hai.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>2. Lack of Rate Limiting</strong>
+                    <p>
+                        Woh APIs jo ek khaas time frame mein ek hi IP address ya user account se na-kaam login attempts ki tadad ko mahdood nahin karte, woh prime targets hote hain. Unlimited attempts allow hone se brute force asaan ho jata hai.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>3. No Account Lockout</strong>
+                    <p>
+                        Agar kai na-kaam attempts ke baad account temporarily lock nahin hota, toh ek attacker be-rok tok koshish karta reh sakta hai. 24/7 attacks possible hain.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>4. Verbose Error Messages</strong>
+                    <p>
+                        Aisi error messages jo invalid username aur invalid password ke darmiyan farq batati hain, attackers ko apni guesses ko kam karne mein madad kar sakti hain.
+                    </p>
+                    <div class="example-box">
+                        <h4>❌ Bad Practice:</h4>
+                        <code>"Username does not exist"</code>
+                        <code>"Password is incorrect"</code>
+                        <h4 style="margin-top: 10px;">✅ Good Practice:</h4>
+                        <code>"Invalid credentials"</code>
+                    </div>
+                </div>
+
+                <div class="risk-card">
+                    <strong>5. Predictable Patterns</strong>
+                    <p>
+                        Sequential user IDs, predictable API keys, ya default username patterns brute force ko aur asaan banate hain.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tools-section">
+                <h2><span class="icon">🛠️</span>Brute Force Attack Ke Tools</h2>
+
+                <div class="tool-card">
+                    <h3>1. Hydra</h3>
+                    <p>
+                        Sabse popular aur powerful network authentication cracker. Multiple protocols support karta hai.
+                    </p>
+                    <code>hydra -l admin -P passwords.txt https://api.example.com/login</code>
+                    <p style="margin-top: 8px;">Features: Fast, multi-threaded, supports 50+ protocols</p>
+                </div>
+
+                <div class="tool-card">
+                    <h3>2. Burp Suite Intruder</h3>
+                    <p>
+                        Web application testing ke liye best tool. Custom positions aur payloads ke saath flexible attack types.
+                    </p>
+                    <p style="margin-top: 8px;">Attack Types: Sniper, Battering ram, Pitchfork, Cluster bomb</p>
+                </div>
+
+                <div class="tool-card">
+                    <h3>3. Medusa</h3>
+                    <p>
+                        Fast, parallel password cracker. Modular design ke saath multiple services support.
+                    </p>
+                    <code>medusa -h api.example.com -u admin -P wordlist.txt -M http</code>
+                </div>
+
+                <div class="tool-card">
+                    <h3>4. Patator</h3>
+                    <p>
+                        Python-based multi-purpose brute-forcer. Flexible aur extensible.
+                    </p>
+                    <code>patator http_fuzz url=https://api.example.com/login method=POST body='user=admin&pass=FILE0' 0=passwords.txt</code>
+                </div>
+
+                <div class="tool-card">
+                    <h3>5. Custom Python Scripts</h3>
+                    <p>
+                        <code>requests</code> library ke saath custom brute force scripts likhi ja sakti hain for specific scenarios.
+                    </p>
+                    <code>import requests
+for password in wordlist:
+    response = requests.post(url, json={"user":"admin","pass":password})
+    if response.status_code == 200:
+        print(f"Found: {password}")</code>
+                </div>
+
+                <div class="tool-card">
+                    <h3>6. Hashcat</h3>
+                    <p>
+                        Offline password cracking ke liye. Agar password hashes leak ho gayen hon to use kiya jata hai.
+                    </p>
+                    <code>hashcat -m 0 -a 0 hashes.txt wordlist.txt</code>
+                </div>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>Brute Force Attacks Se Bachao</h2>
+                <p>
+                    In defense mechanisms ko implement kar ke brute force attacks se bachaya ja sakta hai:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Strong Password Policies</strong>
+                    <p>
+                        Complex passwords ko enforce karein jo brute force se crack karna mushkil hon.
+                    </p>
+                    <ul>
+                        <li>Minimum 12 characters length</li>
+                        <li>Uppercase, lowercase, numbers, special characters required</li>
+                        <li>No dictionary words</li>
+                        <li>No common patterns (123456, qwerty)</li>
+                        <li>Regular password changes</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Rate Limiting</strong>
+                    <p>
+                        Ek khaas waqt mein login attempts ki tadad ko mahdood karein.
+                    </p>
+                    <ul>
+                        <li>Per IP: Max 5 attempts per minute</li>
+                        <li>Per user account: Max 5 attempts per hour</li>
+                        <li>Global rate limit: Total requests per second</li>
+                        <li>Exponential backoff implement karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Account Lockout</strong>
+                    <p>
+                        Chand na-kaam attempts ke baad accounts ko temporarily lock kar dein.
+                    </p>
+                    <ul>
+                        <li>5 failed attempts → 15 minutes lockout</li>
+                        <li>10 failed attempts → 1 hour lockout</li>
+                        <li>20 failed attempts → Account suspended (manual unlock)</li>
+                        <li>Email notification bhejein user ko</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. CAPTCHAs</strong>
+                    <p>
+                        Human users aur automated bots mein farq karne ke liye CAPTCHAs lagayein.
+                    </p>
+                    <ul>
+                        <li>3 failed attempts ke baad CAPTCHA show karen</li>
+                        <li>reCAPTCHA v3 for invisible protection</li>
+                        <li>hCaptcha as alternative</li>
+                        <li>Custom challenges implement karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Multi-Factor Authentication (MFA)</strong>
+                    <p>
+                        Password ke ilawa security ki ek aur layer shamil karein.
+                    </p>
+                    <ul>
+                        <li>SMS/Email OTP</li>
+                        <li>Authenticator apps (Google Authenticator, Authy)</li>
+                        <li>Hardware tokens (YubiKey)</li>
+                        <li>Biometric authentication</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. IP Blacklisting</strong>
+                    <p>
+                        Suspicious activity dikhane wale IP addresses ko block karein.
+                    </p>
+                    <ul>
+                        <li>Automatic blacklisting after threshold</li>
+                        <li>Known malicious IPs ki lists use karen</li>
+                        <li>Geo-blocking implement karen (agar applicable ho)</li>
+                        <li>Temporary vs permanent bans</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Monitoring Aur Alerting</strong>
+                    <p>
+                        Real-time monitoring aur alerts setup karen.
+                    </p>
+                    <ul>
+                        <li>Failed login patterns track karen</li>
+                        <li>Unusual activity detect karen</li>
+                        <li>Security team ko alerts bhejein</li>
+                        <li>Logs analyze karen regularly</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Progressive Delays</strong>
+                    <p>
+                        Har failed attempt ke baad delay increase karen.
+                    </p>
+                    <ul>
+                        <li>1st fail: No delay</li>
+                        <li>2nd fail: 2 seconds delay</li>
+                        <li>3rd fail: 5 seconds delay</li>
+                        <li>4th fail: 10 seconds delay</li>
+                        <li>Subsequent: Exponentially increase</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Testing Guidelines</h4>
+                <p>
+                    Brute force attacks sirf authorized testing environments par karein. Production systems par unauthorized brute force testing illegal hai aur serious legal consequences ho sakte hain. Hamesha bug bounty programs ya proper authorization ke saath testing karein.
+                </p>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    <strong>Brute force attacks</strong> ko samajhna API hackers ke liye bunyadi hai kyunki ye API resources tak unauthorized access haasil karne ka ek aam ibtedai tareeqa hai. Proper defenses implement kar ke organizations apni APIs ko is common attack se bacha sakte hain.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Brute Force Attacks systematically har possible combination ko try karne ka method hai - simple lekin effective. Modern computing power ki wajah se ye attacks bohot tezi se execute ho sakte hain, khaas kar jab koi proper defenses na hon.
+                </p>
+                <p style="margin-top: 15px;">
+                    Successful defense ke liye multiple layers ki zaroorat hoti hai: strong passwords, rate limiting, account lockouts, CAPTCHAs, aur MFA. Ek bhi layer weak hone se attacker success ho sakta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Developers:</strong> Apni APIs mein comprehensive brute force protection implement karen. <strong>Users:</strong> Strong, unique passwords istemal karen aur MFA enable karen jahan available ho. <strong>Security Teams:</strong> Regular monitoring aur testing karte rahein.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

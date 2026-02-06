@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burp Suite Ka Istemal - Maloomat Jama Karna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #4facfe;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #fa709a;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .section h2 {
+            color: #4facfe;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #fa709a;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .section code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .importance-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .importance-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .importance-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .importance-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .importance-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .importance-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .importance-card ul li {
+            margin: 8px 0;
+        }
+
+        .features-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .features-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .feature-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card h3 {
+            color: #6c5ce7;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-card .icon-small {
+            font-size: 1.3em;
+            margin-right: 8px;
+        }
+
+        .feature-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .feature-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .feature-card ul li {
+            margin: 8px 0;
+        }
+
+        .usage-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .usage-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .step-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-card h3 {
+            color: #e17055;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .step-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .step-card ol {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .step-card ol li {
+            margin: 12px 0;
+        }
+
+        .step-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #e17055;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #e17055;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .tips-section {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .tips-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .tips-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-section li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tips-section strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .tips-section code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .info-box p {
+            color: #0c5460;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+
+        .info-box ul li {
+            margin: 8px 0;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #fa709a;
+        }
+
+        .conclusion h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .importance-section, .features-section, .usage-section, .tips-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Burp Suite Ka Istemal</h1>
+            <p>Web Security Testing Ka Professional Tool</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Maloomat Jama Karna</a> /
+            <span>Burp Suite Ka Istemal</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Burp Suite Kya Hai?</h2>
+                <p>
+                    <strong>Burp Suite</strong> web applications ki security testing ke liye aik integrated platform hai. Is mein mukhtalif tools shamil hain jo testing ke poore amal ko sahara dene ke liye yakjaan ho kar kaam karte hain, shuruati mapping aur analysis se le kar vulnerabilities dhoondhne aur unhain exploit karne tak.
+                </p>
+                <p>
+                    Isay <strong>PortSwigger Web Security</strong> ne banaya hai aur yeh web security testing mein shamil har shakhs ke liye, khaas taur par API hacking ke liye, aik aham tool hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>"Burp Suite Ka Istemal"</strong> API Hacking roadmap ke "Maloomat Jama Karna" (Information Gathering) section mein aik nihayat zaroori topic hai.
+                </p>
+            </div>
+
+            <div class="importance-section">
+                <h2><span class="icon">⚡</span>API Hacking Ke Liye Yeh Kyun Zaroori Hai?</h2>
+                <p>
+                    API hacking ke liye, Burp Suite laazmi hai kyunke APIs bunyadi taur par web services hotay hain. Burp Suite aik <strong>intercepting proxy</strong> ke tor par kaam karta hai, jo aapko apne browser (ya kisi bhi client application) aur web server (jahan API maujood hai) ke darmiyan hone wale tamam traffic ko capture, inspect aur modify karne ki ijazat deta hai.
+                </p>
+
+                <div class="importance-card">
+                    <h3>1. API Requests Aur Responses Ko Observe Karna</h3>
+                    <p>
+                        Aap bilkul dekh sakte hain ke API ko kya data bheja ja raha hai aur kya responses mil rahen hain. Is mein HTTP methods, headers, parameters, aur requests aur responses ka body shamil hai. Yeh aapko API ke kaam karne ke tareeqay ki mukammal tasveer deta hai.
+                    </p>
+                </div>
+
+                <div class="importance-card">
+                    <h3>2. API Endpoints Ko Pehchanna</h3>
+                    <p>
+                        Traffic ko observe kar ke, aap un tamam mukhtalif API endpoints ko pehchan sakte hain jin ke saath application communicate kar rahi hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Common API Endpoints:</h4>
+                        <code>/api/v1/users</code>
+                        <code>/api/v2/products</code>
+                        <code>/graphql</code>
+                        <code>/rest/v1/orders</code>
+                    </div>
+                </div>
+
+                <div class="importance-card">
+                    <h3>3. Parameters Ko Identify Karna</h3>
+                    <p>
+                        Aap API calls mein istemal hone wale tamam parameters ko dekh sakte hain, jo injection attacks, broken access control aur deegar vulnerabilities ki testing ke liye intahai aham hai.
+                    </p>
+                </div>
+
+                <div class="importance-card">
+                    <h3>4. Authentication Mechanisms Ka Tajzia Karna</h3>
+                    <p>
+                        Burp Suite aapko yeh samajhne mein madad karta hai ke API authentication ko kaise handle karta hai yeh dikha kar ke yeh tokens kahan bheje aur receive kiye ja rahay hain.
+                    </p>
+                    <ul>
+                        <li>API keys ko track karna</li>
+                        <li>JWT tokens ka analysis</li>
+                        <li>Session cookies ka behavior</li>
+                        <li>OAuth flows ko samajhna</li>
+                    </ul>
+                </div>
+
+                <div class="importance-card">
+                    <h3>5. Chhipi Hui Functionality Ko Zahir Karna</h3>
+                    <p>
+                        Kabhi kabhi, aik application aisi API calls kar sakti hai jo UI se fori tor par wazeh nahin hotin. Burp Suite yeh tamam backend calls capture karega.
+                    </p>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <h2><span class="icon">🔧</span>Burp Suite Ki Aham Khasoosiyat</h2>
+                <p>
+                    API Information Gathering se mutalliq Burp Suite ke main components:
+                </p>
+
+                <div class="feature-card">
+                    <h3><span class="icon-small">🔄</span>Proxy</h3>
+                    <p>
+                        Yeh bunyadi component hai. Yeh aapke browser aur target server ke darmiyan tamam HTTP/S traffic ko intercept karta hai. Aap requests aur responses ko dekh sakte hain, unhain forward kar sakte hain, ya drop kar sakte hain.
+                    </p>
+                    <ul>
+                        <li><strong>HTTP History:</strong> Tamam requests ka complete log</li>
+                        <li><strong>WebSockets History:</strong> Real-time communication tracking</li>
+                        <li><strong>Intercept:</strong> Traffic ko real-time mein modify karna</li>
+                        <li><strong>Options:</strong> Proxy configuration aur filtering</li>
+                    </ul>
+                    <p style="margin-top: 10px;">
+                        Aap apna zyada tar waqt API communication ko observe karne mein yahan guzarenge.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3><span class="icon-small">🎯</span>Target</h3>
+                    <p>
+                        Yeh tool aapko apni testing ke scope ko define karne mein madad karta hai aur aik site map faraham karta hai, jo target application ke tamam daryaft shuda content aur functionality ko dikhata hai, jis mein API endpoints bhi shamil hain.
+                    </p>
+                    <ul>
+                        <li><strong>Site Map:</strong> Hierarchical view of all endpoints</li>
+                        <li><strong>Scope:</strong> Testing ki boundaries define karna</li>
+                        <li><strong>Issue Definitions:</strong> Vulnerability categories</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3><span class="icon-small">🔁</span>Repeater</h3>
+                    <p>
+                        Yeh tool aapko individual HTTP requests ko manually modify aur resend karne, aur responses ka tajzia karne ki ijazat deta hai. Yeh mukhtalif parameter values ya HTTP methods ki testing ke liye intahai mufeed hai baghair frontend application ke saath interact kiye.
+                    </p>
+                    <ul>
+                        <li>Manual request modification</li>
+                        <li>Multiple request tabs</li>
+                        <li>Request/Response comparison</li>
+                        <li>Quick parameter testing</li>
+                    </ul>
+                    <div class="example-box">
+                        <h4>💡 Repeater Use Case:</h4>
+                        <p>GET request ko POST mein change kar ke test karna</p>
+                        <p>User ID parameter ko modify kar ke access control test karna</p>
+                        <p>Different authentication tokens try karna</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h3><span class="icon-small">⚔️</span>Intruder</h3>
+                    <p>
+                        Jabke yeh zyada hamle ke liye hai, Intruder ko information gathering ke marhale mein parameters ko tezí se fuzz karne ya valid values ko enumerate karne ke liye istemal kiya ja sakta hai, mukhtalif inputs ko azma kar aur responses ko observe kar ke.
+                    </p>
+                    <ul>
+                        <li><strong>Sniper:</strong> Single parameter attack</li>
+                        <li><strong>Battering Ram:</strong> Same payload everywhere</li>
+                        <li><strong>Pitchfork:</strong> Multiple parameters simultaneously</li>
+                        <li><strong>Cluster Bomb:</strong> All combinations test karna</li>
+                    </ul>
+                    <div class="example-box">
+                        <h4>💡 Intruder Examples:</h4>
+                        <p>Directory names brute-force karna</p>
+                        <p>Valid user IDs enumerate karna</p>
+                        <p>API version numbers discover karna</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h3><span class="icon-small">🔢</span>Sequencer</h3>
+                    <p>
+                        Yeh tool session tokens ya application ke zariye generate kiye gaye deegar zahiran ghair-mutawaqqo values ki randomness ka tajzia karne ke liye istemal hota hai.
+                    </p>
+                    <ul>
+                        <li>Token entropy analysis</li>
+                        <li>Predictability testing</li>
+                        <li>Statistical analysis</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3><span class="icon-small">🔓</span>Decoder</h3>
+                    <p>
+                        Mukhtalif data formats ko decode aur encode karne ke liye mufeed hai, jo API requests aur responses mein aam hain.
+                    </p>
+                    <ul>
+                        <li>URL encoding/decoding</li>
+                        <li>HTML encoding/decoding</li>
+                        <li>Base64 encoding/decoding</li>
+                        <li>Hex, ASCII conversions</li>
+                        <li>Hash generation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="usage-section">
+                <h2><span class="icon">📋</span>Information Gathering Ke Liye Burp Suite Kaise Istemal Karen</h2>
+                <p>
+                    Step-by-step guide API information gathering ke liye:
+                </p>
+
+                <div class="step-card">
+                    <h3>Step 1: Proxy Setup Karen</h3>
+                    <p>
+                        Apne browser (ya client application) ko Burp Suite ko apne proxy ke tor par istemal karne ke liye configure karen.
+                    </p>
+                    <ol>
+                        <li>Burp Suite launch karein</li>
+                        <li>Proxy tab mein jayein</li>
+                        <li>Options check karein - default setting: <code>127.0.0.1:8080</code></li>
+                        <li>Browser mein proxy settings configure karein:
+                            <ul style="margin: 10px 0 10px 20px;">
+                                <li>Firefox: Settings → Network Settings → Manual Proxy</li>
+                                <li>Chrome: System proxy settings use karta hai</li>
+                                <li>Ya FoxyProxy extension istemal karein</li>
+                            </ul>
+                        </li>
+                        <li>HTTPS ke liye Burp CA certificate install karein</li>
+                    </ol>
+                </div>
+
+                <div class="step-card">
+                    <h3>Step 2: Application Browse Karen</h3>
+                    <p>
+                        Us web application ke saath interact karen jo target API istemal karti hai. Jab aap click karte hain, forms submit karte hain, aur features istemal karte hain, Burp Suite tamam bunyadi API requests aur responses ko capture karega.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Complete Interaction:</h4>
+                        <p>✓ Login/Signup karna</p>
+                        <p>✓ Tamam pages visit karna</p>
+                        <p>✓ Forms fill karna</p>
+                        <p>✓ Search functionality use karna</p>
+                        <p>✓ File upload/download test karna</p>
+                        <p>✓ CRUD operations perform karna</p>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h3>Step 3: Traffic Inspect Karen</h3>
+                    <p>
+                        Burp Suite mein "Proxy" → "HTTP history" tab par ja kar tamam captured requests aur responses ka jaiza len.
+                    </p>
+                    <ul>
+                        <li>Patterns talash karen</li>
+                        <li>API endpoints ko pehchanen (aksar <code>/api/v1/users</code> ya <code>/graphql</code> jaise paths)</li>
+                        <li>Data structures (JSON, XML) ko samajhen</li>
+                        <li>Authentication headers note karen</li>
+                        <li>Response codes analyze karen</li>
+                    </ul>
+                    <div class="example-box">
+                        <h4>💡 Kya Dhoondhein:</h4>
+                        <code>Authorization: Bearer &lt;token&gt;</code>
+                        <code>X-API-Key: &lt;key&gt;</code>
+                        <code>Cookie: session=&lt;id&gt;</code>
+                        <code>Content-Type: application/json</code>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <h3>Step 4: Repeater Ko Bhejen</h3>
+                    <p>
+                        Agar aapko koi dilchasp API request milti hai, to usay "Repeater" tool par bhejen taake mukhtalif inputs ke saath manually experiment kiya ja sake aur API kaise response karta hai, iska mushahida kiya ja sake.
+                    </p>
+                    <ol>
+                        <li>HTTP History mein interesting request par right-click karen</li>
+                        <li>"Send to Repeater" select karen (ya <code>Ctrl+R</code>)</li>
+                        <li>Repeater tab mein request modify karen</li>
+                        <li>"Send" button click karen</li>
+                        <li>Response analyze karen</li>
+                        <li>Multiple variations test karen</li>
+                    </ol>
+                </div>
+
+                <div class="step-card">
+                    <h3>Step 5: Site Map Ka Tajzia Karen</h3>
+                    <p>
+                        "Target" tab ka "Site map" khud-ba-khud tamam daryaft shuda content ka aik hierarchical view banayega, jis mein API endpoints bhi shamil hain, jo aapko application ke attack surface ka aik overview dega.
+                    </p>
+                    <ul>
+                        <li>Tree structure mein endpoints dekhen</li>
+                        <li>Color codes note karen (grey=out of scope, black=in scope)</li>
+                        <li>Status codes check karen</li>
+                        <li>Parameters list dekhen</li>
+                        <li>Right-click options explore karen</li>
+                    </ul>
+                </div>
+
+                <div class="step-card">
+                    <h3>Step 6: Document Karein</h3>
+                    <p>
+                        Apni findings ko systematically document karen:
+                    </p>
+                    <ul>
+                        <li>Discovered endpoints ki list</li>
+                        <li>Authentication mechanisms</li>
+                        <li>Request/Response formats</li>
+                        <li>Parameters aur unki types</li>
+                        <li>Interesting behaviors ya anomalies</li>
+                        <li>Potential vulnerabilities ke notes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tips-section">
+                <h2><span class="icon">💡</span>Pro Tips Aur Best Practices</h2>
+                <ul>
+                    <li>
+                        <strong>Scope Properly Set Karen</strong>
+                        <p>Target tab mein scope define karen taake sirf relevant traffic capture ho. Is se noise kam hoti hai aur focus behtar hota hai.</p>
+                    </li>
+
+                    <li>
+                        <strong>Match and Replace Rules</strong>
+                        <p>Proxy options mein automatic modifications set kar sakte hain, jaise har request mein specific header add karna.</p>
+                    </li>
+
+                    <li>
+                        <strong>Save Project State</strong>
+                        <p>Burp Suite Pro mein apna kaam save kar sakte hain. Community edition mein temporary project hota hai.</p>
+                    </li>
+
+                    <li>
+                        <strong>Extensions Install Karen</strong>
+                        <p>BApp Store se useful extensions install karen: <code>JWT Editor</code>, <code>Autorize</code>, <code>Logger++</code>, <code>JSON Web Tokens</code></p>
+                    </li>
+
+                    <li>
+                        <strong>Filters Istemal Karen</strong>
+                        <p>HTTP history mein filters laga kar specific requests dhoondhein - by status code, file extension, parameters, etc.</p>
+                    </li>
+
+                    <li>
+                        <strong>Compare Tool Use Karen</strong>
+                        <p>Do requests ya responses ko compare karne ke liye Comparer tool istemal karen - differences identify karne mein helpful.</p>
+                    </li>
+
+                    <li>
+                        <strong>Keyboard Shortcuts Seekhen</strong>
+                        <p><code>Ctrl+R</code> = Repeater, <code>Ctrl+I</code> = Intruder, <code>Ctrl+Shift+B</code> = Base64 encode, etc.</p>
+                    </li>
+
+                    <li>
+                        <strong>WebSocket Traffic Monitor Karen</strong>
+                        <p>Agar application WebSockets use karti hai to unka separate history bhi check karen.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">🔍</span>Practical Example - API Analysis</h2>
+                <p>
+                    Maan lo aap ek e-commerce API analyze kar rahe hain:
+                </p>
+
+                <div class="example-box">
+                    <h4>🛒 Scenario: User Authentication API</h4>
+                    <p><strong>Step 1:</strong> Login form submit karte waqt yeh request capture hoti hai:</p>
+                    <code>POST /api/v1/auth/login HTTP/1.1</code>
+                    <code>Host: example.com</code>
+                    <code>Content-Type: application/json</code>
+                    <code>{"email":"user@test.com","password":"pass123"}</code>
+                    
+                    <p style="margin-top: 10px;"><strong>Step 2:</strong> Response dekhen:</p>
+                    <code>HTTP/1.1 200 OK</code>
+                    <code>{"token":"eyJhbGc...","user_id":123,"role":"customer"}</code>
+                    
+                    <p style="margin-top: 10px;"><strong>Step 3:</strong> Is token ko Repeater mein test karen:</p>
+                    <p>- Token expiry check karen</p>
+                    <p>- Different user IDs try karen</p>
+                    <p>- Role parameter modify karen</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>ℹ️ Burp Suite Versions</h4>
+                <ul>
+                    <li><strong>Community Edition (Free):</strong> Basic features, manual testing ke liye kaafi hai</li>
+                    <li><strong>Professional Edition:</strong> Advanced scanning, save projects, faster Intruder</li>
+                    <li><strong>Enterprise Edition:</strong> Automated scanning, CI/CD integration</li>
+                </ul>
+                <p style="margin-top: 10px;">Information gathering ke liye Community Edition sufficient hai, lekin Pro version mein zyada features hain.</p>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    <strong>Burp Suite ka istemal</strong> is taqatwar tool ko istemal karne ke bare mein hai taake yeh mukammal tor par samjha ja sake ke API kaise kaam karta hai - iski communication ko intercept, observe aur analyze kar ke. Yeh gehri samajh API hacking ke baad ke marhalon mein vulnerabilities ko pehchanne aur exploit karne ki bunyad hai.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Burp Suite API security testing ka backbone hai. Yeh aik comprehensive platform hai jo aapko har aspect of HTTP/S communication ko control karne ki power deta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Information gathering phase mein, Burp Suite aapko API ki complete picture banane mein madad karta hai - endpoints se lekar authentication tak, parameters se lekar response formats tak. Is tool mein maharat hasil karna har API security tester ke liye zaroori hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Practice karein, explore karein, aur is powerful tool ki capabilities ko fully utilize karein. Jitna zyada aap ise use karenge, utna hi confident aap API testing mein banenge.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

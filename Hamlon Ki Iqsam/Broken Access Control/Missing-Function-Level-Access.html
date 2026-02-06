@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Function Level Access - Broken Access Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #00d2ff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #00d2ff;
+        }
+
+        .intro-section h2 {
+            color: #0984e3;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .intro-section strong {
+            color: #0984e3;
+        }
+
+        .concept-box {
+            background: white;
+            border: 2px solid #00d2ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .concept-box h4 {
+            color: #00d2ff;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .concept-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .concept-box ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .concept-box ul li {
+            margin: 6px 0;
+        }
+
+        .concept-box code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #00d2ff;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .section strong {
+            color: #00b894;
+        }
+
+        .definition-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .definition-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .def-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .def-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .def-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .def-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .def-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .def-card ul li {
+            margin: 8px 0;
+        }
+
+        .scenarios-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .scenarios-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .scenario-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .scenario-card h3 {
+            color: #e17055;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .scenario-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .scenario-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .scenario-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #e17055;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #e17055;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .impact-section {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #d63031;
+        }
+
+        .impact-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .impact-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #d63031;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .impact-card strong {
+            color: #d63031;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .impact-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .impact-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .impact-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .defense-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #00d2ff;
+        }
+
+        .conclusion h3 {
+            color: #0984e3;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .definition-section, .scenarios-section, .impact-section, .defense-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Missing Function Level Access</h1>
+            <p>Functions Tak Pohanchnay Mein Nuqs - Authorization Ki Kami</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Hamlon Ki Iqsam</a> /
+            <a href="index.html">Broken Access Control</a> /
+            <span>Missing Function Level Access</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Missing Function Level Access Kya Hai?</h2>
+                <p>
+                    <strong>"Missing Function Level Access"</strong> ka matlab hai "functions tak pohanchnay mein nuqs". Yeh "Broken Access Control" category mein aata hai, jo API hacking roadmap ka aik hissa hai.
+                </p>
+                <p>
+                    <strong>Seedhay alfaaz mein:</strong> Iska matlab yeh hai ke aik API ya application sahih tareeqay se yeh check nahi karta ke kisi user ke paas kisi khaas function ya resource tak pohanchnay ke liye zaroori permissions hain ya nahi.
+                </p>
+
+                <div class="concept-box">
+                    <h4>🎭 Simple Misaal Se Samjhiye</h4>
+                    <p>
+                        Imagine karein aik company office building jahan mukhtalif departments hain aur har department ka apna secure area hai:
+                    </p>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>HR Department:</strong> Sirf HR staff enter kar sakta hai - employee records, salaries</li>
+                        <li><strong>Finance Department:</strong> Sirf finance team - company bank accounts, budgets</li>
+                        <li><strong>IT Department:</strong> Sirf IT admins - server room, system configurations</li>
+                    </ul>
+                    <p style="margin-top: 10px;">
+                        <strong>Proper Security:</strong> Har door par security guard hai jo aapki ID card check karta hai aur verify karta hai ke aap us department mein jaane ke authorized hain ya nahi.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        <strong>Missing Function Level Access:</strong> Doors par locks hain lekin koi guard nahi! Agar aapko door ka code pata chal jaye ya key mil jaye, to aap kisi bhi department mein ja sakte hain - chahe aapko authorization ho ya na ho. System check hi nahi kar raha ke aap authorized hain ya nahi!
+                    </p>
+                </div>
+
+                <p style="margin-top: 15px;">
+                    Web applications mein yeh tab hota hai jab mukhtalif users ke mukhtalif roles (maslan, administrator, editor, viewer) hain. Agar application kisi user ki role ko sahih tareeqay se verify nahi karta usay koi action perform karnay se pehlay, toh kam privileges wala user un functions tak pohanch sakta hai jo sirf ziyada privileges walay users ke liye hain.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">❓</span>Yeh Kaise Hota Hai?</h2>
+                <p>
+                    Aksar aisa tab hota hai jab developers access control checks sirf <strong>user interface (UI) level</strong> par lagate hain, lekin <strong>API endpoint level</strong> par nahi.
+                </p>
+                <p>
+                    Aik attacker UI ki restrictions ko bypass kar sakta hai aur seedhay API endpoints par requests bhej sakta hai jo sensitive actions perform kartay hain.
+                </p>
+
+                <div class="danger-box">
+                    <h4>🚨 Security Through Obscurity - Galat Approach!</h4>
+                    <p>
+                        Bohat se developers sochte hain: "Agar hum admin buttons ko UI mein hide kar dein, to users unhe access nahi kar sakte." Yeh <strong>bohot bari galti</strong> hai!
+                    </p>
+                    <ul>
+                        <li>UI hiding sirf ek illusion hai - real security nahi</li>
+                        <li>Browser DevTools se hidden elements dekhe ja sakte hain</li>
+                        <li>API endpoints direct call kiye ja sakte hain</li>
+                        <li>Burp Suite, Postman jaise tools se requests manually bheje ja sakte hain</li>
+                    </ul>
+                </div>
+
+                <h3>Attack Ka Process:</h3>
+                <ul>
+                    <li><strong>Discovery:</strong> Attacker API endpoints discover karta hai (documentation, network traffic, URL patterns)</li>
+                    <li><strong>Testing:</strong> Different endpoints ko test karta hai with regular user credentials</li>
+                    <li><strong>Exploitation:</strong> Admin/privileged endpoints ko access kar leta hai without proper authorization</li>
+                    <li><strong>Abuse:</strong> Sensitive functions ko unauthorized execute karta hai</li>
+                </ul>
+            </div>
+
+            <div class="scenarios-section">
+                <h2><span class="icon">📝</span>Detailed Misaal - E-commerce Website</h2>
+                <p>
+                    Farz karein aik e-commerce website par aik API endpoint hai:
+                </p>
+
+                <div class="scenario-card">
+                    <h3>Endpoint: /api/admin/deleteProduct</h3>
+                    <p>
+                        Yeh endpoint sirf administrators ke liye accessible hona chahiye taake wo products ko delete kar saken.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>✅ Sahi Implementation (Secure):</h4>
+                        <code>POST /api/admin/deleteProduct</code>
+                        <code>Authorization: Bearer user_token</code>
+                        <code>{ "product_id": "123" }</code>
+                        <code></code>
+                        <p><strong>Backend Process:</strong></p>
+                        <code>1. Token se user identity verify karo (Authentication)</code>
+                        <code>2. User ki role check karo (Authorization)</code>
+                        <code>3. Agar role === "admin", to proceed</code>
+                        <code>4. Agar role !== "admin", to 403 Forbidden return karo</code>
+                        <code>5. Product delete karo (if authorized)</code>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>❌ Missing Function Level Access Vulnerability:</h4>
+                        <code>POST /api/admin/deleteProduct</code>
+                        <code>Authorization: Bearer regular_user_token</code>
+                        <code>{ "product_id": "123" }</code>
+                        <code></code>
+                        <p><strong>Vulnerable Backend:</strong></p>
+                        <code>1. Token se user identity verify karo (Authentication) ✅</code>
+                        <code>2. User ki role check karo? ❌ MISSING!</code>
+                        <code>3. Directly product delete kar do!</code>
+                        <code></code>
+                        <p style="color: #d63031; font-weight: bold;">Regular user successfully product delete kar sakta hai!</p>
+                    </div>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>UI vs API - Security Gap</h3>
+                    <p>
+                        Yeh vulnerability is liye hota hai kyunki:
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Frontend (UI Level):</h4>
+                        <code>// React/Vue/Angular code</code>
+                        <code>if (user.role === 'admin') {</code>
+                        <code>  &lt;button onClick={deleteProduct}&gt;Delete Product&lt;/button&gt;</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px;">UI mein "Delete Product" button sirf admin ko dikhta hai - regular users ko nahi.</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>💡 Backend (API Level) - VULNERABLE:</h4>
+                        <code>// Express.js example</code>
+                        <code>app.post('/api/admin/deleteProduct', (req, res) => {</code>
+                        <code>  // ❌ No role check here!</code>
+                        <code>  const productId = req.body.product_id;</code>
+                        <code>  db.deleteProduct(productId);</code>
+                        <code>  res.json({success: true});</code>
+                        <code>});</code>
+                        <p style="margin-top: 10px; color: #d63031;">Backend par koi role verification nahi! Koi bhi authenticated user is endpoint ko call kar sakta hai!</p>
+                    </div>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>Attacker Kaise Exploit Karta Hai</h3>
+
+                    <div class="example-box">
+                        <h4>💡 Attack Steps:</h4>
+                        <p><strong>Step 1: Regular user login karta hai</strong></p>
+                        <code>Username: hacker@example.com</code>
+                        <code>Role: regular_user</code>
+                        <code></code>
+                        <p><strong>Step 2: Browser DevTools open karta hai</strong></p>
+                        <code>Network tab mein admin users ki activities monitor karta hai</code>
+                        <code>Ya documentation se admin endpoints discover karta hai</code>
+                        <code></code>
+                        <p><strong>Step 3: Burp Suite ya Postman use karta hai</strong></p>
+                        <code>POST /api/admin/deleteProduct</code>
+                        <code>Authorization: Bearer &lt;regular_user_token&gt;</code>
+                        <code>{ "product_id": "999" }</code>
+                        <code></code>
+                        <p><strong>Step 4: Success! Product deleted!</strong></p>
+                        <code>Response: { "success": true, "message": "Product deleted" }</code>
+                    </div>
+
+                    <p style="margin-top: 15px;">
+                        Attacker ne successfully admin function execute kar diya, halaanke wo sirf regular user hai!
+                    </p>
+                </div>
+            </div>
+
+            <div class="definition-section">
+                <h2><span class="icon">🔍</span>Common Vulnerable Endpoints</h2>
+                <p>
+                    Yeh kuch aam endpoints hain jo aksar Missing Function Level Access se vulnerable hote hain:
+                </p>
+
+                <div class="def-card">
+                    <h3>1. Admin Functions</h3>
+                    <ul>
+                        <li><code>/api/admin/users</code> - All users list</li>
+                        <li><code>/api/admin/deleteUser</code> - User deletion</li>
+                        <li><code>/api/admin/changeRole</code> - Role modification</li>
+                        <li><code>/api/admin/settings</code> - System settings</li>
+                        <li><code>/api/admin/logs</code> - System logs access</li>
+                        <li><code>/api/admin/backup</code> - Database backup</li>
+                    </ul>
+                </div>
+
+                <div class="def-card">
+                    <h3>2. Management Functions</h3>
+                    <ul>
+                        <li><code>/api/reports/financial</code> - Financial reports</li>
+                        <li><code>/api/analytics/advanced</code> - Advanced analytics</li>
+                        <li><code>/api/export/alldata</code> - Bulk data export</li>
+                        <li><code>/api/bulk/operations</code> - Bulk updates/deletes</li>
+                        <li><code>/api/configuration/update</code> - Config changes</li>
+                    </ul>
+                </div>
+
+                <div class="def-card">
+                    <h3>3. Privileged Operations</h3>
+                    <ul>
+                        <li><code>/api/payments/refund</code> - Payment refunds</li>
+                        <li><code>/api/orders/cancel-any</code> - Cancel any order</li>
+                        <li><code>/api/content/publish</code> - Publish content</li>
+                        <li><code>/api/moderate/approve</code> - Approve submissions</li>
+                        <li><code>/api/promotions/create</code> - Create discounts</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="impact-section">
+                <h2><span class="icon">💥</span>Asraat (Impact)</h2>
+                <p>
+                    Is vulnerability ke asraat bohat shadeed ho saktay hain:
+                </p>
+
+                <div class="impact-card">
+                    <strong>1. Ghair-Mutawwaqa Data Tak Rasai</strong>
+                    <p>
+                        Users aisa sensitive data dekh saktay hain jo unhein nahi dekhna chahiye:
+                    </p>
+                    <ul>
+                        <li>All users ki personal information access</li>
+                        <li>Financial records aur transaction history</li>
+                        <li>Business intelligence aur analytics</li>
+                        <li>System logs aur audit trails</li>
+                        <li>API keys aur credentials</li>
+                        <li>Database schemas aur configurations</li>
+                        <li>Source code aur proprietary information</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>2. Ghair-Mutawwaqa Data Mein Tabdeeli Ya Hatana</strong>
+                    <p>
+                        Users us data ko tabdeel ya delete kar saktay hain jis ki unhein permission nahi hai:
+                    </p>
+                    <ul>
+                        <li>Critical products ya content delete karna</li>
+                        <li>User accounts modify ya delete karna</li>
+                        <li>System settings change karna</li>
+                        <li>Prices aur inventory manipulate karna</li>
+                        <li>Financial records alter karna</li>
+                        <li>Audit logs ko clear karna</li>
+                        <li>Security configurations disable karna</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>3. Privilege Escalation</strong>
+                    <p>
+                        Aik kam privileges wala user administrative functions tak rasai hasil kar sakta hai, jis se poora system compromise ho sakta hai:
+                    </p>
+                    <ul>
+                        <li>Regular user → Admin privileges</li>
+                        <li>Guest → Registered user privileges</li>
+                        <li>User → Moderator capabilities</li>
+                        <li>Moderator → Super admin access</li>
+                        <li>Complete system takeover possible</li>
+                        <li>Backdoor accounts create karna</li>
+                        <li>Other admins ko demote ya delete karna</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>4. Business Logic Bypass</strong>
+                    <p>
+                        Users aisay actions perform kar saktay hain jo business ke maqasid ke khilaaf hain:
+                    </p>
+                    <ul>
+                        <li>Payment bypass - free orders place karna</li>
+                        <li>Approval workflows skip karna</li>
+                        <li>Verification steps bypass karna</li>
+                        <li>Rate limiting ignore karna</li>
+                        <li>Subscription restrictions bypass</li>
+                        <li>Quota limits cross karna</li>
+                        <li>Trial periods extend karna</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>5. Financial Loss</strong>
+                    <p>
+                        Direct financial impact on business:
+                    </p>
+                    <ul>
+                        <li>Unauthorized refunds issue karna</li>
+                        <li>Discount codes create karna</li>
+                        <li>Free premium features access</li>
+                        <li>Inventory theft through manipulation</li>
+                        <li>Revenue loss through price changes</li>
+                        <li>Fraudulent transactions</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>6. Compliance & Legal Issues</strong>
+                    <p>
+                        Regulatory violations aur legal consequences:
+                    </p>
+                    <ul>
+                        <li>Data protection law violations (GDPR, CCPA)</li>
+                        <li>Industry compliance failures (PCI-DSS, HIPAA)</li>
+                        <li>Audit failures</li>
+                        <li>Customer lawsuits</li>
+                        <li>Regulatory fines aur penalties</li>
+                        <li>License revocation</li>
+                        <li>Reputation damage</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Real-World Examples</h4>
+                <p>
+                    Major companies mein Missing Function Level Access ki wajah se hui incidents:
+                </p>
+                <ul>
+                    <li><strong>Facebook Graph API:</strong> Regular users admin functions access kar sakte the</li>
+                    <li><strong>Tesla:</strong> API vulnerability se kisi bhi car ko unlock/start kiya ja sakta tha</li>
+                    <li><strong>Uber:</strong> Drivers admin endpoints access kar ke rider data dekhte the</li>
+                    <li><strong>Instagram:</strong> Regular users moderator functions access kar sakte the</li>
+                    <li><strong>PayPal:</strong> Account limitations bypass through missing authorization</li>
+                    <li><strong>GitHub:</strong> Private repositories access without proper permissions</li>
+                </ul>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>Bachao - Defenses Aur Mitigations</h2>
+                <p>
+                    "Missing Function Level Access" se bachnay ke liye, developers ko har API endpoint par mazboot access control checks laganay chahiye:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Authentication Aur Authorization Checks Lagana</strong>
+                    <p>
+                        Yaqeeni banayein ke har API request authenticated ho aur phir user ke role aur permissions ki bunyad par authorized ho.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Proper Implementation:</h4>
+                        <code>// Express.js with middleware</code>
+                        <code>const requireAuth = (req, res, next) => {</code>
+                        <code>  if (!req.session.userId) {</code>
+                        <code>    return res.status(401).json({error: 'Not authenticated'});</code>
+                        <code>  }</code>
+                        <code>  next();</code>
+                        <code>};</code>
+                        <code></code>
+                        <code>const requireAdmin = (req, res, next) => {</code>
+                        <code>  if (req.user.role !== 'admin') {</code>
+                        <code>    return res.status(403).json({error: 'Forbidden'});</code>
+                        <code>  }</code>
+                        <code>  next();</code>
+                        <code>};</code>
+                        <code></code>
+                        <code>// Secure endpoint</code>
+                        <code>app.post('/api/admin/deleteProduct', </code>
+                        <code>  requireAuth, requireAdmin, (req, res) => {</code>
+                        <code>  // Now safe to proceed</code>
+                        <code>  const productId = req.body.product_id;</code>
+                        <code>  db.deleteProduct(productId);</code>
+                        <code>  res.json({success: true});</code>
+                        <code>});</code>
+                    </div>
+
+                    <ul>
+                        <li>Har endpoint par authentication verify karen</li>
+                        <li>Role-based checks implement karen</li>
+                        <li>Permission-based access control use karen</li>
+                        <li>Middleware patterns follow karen consistency ke liye</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Least Privilege Principle</strong>
+                    <p>
+                        Users ko sirf un functions aur data tak rasai milni chahiye jo unki role ke liye bilkul zaroori hain.
+                    </p>
+
+                    <ul>
+                        <li>Default deny policy - explicitly allow karna zaroori</li>
+                        <li>Minimum necessary permissions hi assign karen</li>
+                        <li>Temporary elevated access for specific tasks</li>
+                        <li>Regular permission audits conduct karen</li>
+                        <li>Unused privileges revoke karen</li>
+                        <li>Time-bound permissions implement karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Role-Based Access Control (RBAC)</strong>
+                    <p>
+                        Wazeh roles define karein aur har role ko khaas permissions assign karein, phir inhein API level par enforce karein.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 RBAC Implementation:</h4>
+                        <code>const permissions = {</code>
+                        <code>  guest: ['read:public'],</code>
+                        <code>  user: ['read:public', 'read:own', 'write:own'],</code>
+                        <code>  moderator: ['read:all', 'write:own', 'moderate:content'],</code>
+                        <code>  admin: ['read:all', 'write:all', 'delete:all', 'manage:users']</code>
+                        <code>};</code>
+                        <code></code>
+                        <code>function hasPermission(userRole, requiredPermission) {</code>
+                        <code>  return permissions[userRole].includes(requiredPermission);</code>
+                        <code>}</code>
+                    </div>
+
+                    <ul>
+                        <li>Clear role hierarchy define karen</li>
+                        <li>Granular permissions assign karen</li>
+                        <li>Permission matrix maintain karen</li>
+                        <li>Role inheritance properly manage karen</li>
+                        <li>Dynamic role assignment with audit logging</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. API Gateway</strong>
+                    <p>
+                        Aik API Gateway access control policies ko markazi bananay aur enforce karnay mein madad kar sakta hai.
+                    </p>
+
+                    <ul>
+                        <li>Centralized authentication aur authorization</li>
+                        <li>Rate limiting aur throttling</li>
+                        <li>Request validation aur sanitization</li>
+                        <li>Logging aur monitoring centralization</li>
+                        <li>Policy enforcement consistency</li>
+                        <li>API versioning aur deprecation management</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Defense in Depth</strong>
+                    <p>
+                        Multiple layers of security implement karen:
+                    </p>
+
+                    <ul>
+                        <li><strong>Layer 1:</strong> Network level - IP filtering, firewalls</li>
+                        <li><strong>Layer 2:</strong> API Gateway - rate limiting, validation</li>
+                        <li><strong>Layer 3:</strong> Application level - authentication</li>
+                        <li><strong>Layer 4:</strong> Endpoint level - authorization checks</li>
+                        <li><strong>Layer 5:</strong> Data level - field-level permissions</li>
+                        <li><strong>Layer 6:</strong> Monitoring - anomaly detection</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. Secure API Design Patterns</strong>
+                    <p>
+                        API endpoints ko secure design principles ke sath banayein:
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Secure URL Patterns:</h4>
+                        <code>// ❌ BAD - Role in URL (predictable)</code>
+                        <code>/api/admin/deleteProduct</code>
+                        <code>/api/user/viewProfile</code>
+                        <code></code>
+                        <code>// ✅ GOOD - Action-based with authorization</code>
+                        <code>/api/products/delete  (with role check in backend)</code>
+                        <code>/api/profile  (user determined from session)</code>
+                    </div>
+
+                    <ul>
+                        <li>RESTful best practices follow karen</li>
+                        <li>Predictable patterns avoid karen</li>
+                        <li>Versioning for security updates</li>
+                        <li>Comprehensive documentation with security notes</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Comprehensive Logging Aur Monitoring</strong>
+                    <p>
+                        Har authorization attempt ko log karen:
+                    </p>
+
+                    <ul>
+                        <li>Successful aur failed authorization attempts log karen</li>
+                        <li>Unusual access patterns detect karen</li>
+                        <li>Privilege escalation attempts alert karen</li>
+                        <li>Real-time monitoring dashboards</li>
+                        <li>Automated alerting systems</li>
+                        <li>SIEM integration</li>
+                        <li>Regular audit log reviews</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Regular Security Testing</strong>
+                    <p>
+                        Continuous security assessment conduct karen:
+                    </p>
+
+                    <ul>
+                        <li>Penetration testing specifically for authorization issues</li>
+                        <li>Automated security scanning tools</li>
+                        <li>Code reviews focusing on access control</li>
+                        <li>Bug bounty programs for external testing</li>
+                        <li>CI/CD pipeline mein security tests</li>
+                        <li>Red team exercises</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>9. Developer Training Aur Awareness</strong>
+                    <p>
+                        Development team ko security best practices ki training dein:
+                    </p>
+
+                    <ul>
+                        <li>OWASP Top 10 awareness sessions</li>
+                        <li>Secure coding workshops</li>
+                        <li>Real-world breach case studies</li>
+                        <li>Security champions program</li>
+                        <li>Regular security newsletters</li>
+                        <li>Code review guidelines with security focus</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>10. Framework Security Features Use Karen</strong>
+                    <p>
+                        Modern frameworks ki built-in security features leverage karen:
+                    </p>
+
+                    <ul>
+                        <li><strong>Spring Security:</strong> Method-level security annotations</li>
+                        <li><strong>Django:</strong> Permission decorators aur mixins</li>
+                        <li><strong>Laravel:</strong> Gates aur policies</li>
+                        <li><strong>Express.js:</strong> Passport.js aur authorization middleware</li>
+                        <li><strong>ASP.NET:</strong> Role-based authorization attributes</li>
+                        <li><strong>Ruby on Rails:</strong> CanCanCan authorization library</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Common Mistakes To Avoid</h4>
+                <ul>
+                    <li><strong>UI-only security:</strong> Sirf frontend par buttons hide karna - backend vulnerable hai</li>
+                    <li><strong>Security through obscurity:</strong> Endpoints ko secret rakhna - always discovered</li>
+                    <li><strong>Inconsistent checks:</strong> Some endpoints secure, others not</li>
+                    <li><strong>Hard-coded roles:</strong> Code mein roles hard-code karna instead of database</li>
+                    <li><strong>Client-side validation only:</strong> Server par koi checks nahi</li>
+                    <li><strong>Token without validation:</strong> Token accept karna without proper verification</li>
+                    <li><strong>Missing edge cases:</strong> Special scenarios mein authorization skip ho jaata hai</li>
+                </ul>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Golden Rule</h4>
+                <p>
+                    <strong>"Never trust the client. Always verify authorization on the server for EVERY sensitive operation."</strong>
+                </p>
+                <p style="margin-top: 10px;">
+                    UI restrictions sirf user experience ke liye hain - security ke liye nahi. Real security hamesha server-side implement karni chahiye, har request ke liye, har endpoint par.
+                </p>
+                <p style="margin-top: 10px;">
+                    Authentication (user kaun hai) + Authorization (user ko kya karne ki permission hai) = Complete Security
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa (Conclusion)</h3>
+                <p>
+                    <strong>Missing Function Level Access</strong> ek critical vulnerability hai jo tab hoti hai jab applications proper authorization checks implement nahi karti hain har function/endpoint par.
+                </p>
+                <p style="margin-top: 15px;">
+                    Yeh vulnerability aksar is liye hoti hai kyunki developers sirf UI level par access control lagaate hain aur backend API endpoints ko improperly secure karte hain. Attackers UI restrictions ko asaani se bypass kar ke sensitive functions ko directly access kar sakte hain.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Prevention strategies:</strong> Har endpoint par comprehensive authentication + authorization checks, Role-Based Access Control (RBAC), Least Privilege Principle, API Gateway for centralized security, aur multi-layer defense approach implement karen.
+                </p>
+                <p style="margin-top: 15px;">
+                    Yaad rakhein: Security through obscurity kaam nahi karta. Real security server-side enforcement se aati hai. Har sensitive function, har API endpoint ko properly secure karen with mandatory authorization checks!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

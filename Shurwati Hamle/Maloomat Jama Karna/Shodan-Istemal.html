@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shodan Istemal Karna - Maloomat Jama Karna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .intro-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .intro-section code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .section h2 {
+            color: #4facfe;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #667eea;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .comparison-box {
+            background: white;
+            border: 2px solid #4facfe;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-box h4 {
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+
+        .comparison-box p {
+            color: #2d3436;
+            margin: 8px 0;
+        }
+
+        .usecases-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #fd79a8;
+        }
+
+        .usecases-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .usecase-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #fd79a8;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .usecase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .usecase-card h3 {
+            color: #fd79a8;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .usecase-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .usecase-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #fd79a8;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #fd79a8;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .queries-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .queries-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .query-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .query-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .query-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .query-example {
+            background: #e9ecef;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 3px solid #00b894;
+        }
+
+        .query-example code {
+            color: #495057;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 3px 0;
+        }
+
+        .filters-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .filters-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .filter-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-item strong {
+            color: #e17055;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .filter-item p {
+            color: #2d3436;
+            font-size: 0.95em;
+        }
+
+        .filter-item code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin-top: 8px;
+        }
+
+        .practical-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .practical-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .step-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-card h3 {
+            color: #6c5ce7;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .step-card ol {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .step-card ol li {
+            margin: 10px 0;
+        }
+
+        .step-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .tips-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .tips-section h2 {
+            color: #4facfe;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .tips-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-section li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tips-section strong {
+            color: #4facfe;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .tips-section code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #fd79a8;
+        }
+
+        .conclusion h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .usecases-section, .queries-section, .filters-section, .practical-section, .tips-section {
+                padding: 20px;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Shodan Istemal Karna</h1>
+            <p>Internet-Connected Devices Ka Taqatwar Search Engine</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Maloomat Jama Karna</a> /
+            <span>Shodan Istemal Karna</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Shodan Kya Hai?</h2>
+                <p>
+                    <strong>Shodan</strong> internet se juday hue devices ke liye aik khaas search engine hai. Google ke bar-aks, jo web pages talaash karta hai, Shodan servers, routers, webcams, industrial control systems, aur deegar network devices ko talaash karta hai.
+                </p>
+                <p>
+                    Yeh internet se connected mukhtalif services aur devices ke baray mein data jama karta hai, unke open ports, banners, software versions, aur mumkina kamzoriyon ke baray mein maloomat faraham karta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>"Shodan Istemal Karna"</strong> "API Hacking" roadmap mein "Maloomat Jama Karna" (Information Gathering) ke under aik sub-topic hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Website:</strong> <code>https://www.shodan.io</code>
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">🔍</span>Shodan Vs Google - Farq Kya Hai?</h2>
+                
+                <div class="comparison-box">
+                    <h4>🌐 Google:</h4>
+                    <p>✓ Web pages aur content ko index karta hai</p>
+                    <p>✓ Websites ki visible content talaash karta hai</p>
+                    <p>✓ Text, images, aur documents search karta hai</p>
+                </div>
+
+                <div class="comparison-box">
+                    <h4>🔌 Shodan:</h4>
+                    <p>✓ Network devices aur services ko scan karta hai</p>
+                    <p>✓ Open ports aur running services detect karta hai</p>
+                    <p>✓ Server banners, software versions collect karta hai</p>
+                    <p>✓ IoT devices, cameras, routers, industrial systems dhoondhta hai</p>
+                </div>
+            </div>
+
+            <div class="usecases-section">
+                <h2><span class="icon">⚡</span>API Hacking Ke Liye Kaise Faidamand Hai?</h2>
+                <p>
+                    API hacking ke tanazur mein, Shodan ka istemal maloomat jama karne ke liye buhat faidamand ho sakta hai:
+                </p>
+
+                <div class="usecase-card">
+                    <h3>1. API Endpoints Talaash Karna</h3>
+                    <p>
+                        Attackers Shodan ka istemal karke publicly exposed API endpoints ya servers talaash kar sakte hain jo API services chala rahe hain. API se mutaliq khaas keywords (maslan, <code>"API"</code>, <code>"REST"</code>, <code>"GraphQL"</code>, <code>"Swagger"</code>) search karke, aise systems mil sakte hain jo publically available nahi hone chahiye thay ya jin mein qeemti maloomat mojood ho sakti hain.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Example Searches:</h4>
+                        <code>"API" port:8080</code>
+                        <code>"REST API" country:US</code>
+                        <code>product:"Swagger UI"</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>2. Technologies Ki Pehchan</h3>
+                    <p>
+                        Shodan server par chalne wali bunyadi technologies aur services ko zahir kar sakta hai. Is mein web servers (jaise Nginx, Apache), API frameworks, aur operating systems shamil hain. In technologies ko janna aik attacker ko apne hamlon ko munazam karne mein madad deta hai, kyunki mukhtalif technologies ki mukhtalif aam kamzoriyan hoti hain.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Example Searches:</h4>
+                        <code>product:"nginx" "api"</code>
+                        <code>http.title:"API" http.component:"express"</code>
+                        <code>"Node.js" port:3000</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>3. Kamzor Versions Maloom Karna</h3>
+                    <p>
+                        Shodan aksar software aur services ke version numbers dikhata hai. Attackers is maloomat ka istemal karke in khaas versions ke liye ma'loom kamzoriyon (CVEs) ko cross-reference kar sakte hain, jo mumkina taur par asaan exploitation ka sabab ban sakta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Example Searches:</h4>
+                        <code>apache 2.4.49</code>
+                        <code>product:"OpenSSL" version:"1.0.1"</code>
+                        <code>"nginx/1.18.0" vuln:CVE-2021-23017</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>4. Geolocation Maloomat</h3>
+                    <p>
+                        Shodan kabhi kabhi devices ki geographical location bhi faraham kar sakta hai, jo infrastructure ko samajhne ya kisi khaas ilaqay mein targets ki nishandahi karne ke liye mufeed ho sakti hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Example Searches:</h4>
+                        <code>api country:PK</code>
+                        <code>city:"Karachi" port:8080</code>
+                        <code>country:US state:CA "API"</code>
+                    </div>
+                </div>
+
+                <div class="usecase-card">
+                    <h3>5. Exposed Services Aur Misconfigurations</h3>
+                    <p>
+                        Attackers aisi khaas services ko talaash kar sakte hain jo aksar misconfigured hoti hain ya khuli reh jaati hain, jaise databases, development environments, ya administrative interfaces jin mein API keys ya sensitive data ho sakta hai.
+                    </p>
+                    <div class="example-box">
+                        <h4>💡 Example Searches:</h4>
+                        <code>mongodb port:27017</code>
+                        <code>"Redis" -authentication</code>
+                        <code>http.title:"phpMyAdmin"</code>
+                        <code>"Docker API" port:2375</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <h2><span class="icon">🔧</span>Shodan Ke Important Filters</h2>
+                <p>
+                    Shodan mein search ko refine karne ke liye kai powerful filters mojood hain:
+                </p>
+
+                <div class="filter-grid">
+                    <div class="filter-item">
+                        <strong>hostname:</strong>
+                        <p>Specific hostname search karta hai</p>
+                        <code>hostname:example.com</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>port:</strong>
+                        <p>Specific port number</p>
+                        <code>port:8080</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>country:</strong>
+                        <p>Mulk ke code se search</p>
+                        <code>country:US</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>city:</strong>
+                        <p>Sheher ke naam se</p>
+                        <code>city:"New York"</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>org:</strong>
+                        <p>Organization name</p>
+                        <code>org:"Google"</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>os:</strong>
+                        <p>Operating system</p>
+                        <code>os:"Windows"</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>product:</strong>
+                        <p>Software product name</p>
+                        <code>product:"Apache"</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>version:</strong>
+                        <p>Software version</p>
+                        <code>version:"2.4.1"</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>http.title:</strong>
+                        <p>Web page ka title</p>
+                        <code>http.title:"API"</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>http.component:</strong>
+                        <p>Web component/framework</p>
+                        <code>http.component:"bootstrap"</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>ssl:</strong>
+                        <p>SSL certificate data</p>
+                        <code>ssl:"example.com"</code>
+                    </div>
+
+                    <div class="filter-item">
+                        <strong>vuln:</strong>
+                        <p>CVE vulnerability ID</p>
+                        <code>vuln:CVE-2021-44228</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="queries-section">
+                <h2><span class="icon">🎯</span>API Hacking Ke Liye Practical Queries</h2>
+                <p>
+                    Yahan kuch ready-to-use Shodan queries hain jo API hacking mein useful hain:
+                </p>
+
+                <div class="query-card">
+                    <h3>API Management Interfaces</h3>
+                    <div class="query-example">
+                        <code>http.title:"API Management"</code>
+                        <code>http.title:"Kong" port:8001</code>
+                        <code>product:"API Gateway"</code>
+                        <code>http.title:"Apigee"</code>
+                    </div>
+                </div>
+
+                <div class="query-card">
+                    <h3>Swagger/OpenAPI Documentation</h3>
+                    <div class="query-example">
+                        <code>product:"Swagger UI"</code>
+                        <code>http.title:"Swagger UI"</code>
+                        <code>"openapi.json" 200</code>
+                        <code>http.html:"swagger-ui"</code>
+                    </div>
+                </div>
+
+                <div class="query-card">
+                    <h3>GraphQL Endpoints</h3>
+                    <div class="query-example">
+                        <code>http.html:"graphql" port:443</code>
+                        <code>http.title:"GraphQL Playground"</code>
+                        <code>"GraphiQL" 200</code>
+                    </div>
+                </div>
+
+                <div class="query-card">
+                    <h3>REST API Servers</h3>
+                    <div class="query-example">
+                        <code>http.title:"REST API" port:8080</code>
+                        <code>"Content-Type: application/json" "API"</code>
+                        <code>port:3000 http.html:"express"</code>
+                    </div>
+                </div>
+
+                <div class="query-card">
+                    <h3>Development/Staging Environments</h3>
+                    <div class="query-example">
+                        <code>hostname:dev.example.com</code>
+                        <code>hostname:staging.example.com</code>
+                        <code>http.title:"Development" "API"</code>
+                        <code>hostname:test port:8080</code>
+                    </div>
+                </div>
+
+                <div class="query-card">
+                    <h3>Exposed Databases</h3>
+                    <div class="query-example">
+                        <code>product:"MongoDB" port:27017 -authentication</code>
+                        <code>port:5432 "PostgreSQL"</code>
+                        <code>product:"MySQL" port:3306</code>
+                        <code>"Redis" port:6379</code>
+                    </div>
+                </div>
+
+                <div class="query-card">
+                    <h3>API Keys Ya Tokens</h3>
+                    <div class="query-example">
+                        <code>http.html:"api_key" 200</code>
+                        <code>http.html:"apikey" http.status:200</code>
+                        <code>"Authorization: Bearer"</code>
+                    </div>
+                </div>
+
+                <div class="query-card">
+                    <h3>Target-Specific Search</h3>
+                    <div class="query-example">
+                        <code>hostname:*.example.com</code>
+                        <code>org:"Company Name" port:8080</code>
+                        <code>ssl.cert.subject.cn:"api.example.com"</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="practical-section">
+                <h2><span class="icon">🛠️</span>Amal Mein Iska Istemal - Step by Step</h2>
+
+                <div class="step-card">
+                    <h3>Scenario: Target Company Ki API Infrastructure Discover Karna</h3>
+                    <ol>
+                        <li><strong>Account banayein:</strong> <code>shodan.io</code> par account create karein (free ya paid)</li>
+                        <li><strong>Basic search karein:</strong> Target domain ko search karein
+                            <code>hostname:example.com</code>
+                        </li>
+                        <li><strong>Subdomains dhoondhein:</strong> Wildcard search istemal karein
+                            <code>hostname:*.example.com</code>
+                        </li>
+                        <li><strong>API ports check karein:</strong> Common API ports search karein
+                            <code>hostname:example.com port:8080 OR port:3000 OR port:8000</code>
+                        </li>
+                        <li><strong>Technologies identify karein:</strong> Running services dekhen</li>
+                        <li><strong>Version numbers note karein:</strong> CVE vulnerabilities check karein</li>
+                        <li><strong>Open services dhoondhein:</strong> Misconfigured services talaash karein</li>
+                        <li><strong>Results document karein:</strong> Saari findings ko organize karein</li>
+                        <li><strong>Further investigation:</strong> Interesting results ko detail mein explore karein</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="tips-section">
+                <h2><span class="icon">💡</span>Advanced Tips Aur Best Practices</h2>
+                <ul>
+                    <li>
+                        <strong>Multiple Filters Combine Karein</strong>
+                        <p>Zyada specific results ke liye multiple filters use karein: <code>hostname:example.com port:8080 http.title:"API"</code></p>
+                    </li>
+
+                    <li>
+                        <strong>Shodan CLI Istemal Karein</strong>
+                        <p>Command line interface se automation possible hai aur scripting mein helpful hai.</p>
+                    </li>
+
+                    <li>
+                        <strong>API Access Use Karein</strong>
+                        <p>Shodan ka API aapko programmatically searches karne ki ijazat deta hai - automation ke liye best.</p>
+                    </li>
+
+                    <li>
+                        <strong>Regular Monitoring Setup Karein</strong>
+                        <p>Shodan Alerts create karein jo naye exposed services ko notify karen.</p>
+                    </li>
+
+                    <li>
+                        <strong>Historical Data Check Karein</strong>
+                        <p>Shodan historical scans bhi store karta hai - purani data valuable ho sakti hai.</p>
+                    </li>
+
+                    <li>
+                        <strong>Screenshots Dekhen</strong>
+                        <p>HTTP services ke liye Shodan screenshots bhi provide karta hai - visual confirmation ke liye useful.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    Shodan ka faida utha kar, hackers ibtadai reconnaissance data ki bharpoor miqdar jama kar sakte hain jo unhein target ke attack surface ko samajhne aur seedhay hamlay shuru karne se pehle mumkina kamzor points ki nishandahi karne mein madad karta hai.
+                </p>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Qanooni Aur Akhlaqi Tanbih</h4>
+                <p>
+                    <strong>Yaad rakhein:</strong> Shodan se information gather karna legal hai, lekin us information ka unauthorized access ya exploitation ke liye istemal karna illegal hai. Hamesha proper authorization ke saath hi kisi system ko test karein. Sirf bug bounty programs, penetration testing contracts, ya apne khud ke systems par testing karein.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">📚</span>Additional Resources</h2>
+                <p>
+                    Shodan ko behtar samajhne ke liye ye resources mufeed hain:
+                </p>
+                <ul style="margin-left: 20px; margin-top: 15px; color: #2d3436;">
+                    <li style="margin: 10px 0;"><strong>Shodan Search Filters:</strong> Official documentation par complete filters list</li>
+                    <li style="margin: 10px 0;"><strong>Shodan CLI:</strong> Command line tool installation aur usage guide</li>
+                    <li style="margin: 10px 0;"><strong>Shodan API:</strong> Python, Ruby, Node.js libraries ke saath integration</li>
+                    <li style="margin: 10px 0;"><strong>Shodan Monitor:</strong> Network monitoring aur alerting service</li>
+                    <li style="margin: 10px 0;"><strong>Exploit Database:</strong> CVE vulnerabilities cross-reference karne ke liye</li>
+                </ul>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Shodan API hacking ke reconnaissance phase mein ek bemisaal (unique) aur taqatwar tool hai. Yeh aapko internet par exposed APIs, services, aur infrastructure ko discover karne ki qudrat deta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Open ports, running services, software versions, aur misconfigured systems ko identify kar ke aap target ki complete picture bana sakte hain. Is maloomat se aap zyada targeted aur effective attacks plan kar sakte hain.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Hamesha yaad rakhein:</strong> Ethical boundaries ke andar rahte hue hi is powerful tool ka istemal karein. Unauthorized testing ghair-qanooni hai aur serious consequences ho sakte hain.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

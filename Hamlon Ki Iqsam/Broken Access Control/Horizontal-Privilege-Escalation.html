@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontal Privilege Escalation - Access Control Vulnerability</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .intro-section strong {
+            color: #d63031;
+        }
+
+        .concept-box {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .concept-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .concept-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .concept-box ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .concept-box ul li {
+            margin: 6px 0;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #f5576c;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .section strong {
+            color: #667eea;
+        }
+
+        .scenarios-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .scenarios-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .scenario-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .scenario-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .scenario-card h4 {
+            color: #f5576c;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .scenario-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .scenario-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .scenario-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #00b894;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #00b894;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .idor-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .idor-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .idor-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .idor-card h3 {
+            color: #e17055;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .idor-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .idor-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .idor-card ul li {
+            margin: 6px 0;
+        }
+
+        .idor-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .impact-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .impact-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .impact-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .impact-card strong {
+            color: #6c5ce7;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .impact-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .impact-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .impact-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .defense-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #f5576c;
+        }
+
+        .conclusion h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .scenarios-section, .idor-section, .impact-section, .defense-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚠️ Horizontal Privilege Escalation</h1>
+            <p>Same Level Users Ke Resources Tak Ghair-Ikhtiyar Rasai</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Authentication Bypass</a> /
+            <span>Horizontal Privilege Escalation</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Horizontal Privilege Escalation Kya Hai?</h2>
+                <p>
+                    <strong>"Horizontal Privilege Escalation"</strong> ek qisam ki access control vulnerability hai jahan ek user kisi doosre user ke resources ya data tak rasai haasil kar sakta hai, jabkay woh doosra user bhi usi level ke privileges rakhta ho.
+                </p>
+                <p>
+                    Yeh aisa hai jaise do user hain, <strong>User A</strong> aur <strong>User B</strong>, aur dono ke paas "normal user" ki permission hai. Horizontal privilege escalation ki surat mein, <strong>User A</strong>, <strong>User B</strong> ki niji maloomat (private information) tak pahunch sakta hai ya User B ki taraf se koi kaam kar sakta hai, halaank dono users ke account ka darja (level) ek jaisa hai.
+                </p>
+
+                <div class="concept-box">
+                    <h4>🎭 Simple Misaal</h4>
+                    <p>
+                        Sochiye ek company office building hai jahan tamam employees ke paas "Employee" level ki access card hai. Har employee apne personal cabin mein ja sakta hai. Lekin agar Employee A apni card se Employee B ki cabin mein enter kar sakta hai, to yeh <strong>Horizontal Privilege Escalation</strong> hai - kyunki dono ke paas same level ki permissions hain, lekin A ne B ki personal space tak ghair-ikhtiyar (unauthorized) rasai haasil kar li.
+                    </p>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Vertical Escalation:</strong> Normal user → Admin ban jaana</li>
+                        <li><strong>Horizontal Escalation:</strong> User A → User B ke resources tak rasai</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">📋</span>Iski Kya Matlab Hai?</h2>
+                
+                <h3>Same Privilege Level (Ek Jaisa Ikhityar Ka Darja)</h3>
+                <p>
+                    Yahan bunyadi baat yeh hai ke <strong>"horizontal"</strong> ka matlab hai ke aap administrator level tak nahi jaa rahe (woh "vertical privilege escalation" hoga). Balkay, aap <strong>"side-ways"</strong> (baghal mein) jaa rahe hain taa ke usi darje ke doosre user ke resources tak pahunch saken.
+                </p>
+
+                <h3>Unauthorized Access (Ghair Majaz Rasai)</h3>
+                <p>
+                    Hamlaawar (User A) un security measures ko bypass kar pata hai jo User A ke data ko User B ke data se alag rakhne ke liye banaye gaye hotay hain.
+                </p>
+
+                <div class="danger-box">
+                    <h4>🚨 Critical Point</h4>
+                    <p>
+                        Horizontal privilege escalation mein attacker ka objective yeh nahi hota ke woh admin ban jaye. Uska maqsad sirf doosre normal users ke data tak pahunchna hota hai. Yeh utna hi khatarnak hai kyunki:
+                    </p>
+                    <ul>
+                        <li>Bulk data breach possible hai (thousands of users ka data)</li>
+                        <li>Detection mushkil hai (normal user activity lagti hai)</li>
+                        <li>Impact bohot zyada ho sakta hai (PII, financial data, etc.)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="scenarios-section">
+                <h2><span class="icon">🔓</span>Yeh Kaise Hota Hai? Aam Scenarios</h2>
+                <p>
+                    Yeh aksar is wajah se hota hai ke application user input ko kaise handle karti hai aur resources ki ownership (malikana haq) ko sahi tareeqay se validate nahi karti. Yahan kuch aam tareeqay diye gaye hain:
+                </p>
+
+                <div class="scenario-card">
+                    <h3>1. Insecure Direct Object References (IDORs)</h3>
+                    <p>
+                        <strong>Yeh ek bohot aam wajah hai.</strong> Agar koi application URL ya request body mein kisi ID (jaise user ID, order ID, ya document ID) ka istemal data nikalne ya us mein tabdeeli karne ke liye karti hai, aur woh sahi tareeqay se yeh check nahi karti ke maujooda logged-in user ko us khaas ID tak rasai ki ijazat hai ya nahi, to hamlaawar sirf ID ko doosre user ki ID mein badal kar unke data tak rasai haasil kar sakta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 IDOR Example:</h4>
+                        <code>URL: https://example.com/profile?id=123</code>
+                        <p>User A (ID 123) logged in hai. Agar woh URL mein ID ko badal kar 456 kar deta hai:</p>
+                        <code>URL: https://example.com/profile?id=456</code>
+                        <p>Aur application yeh verify nahi karti ke User A ko profile 456 dekhne ki permission hai ya nahi, to User A ne successfully User B (ID 456) ki profile dekh li. Yeh Horizontal Privilege Escalation hai!</p>
+                    </div>
+
+                    <h4>IDOR Ke Aur Examples:</h4>
+                    <ul>
+                        <li><code>/api/orders/789</code> - Order ID change kar ke doosre user ki order details</li>
+                        <li><code>/api/documents/doc_456</code> - Document ID manipulate kar ke access</li>
+                        <li><code>/api/messages/msg_123</code> - Message IDs change kar ke private messages</li>
+                        <li><code>/api/invoices/inv_999</code> - Invoice details of other users</li>
+                        <li><code>/api/cart/user_456</code> - Shopping cart data of different user</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>2. Parameter Tampering</h3>
+                    <p>
+                        IDORs ki tarah, agar requests mein sensitive parameters (jaise <code>user_id</code>, <code>account_number</code>, <code>document_id</code>) ko hamlaawar baghair sahi server-side validation ke badal sakta hai, to woh doosre user ke data tak rasai haasil kar sakta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Parameter Tampering Example:</h4>
+                        <p>POST request body mein:</p>
+                        <code>POST /api/updateProfile</code>
+                        <code>Content-Type: application/json</code>
+                        <code>{</code>
+                        <code>  "user_id": "123",</code>
+                        <code>  "name": "New Name",</code>
+                        <code>  "email": "newemail@example.com"</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px;">Attacker <code>user_id</code> ko 456 kar deta hai aur doosre user ki profile update kar sakta hai!</p>
+                    </div>
+
+                    <ul>
+                        <li>Hidden form fields manipulate karna</li>
+                        <li>JSON payload mein IDs change karna</li>
+                        <li>Cookie values tamper karna</li>
+                        <li>Query parameters modify karna</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>3. Missing Function Level Access Control</h3>
+                    <p>
+                        Halaank yeh aksar vertical escalation ki taraf le jaata hai, lekin yeh horizontal mein bhi madad kar sakta hai agar, maslan, ek function jo sirf kisi khaas user ko apne data ke liye dastiyab hona chahiye, usay kisi doosre user ke data par kaam karne ke liye dhoka diya ja sake.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Function Level Access Example:</h4>
+                        <code>GET /api/user/123/transactions</code>
+                        <p>Agar function yeh check nahi karta ke request karne wala user hi ID 123 hai, to koi bhi user kisi bhi doosre user ki transactions dekh sakta hai by just changing the ID.</p>
+                    </div>
+
+                    <ul>
+                        <li>Delete functions baghair ownership check</li>
+                        <li>Export/download functions vulnerable</li>
+                        <li>Update operations improperly secured</li>
+                        <li>Search functions returning other users' data</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>4. Session Token Manipulation</h3>
+                    <p>
+                        Agar session tokens qabil-e-pishgoi (predictable) hain ya unhe hijack kiya ja sakta hai (maslan, XSS ke zariye), to hamlaawar usi privilege level ke doosre user ki naqal kar sakta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Session Manipulation Example:</h4>
+                        <p>Agar session tokens predictable pattern follow karte hain:</p>
+                        <code>Session Token: user_123_20240206</code>
+                        <p>Attacker easily guess kar sakta hai:</p>
+                        <code>Session Token: user_124_20240206</code>
+                        <code>Session Token: user_125_20240206</code>
+                    </div>
+
+                    <ul>
+                        <li>Weak session ID generation</li>
+                        <li>Sequential session tokens</li>
+                        <li>Session fixation attacks</li>
+                        <li>XSS se session theft</li>
+                    </ul>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>5. JWT Token Vulnerabilities</h3>
+                    <p>
+                        JWT tokens mein user ID ya role stored hota hai. Agar token properly signed nahi hai ya validation weak hai, to attacker token manipulate kar sakta hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 JWT Manipulation:</h4>
+                        <code>Original JWT payload:</code>
+                        <code>{ "user_id": 123, "role": "user" }</code>
+                        <p>Attacker decode karke user_id change kar deta hai:</p>
+                        <code>{ "user_id": 456, "role": "user" }</code>
+                        <p>Agar server signature verify nahi karta properly, to access mil jaati hai!</p>
+                    </div>
+
+                    <ul>
+                        <li>Algorithm confusion attacks (alg: none)</li>
+                        <li>Weak signing keys</li>
+                        <li>Missing signature verification</li>
+                        <li>JWT payload tampering</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="idor-section">
+                <h2><span class="icon">🔍</span>IDOR - Sabse Aam Attack Vector</h2>
+                <p>
+                    <strong>Insecure Direct Object References (IDORs)</strong> horizontal privilege escalation ka sabse zyada common attack vector hai. Isko tafseel se samajhna bohot zaroori hai.
+                </p>
+
+                <div class="idor-card">
+                    <h3>IDOR Kya Hai?</h3>
+                    <p>
+                        IDOR tab hota hai jab application user ko directly internal objects (database records, files, directories) ko reference karne ki permission deti hai baghair yeh check kiye ke user ko us object tak access ki authorization hai ya nahi.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Common IDOR Patterns:</h4>
+                        <code>1. Numeric IDs:</code>
+                        <code>   /api/user/profile/123</code>
+                        <code>   /download/invoice/456</code>
+                        <code></code>
+                        <code>2. UUID/GUID:</code>
+                        <code>   /api/document/a1b2c3d4-e5f6-7890</code>
+                        <code></code>
+                        <code>3. Filenames:</code>
+                        <code>   /files/user123_report.pdf</code>
+                        <code></code>
+                        <code>4. Email addresses:</code>
+                        <code>   /api/profile?email=user@example.com</code>
+                    </div>
+                </div>
+
+                <div class="idor-card">
+                    <h3>IDOR Testing Kaise Karen?</h3>
+                    <p>IDOR vulnerabilities dhoondhne ke liye yeh steps follow karen:</p>
+                    <ul>
+                        <li><strong>Step 1:</strong> Application mein do accounts banayein (User A aur User B)</li>
+                        <li><strong>Step 2:</strong> User A se login kar ke sensitive operations perform karen (profile view, documents access, etc.)</li>
+                        <li><strong>Step 3:</strong> Burp Suite ya similar tool se requests capture karen</li>
+                        <li><strong>Step 4:</strong> IDs aur parameters identify karen (user_id, doc_id, order_id, etc.)</li>
+                        <li><strong>Step 5:</strong> User B se login karen aur User B ki IDs note karen</li>
+                        <li><strong>Step 6:</strong> User A ki session mein User B ki IDs use karen</li>
+                        <li><strong>Step 7:</strong> Agar User B ka data accessible hai, to IDOR confirmed!</li>
+                    </ul>
+                </div>
+
+                <div class="idor-card">
+                    <h3>IDOR Ke Real Examples</h3>
+                    <ul>
+                        <li><strong>Instagram (2016):</strong> IDOR vulnerability se private photos accessible the</li>
+                        <li><strong>Facebook (Multiple times):</strong> Graph API mein IDOR se user data leak</li>
+                        <li><strong>Bank APIs:</strong> Account numbers manipulate kar ke dusre accounts ki details</li>
+                        <li><strong>Healthcare Apps:</strong> Patient IDs change kar ke medical records access</li>
+                        <li><strong>E-commerce Sites:</strong> Order IDs modify kar ke payment details theft</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="impact-section">
+                <h2><span class="icon">💥</span>Horizontal Privilege Escalation Ke Asraat (Impact)</h2>
+                <p>
+                    Horizontal privilege escalation ke asraat mukhtalif ho sakte hain:
+                </p>
+
+                <div class="impact-card">
+                    <strong>1. Information Disclosure (Maloomat Ka Inkishaf)</strong>
+                    <p>
+                        Niji user data dekhna jo unauthorized hona chahiye:
+                    </p>
+                    <ul>
+                        <li>Personal emails aur addresses</li>
+                        <li>Phone numbers aur contact information</li>
+                        <li>Order history aur shopping preferences</li>
+                        <li>Financial information (bank accounts, credit cards)</li>
+                        <li>Health records aur medical data</li>
+                        <li>Private messages aur communications</li>
+                        <li>Social security numbers, tax information</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>2. Data Manipulation (Data Mein Tabdeeli)</strong>
+                    <p>
+                        Doosre user ki settings, content, ya data mein unauthorized modifications:
+                    </p>
+                    <ul>
+                        <li>Profile information change karna</li>
+                        <li>Password reset requests doosre user ke behalf par</li>
+                        <li>Email addresses modify karna</li>
+                        <li>Financial transactions manipulate karna</li>
+                        <li>Orders cancel ya modify karna</li>
+                        <li>Content upload/delete karna</li>
+                        <li>Settings aur preferences change karna</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>3. Account Takeover (Account Par Qabza)</strong>
+                    <p>
+                        Sakht suraton mein, doosre user ke account par mukammal control haasil karna:
+                    </p>
+                    <ul>
+                        <li>Password change kar dena</li>
+                        <li>Email address takeover</li>
+                        <li>Two-factor authentication disable karna</li>
+                        <li>Recovery options modify karna</li>
+                        <li>Complete account hijacking</li>
+                        <li>Identity theft</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>4. Privacy Violations (Niji Zindagi Ki Kharabi)</strong>
+                    <p>
+                        User privacy ka complete breach:
+                    </p>
+                    <ul>
+                        <li>Private photos/videos access</li>
+                        <li>Personal conversations read karna</li>
+                        <li>Location history dekh lena</li>
+                        <li>Browsing history aur preferences</li>
+                        <li>Social connections aur relationships</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>5. Financial Loss (Mali Nuqsaan)</strong>
+                    <p>
+                        Direct financial impact:
+                    </p>
+                    <ul>
+                        <li>Fraudulent transactions</li>
+                        <li>Credit card theft</li>
+                        <li>Bank account draining</li>
+                        <li>Cryptocurrency wallet theft</li>
+                        <li>Loyalty points/rewards theft</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>6. Mass Data Breach</strong>
+                    <p>
+                        Agar attacker automated script bana le to thousands/millions of users ka data compromise ho sakta hai:
+                    </p>
+                    <ul>
+                        <li>Bulk user data extraction</li>
+                        <li>Database dumping via API</li>
+                        <li>Scraping entire user base</li>
+                        <li>Selling data on dark web</li>
+                        <li>GDPR violations (heavy fines)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Real-World Impact Examples</h4>
+                <p>
+                    Horizontal privilege escalation ki wajah se hui major incidents:
+                </p>
+                <ul>
+                    <li><strong>T-Mobile (2021):</strong> API vulnerability se 40 million customers ka data breach</li>
+                    <li><strong>Parler (2021):</strong> IDOR vulnerability se 70TB data leaked (videos, posts, GPS locations)</li>
+                    <li><strong>Clubhouse (2021):</strong> API flaw se 1.3 million user profiles scraped</li>
+                    <li><strong>Bumble (2019):</strong> API bug se complete user database accessible</li>
+                    <li><strong>Venmo:</strong> Transaction history publicly accessible due to poor access controls</li>
+                </ul>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>Isse Kaise Bachen - Defenses Aur Mitigations</h2>
+                <p>
+                    Horizontal privilege escalation ko rokne ke liye yeh best practices follow karen:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Strict Access Control (Sakht Rasai Ka Control)</strong>
+                    <p>
+                        Har request ke liye mazboot server-side checks lagu karein taa ke yeh yakeeni banaya ja sake ke authenticated user ko mangay gaye resource tak rasai ya us mein tabdeeli ki ijazat hai.
+                    </p>
+                    <ul>
+                        <li>Har resource access par ownership verify karen</li>
+                        <li>Session mein current user ID store karen</li>
+                        <li>Database queries mein user ID condition zaroori banayein</li>
+                        <li>Client-side input par kabhi bharosa na karen</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Proper Authorization Check:</h4>
+                        <code>// Bad practice (vulnerable):</code>
+                        <code>app.get('/api/profile/:id', (req, res) => {</code>
+                        <code>  const profile = db.getProfile(req.params.id);</code>
+                        <code>  res.json(profile);</code>
+                        <code>});</code>
+                        <code></code>
+                        <code>// Good practice (secure):</code>
+                        <code>app.get('/api/profile/:id', (req, res) => {</code>
+                        <code>  const requestedId = req.params.id;</code>
+                        <code>  const currentUserId = req.session.userId;</code>
+                        <code>  </code>
+                        <code>  if (requestedId !== currentUserId) {</code>
+                        <code>    return res.status(403).json({error: 'Forbidden'});</code>
+                        <code>  }</code>
+                        <code>  </code>
+                        <code>  const profile = db.getProfile(requestedId);</code>
+                        <code>  res.json(profile);</code>
+                        <code>});</code>
+                    </div>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Input Validation (Input Ki Tasdeej)</strong>
+                    <p>
+                        Aane wale tamam data ko, khaas taur par IDs aur parameters ko, achi tarah se validate karein.
+                    </p>
+                    <ul>
+                        <li>User IDs ko whitelist se match karen</li>
+                        <li>Unexpected parameters ko reject karen</li>
+                        <li>Type validation implement karen</li>
+                        <li>Range checks perform karen</li>
+                        <li>Sanitize all inputs</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Least Privilege Principle (Kam Se Kam Ikhtyar Ka Usool)</strong>
+                    <p>
+                        Yakeeni banayein ke users ko sirf un resources aur functionalities tak rasai hasil ho jo unke role ke liye bilkul zaroori hain.
+                    </p>
+                    <ul>
+                        <li>Role-Based Access Control (RBAC) implement karen</li>
+                        <li>Resource-level permissions define karen</li>
+                        <li>Default deny approach use karen</li>
+                        <li>Granular permissions system</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. Secure API Design (Mehfooz API Design)</strong>
+                    <p>
+                        APIs ko shuru se hi security ko zehen mein rakhte hue design karein, har endpoint par sahi authorization checks par tawajjah dein.
+                    </p>
+                    <ul>
+                        <li>RESTful best practices follow karen</li>
+                        <li>OAuth 2.0 ya similar frameworks use karen</li>
+                        <li>API versioning implement karen</li>
+                        <li>Rate limiting add karen</li>
+                        <li>API documentation mein security requirements mention karen</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Secure API Pattern:</h4>
+                        <code>// Use session-based user context</code>
+                        <code>GET /api/my/profile     (current user ki profile)</code>
+                        <code>GET /api/my/orders      (current user ki orders)</code>
+                        <code>GET /api/my/messages    (current user ke messages)</code>
+                        <code></code>
+                        <code>// Instead of exposing IDs:</code>
+                        <code>GET /api/profile/123    (vulnerable to IDOR)</code>
+                    </div>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Use Indirect References</strong>
+                    <p>
+                        Direct database IDs expose karne ki bajaye, indirect references use karen.
+                    </p>
+                    <ul>
+                        <li>GUIDs/UUIDs use karen instead of sequential IDs</li>
+                        <li>Session-specific reference maps banayein</li>
+                        <li>Encrypted IDs use karen</li>
+                        <li>Temporary tokens generate karen</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <h4>💡 Indirect Reference Example:</h4>
+                        <code>// User session mein mapping store karen:</code>
+                        <code>session.resources = {</code>
+                        <code>  "ref1": "actual_id_123",</code>
+                        <code>  "ref2": "actual_id_456"</code>
+                        <code>};</code>
+                        <code></code>
+                        <code>// URL mein reference use karen:</code>
+                        <code>GET /api/document/ref1</code>
+                    </div>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. Implement Comprehensive Logging</strong>
+                    <p>
+                        Tamam access attempts ko log karen taake suspicious activity detect ho sake.
+                    </p>
+                    <ul>
+                        <li>Failed authorization attempts log karen</li>
+                        <li>Unusual access patterns monitor karen</li>
+                        <li>Real-time alerts setup karen</li>
+                        <li>Audit trails maintain karen</li>
+                        <li>Security Information and Event Management (SIEM) use karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Regular Security Testing</strong>
+                    <p>
+                        Application ko regularly test karen for access control issues.
+                    </p>
+                    <ul>
+                        <li>Penetration testing conduct karen</li>
+                        <li>Automated security scans run karen</li>
+                        <li>Code reviews perform karen</li>
+                        <li>Bug bounty programs run karen</li>
+                        <li>Security audits regular interval par</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Developer Training</strong>
+                    <p>
+                        Development team ko security best practices ki training dein.
+                    </p>
+                    <ul>
+                        <li>OWASP Top 10 ki awareness</li>
+                        <li>Secure coding workshops</li>
+                        <li>Real-world examples share karen</li>
+                        <li>Security champions program</li>
+                        <li>Regular security updates</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Testing Warning - Ethical Hacking</h4>
+                <p>
+                    Horizontal privilege escalation vulnerabilities ko test karte waqt hamesha permission lein. Bina ijazat ke doosre users ke accounts ko access karna illegal hai aur serious legal consequences ho sakte hain. Sirf authorized penetration testing ya bug bounty programs ke context mein hi yeh testing karen.
+                </p>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 API Hacking Ke Hawale Se</h4>
+                <p>
+                    <strong>"API Hacking"</strong> ke hawale se, horizontal privilege escalation ek bohot ahem vulnerability hai jiski talash karni chahiye, kyunki APIs aksar mukhtalif identifiers (IDs) ke zariye khaas resources tak rasai aur un mein tabdeeli ke liye istemal hoti hain, jo unhe IDORs aur is jaisay hamlon ke liye ek bunyadi nishana banati hain.
+                </p>
+                <p style="margin-top: 10px;">
+                    Modern web applications aur mobile apps mein APIs central role play karti hain. Agar API endpoints properly secured nahi hain, to horizontal privilege escalation ke through complete user database compromise ho sakta hai.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa (Conclusion)</h3>
+                <p>
+                    <strong>Horizontal Privilege Escalation</strong> ek critical security vulnerability hai jo same privilege level ke users ke beech unauthorized access ki ijazat deti hai. Yeh vertical escalation se kam khatarnak nahi hai kyunki iska impact bohot wide ho sakta hai - ek attacker potentially thousands ya millions of users ka data access kar sakta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>IDOR (Insecure Direct Object References)</strong> is vulnerability ka sabse common form hai, jahan application IDs aur parameters ko properly validate nahi karti. APIs especially vulnerable hain kyunki unki architecture hi resource identifiers par based hoti hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Prevention</strong> ka sabse effective tareeka hai: har request par strict server-side authorization checks, least privilege principle, aur secure API design patterns. Client-side validation par kabhi bharosa na karen - security hamesha server-side enforce karni chahiye.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Yaad rakhein:</strong> "Authorization is not Authentication" - user authenticated hai iska matlab yeh nahi ke woh har resource ko access kar sakta hai. Har resource access ke waqt ownership verification zaroori hai!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

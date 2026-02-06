@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOAP APIs - API Ki Pehchan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #f093fb;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #f5576c;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #764ba2;
+            font-size: 1.1em;
+        }
+
+        .info-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .info-card h4 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .xml-structure {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .xml-structure code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            direction: ltr;
+            display: block;
+            text-align: left;
+        }
+
+        .tag {
+            color: #f92672;
+        }
+
+        .attribute {
+            color: #a6e22e;
+        }
+
+        .value {
+            color: #e6db74;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #333;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        ul li::before {
+            content: "◈";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: -20px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #f5576c;
+        }
+
+        .warning-box h3 {
+            color: #c0392b;
+            border: none;
+            margin: 0 0 15px 0;
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .key-point h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .key-points {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .soap-acronym {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 SOAP APIs</h1>
+            <p style="font-size: 1.2em; margin-top: 10px;">Simple Object Access Protocol</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> ← <span>Bunyadi Maloomat</span> ← <span>API Ki Pehchan</span> ← SOAP APIs</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p><strong>SOAP ka matlab hai Simple Object Access Protocol.</strong> Yeh web services mein structured information ko exchange karne ke liye istemal hone wala ek messaging protocol specification hai. RESTful APIs ke bar-aks, jo aam taur par HTTP par JSON ya XML jaise saade data formats istemal karte hain, SOAP APIs ka structure bohot zyada structured hota hai aur woh requests aur responses dono ke liye XML par bohot zyada depend karte hain.</p>
+            </div>
+
+            <div class="soap-acronym">
+                Simple Object Access Protocol
+            </div>
+
+            <div class="section">
+                <h2>📋 SOAP APIs Ki Bunyadi Khasusiyat</h2>
+
+                <div class="info-card">
+                    <h3>1. XML-Based Messaging</h3>
+                    
+                    <h4>Sakht Format:</h4>
+                    <p>Har SOAP message ek XML document hota hai. Iska matlab hai ki requests aur responses ek sakht XML schema ki pairwi karte hain, jiski wajah se woh verbose (tafseeli) hote hain lekin bohot precise bhi.</p>
+
+                    <h4>Envelope, Header, Body, Fault:</h4>
+                    <p>Ek SOAP message aam taur par in hisson par mushtamil hota hai:</p>
+
+                    <div class="xml-structure">
+                        <code>&lt;<span class="tag">soap:Envelope</span> <span class="attribute">xmlns:soap</span>=<span class="value">"http://schemas.xmlsoap.org/soap/envelope/"</span>&gt;
+    &lt;<span class="tag">soap:Header</span>&gt;
+        &lt;!-- Authentication, Transaction IDs, Routing --&gt;
+    &lt;/<span class="tag">soap:Header</span>&gt;
+    
+    &lt;<span class="tag">soap:Body</span>&gt;
+        &lt;!-- Actual Message Payload --&gt;
+    &lt;/<span class="tag">soap:Body</span>&gt;
+    
+    &lt;<span class="tag">soap:Fault</span>&gt;
+        &lt;!-- Error Information (Optional) --&gt;
+    &lt;/<span class="tag">soap:Fault</span>&gt;
+&lt;/<span class="tag">soap:Envelope</span>&gt;</code>
+                    </div>
+
+                    <div class="highlight-box">
+                        <ul>
+                            <li><strong>Envelope:</strong> Root element jo XML document ko ek SOAP message ke taur par define karta hai.</li>
+                            <li><strong>Header (Ikhtiyari):</strong> Is mein application-specific maloomat hoti hain jaise authentication, transaction IDs, ya routing. Yeh security vulnerabilities ka ek aam ilaqa hai agar isko theek se implement na kiya jaye.</li>
+                            <li><strong>Body:</strong> Message ka asal payload hota hai, jaise method call aur uske parameters ya response data.</li>
+                            <li><strong>Fault (Ikhtiyari):</strong> Message ko process karte waqt hone wali galtiyon ke bare mein maloomat faraham karta hai.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>2. Protocol Agnostic</h3>
+                    <p>Jabke yeh aam taur par HTTP par istemal hota hai, SOAP mukhtalif doosre transport protocols jaise <strong>SMTP, TCP, ya JMS</strong> par bhi chal sakta hai. Yeh lachak (flexibility) kabhi kabhi security analysis mein pechidgi paida kar sakti hai.</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>3. WSDL (Web Services Description Language)</h3>
+                    <p>SOAP APIs ko aam taur par ek <strong>WSDL file</strong> ke zariye bayan kiya jata hai. Yeh XML-based document ek "contract" ki tarah kaam karta hai jo darj zail baatein specify karta hai:</p>
+                    
+                    <ul>
+                        <li>API ki taraf se pesh ki jane wali services</li>
+                        <li>Dastiyab operations (methods)</li>
+                        <li>Har operation ke liye input parameters aur output structures</li>
+                        <li>Istemal hone wale data types</li>
+                        <li>Web service ka location (endpoint)</li>
+                    </ul>
+
+                    <div class="warning-box">
+                        <h3>🎯 Hacker Ke Liye Ahmiyat:</h3>
+                        <p>Ek hacker ke liye, WSDL file ko dhoondhna aur uska tajziya karna API ki functionality ko samajhne, mumkina entry points ki nishandahi karne, aur bad-niyati par mabni requests banane ke liye bohot zaroori hai.</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>4. Stateful Ya Stateless</h3>
+                    <p>SOAP ko application ki zaroorat ke mutabiq <strong>stateful ya stateless</strong> dono tarah se implement kiya ja sakta hai. Stateful services client sessions ke bare mein maloomat rakhte hain, jo session management se mutaliq kamzoriyon ko janam de sakta hai.</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>5. Built-in Error Handling</h3>
+                    <p>SOAP mein <strong>Fault element</strong> ka istemal karte hue galtiyon ki report karne ka ek standard tareeqa maujood hai, jo kabhi kabhi sensitive maloomat leak kar sakta hai agar error messages bohot zyada tafseeli hon.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔒 API Hacking Ke Liye Yeh Kyun Zaroori Hai?</h2>
+
+                <div class="key-points">
+                    <div class="key-point">
+                        <h4>🧩 Pechidgi Aur Tafseel</h4>
+                        <p>XML ki fitri pechidgi aur tafseel kabhi kabhi aisi kamzoriyon ko chhupa sakti hai jo saade JSON-based APIs mein zyada wazeh hoti hain.</p>
+                    </div>
+
+                    <div class="key-point">
+                        <h4>🔍 WSDL Discovery</h4>
+                        <p>WSDL file ko dhoondhna aur samajhna aksar SOAP API ke liye reconnaissance ka pehla qadam hota hai. Yeh API ki salahiyaton ka mukammal blueprint faraham karta hai.</p>
+                    </div>
+
+                    <div class="key-point">
+                        <h4>💉 XML Injection</h4>
+                        <p>XML par iski inhisaari ki wajah se, SOAP APIs mukhtalif XML se mutaliq hamlon jaise <strong>XML External Entities (XXE)</strong> aur <strong>XML Injection</strong> ke liye behtareen nishana hote hain.</p>
+                    </div>
+
+                    <div class="key-point">
+                        <h4>🛡️ Security Extensions</h4>
+                        <p>SOAP <strong>WS-Security</strong> jaisi extensions ko support karta hai jo confidentiality, integrity, aur authentication shamil karti hain. In extensions mein ghalat configurations bypasses ka sabab ban sakti hain.</p>
+                    </div>
+
+                    <div class="key-point">
+                        <h4>🎭 Header Manipulation</h4>
+                        <p>Ikhtiyari Header element kamzoriyon ka sabab ban sakta hai agar authentication, authorization, ya doosri sensitive maloomat ko mahfooz tareeqe se handle na kiya jaye.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+                <div class="highlight-box">
+                    <p><strong>Jab aapko koi SOAP API mile, to:</strong></p>
+                    <ul>
+                        <li>XML-based messages ki tawaqqo rakhein</li>
+                        <li>Uske structure ko samajhne ke liye <strong>WSDL file</strong> talaash karein</li>
+                        <li>Khas taur par <strong>XML se mutaliq injection vulnerabilities</strong> par tawajjah dein</li>
+                        <li><strong>SOAP Header</strong> ke andar mumkina masail ko check karein</li>
+                    </ul>
+                    <br>
+                    <p><strong>SOAP ko samajhna API hacking ke liye ek mukammal nazariye ke liye zaroori hai, khas kar un enterprise environments mein jahan purane, qayam shuda systems aksar is protocol ko istemal karte hain.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">SOAP APIs - API Ki Pehchan</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Bypass - Authentication Bypass</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #11998e;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .intro-section h2 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #00b894;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .otp-info-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .otp-info-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .otp-info-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .otp-info-box ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .otp-info-box ul li {
+            margin: 6px 0;
+        }
+
+        .techniques-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #fd79a8;
+        }
+
+        .techniques-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .technique-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #fd79a8;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .technique-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .technique-card h3 {
+            color: #fd79a8;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .technique-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .technique-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .technique-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #fd79a8;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #fd79a8;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .risks-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .risks-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .risk-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-card strong {
+            color: #e17055;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .risk-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .defense-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .testing-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .testing-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .testing-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .testing-card h3 {
+            color: #00b894;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .testing-card p {
+            color: #2d3436;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .testing-card ol {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .testing-card ol li {
+            margin: 8px 0;
+        }
+
+        .testing-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #00b894;
+        }
+
+        .conclusion h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .techniques-section, .risks-section, .defense-section, .testing-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 OTP Bypass</h1>
+            <p>One-Time Password Security Ko Tor Dena</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Authentication Bypass</a> /
+            <span>OTP Bypass</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 OTP Bypass Kya Hai?</h2>
+                <p>
+                    <strong>"OTP Bypass"</strong> ka topic hamari roadmap mein "Shurwati Hamle" (Initial Attacks) ke section mein aata hai, khaas kar "Authentication Bypass" ke tehat. Iska matlab hai woh tareeqe jo attack-ker (hamla-awar) One-Time Passwords (OTPs) ko bypass karne ya unhein nazar-andaaz karne ke liye istemal karte hain taake authentication process ko uboor kiya ja sake.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">📲</span>OTP (One-Time Password) Kya Hai?</h2>
+                <p>
+                    <strong>OTP (One-Time Password)</strong> ek aisa password hota hai jo sirf ek login session ya ek transaction ke liye mo'atabar hota hai. Yeh aam taur par user ke register shuda mobile number ya email address par bheja jata hai.
+                </p>
+
+                <div class="otp-info-box">
+                    <h4>🔐 OTP Ki Khasoosiyat:</h4>
+                    <ul>
+                        <li><strong>Time-Limited:</strong> Aam taur par 5-10 minutes ke liye valid</li>
+                        <li><strong>Single-Use:</strong> Ek baar use karne ke baad expire ho jata hai</li>
+                        <li><strong>Random Generation:</strong> Har baar naya code generate hota hai</li>
+                        <li><strong>Multi-Factor Authentication:</strong> Password ke ilawa extra security layer</li>
+                        <li><strong>Delivery Methods:</strong> SMS, Email, Authenticator Apps</li>
+                    </ul>
+                </div>
+
+                <h3>OTP Ka Maqsad</h3>
+                <p>
+                    Iska maqsad security ki ek mazeed teh (layer) add karna hai (multi-factor authentication) sirf username aur password se hat kar. Yeh ensure karta hai ke:
+                </p>
+                <ul>
+                    <li>User ke paas actual device/email access hai</li>
+                    <li>Account owner hi login kar raha hai</li>
+                    <li>Stolen passwords se protection milti hai</li>
+                    <li>Suspicious activity detect ho sakti hai</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">🔓</span>OTP Bypass Kaise Kaam Karta Hai?</h2>
+                <p>
+                    OTP Bypass mein mukhtalif techniques shaamil hoti hain jinhein ek attack-ker account tak rasai hasil karne ke liye istemal kar sakta hai, bhale hi OTP ki zaroorat ho. <strong>Bunyadi maqsad yeh hota hai:</strong>
+                </p>
+                <ul>
+                    <li>Asli user tak OTP pohanchnay se rokna</li>
+                    <li>OTP ko beech mein hi rok (intercept) lena</li>
+                    <li>OTP ka andaza lagana ya brute-force karna</li>
+                    <li>OTP validation logic ko mukammal taur par bypass karna</li>
+                </ul>
+            </div>
+
+            <div class="techniques-section">
+                <h2><span class="icon">⚔️</span>Aam OTP Bypass Techniques</h2>
+
+                <div class="technique-card">
+                    <h3>1. OTP Brute-forcing</h3>
+                    <p>
+                        Agar system OTP darj karne ki koshishon par sahi tarah se had (limit) nahi lagata, to ek attack-ker mukhtalif combinations try kar sakta hai jab tak woh sahi OTP ka andaza na laga le.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        <strong>Khaas Taur Par Asardar:</strong> Agar OTP chhota ho (masalan, 4 ya 6 digits) aur rate limiting kamzor ya ghair-maujood ho.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Brute Force Example:</h4>
+                        <p>4-digit OTP: 10,000 combinations (0000-9999)</p>
+                        <p>6-digit OTP: 1,000,000 combinations</p>
+                        <code>POST /verify-otp {"code":"0000"} → Invalid</code>
+                        <code>POST /verify-otp {"code":"0001"} → Invalid</code>
+                        <code>POST /verify-otp {"code":"0002"} → Invalid</code>
+                        <code>...</code>
+                        <code>POST /verify-otp {"code":"5847"} → Success!</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Automated tools se tezi se try kiya ja sakta hai</li>
+                        <li>Rate limiting na hone par minutes mein crack possible</li>
+                        <li>4-digit OTPs bohot vulnerable hain</li>
+                    </ul>
+                </div>
+
+                <div class="technique-card">
+                    <h3>2. Response Manipulation</h3>
+                    <p>
+                        Kabhi kabhi server OTP ko pichli request ke response ke sath bhej deta hai (masalan, ek hidden field mein, cookie mein, ya API response mein) is se pehle ke uski validation ki zaroorat pade. Ek attack-ker is response ko rok kar OTP nikal sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Vulnerable Response Example:</h4>
+                        <code>POST /send-otp</code>
+                        <code>Response: {</code>
+                        <code>  "message": "OTP sent successfully",</code>
+                        <code>  "otp": "123456",  ← OTP exposed!</code>
+                        <code>  "expires_in": 300</code>
+                        <code>}</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>OTP response body mein expose ho jata hai</li>
+                        <li>Hidden HTML fields mein OTP visible</li>
+                        <li>JavaScript code mein hardcoded</li>
+                        <li>Cookies mein plain text OTP</li>
+                    </ul>
+                </div>
+
+                <div class="technique-card">
+                    <h3>3. Race Conditions</h3>
+                    <p>
+                        Kuch kamzor tareeqe se banaye gaye systems mein, agar kai requests tezi se bheji jayen, to un mein se koi ek OTP ki mukammal validation ke bagair process ho sakti hai. Ek attack-ker is timing vulnerability ka faida utha sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Race Condition Scenario:</h4>
+                        <p>Simultaneously multiple requests:</p>
+                        <code>Thread 1: POST /verify-otp {"code":"0000"}</code>
+                        <code>Thread 2: POST /verify-otp {"code":"0000"}</code>
+                        <code>Thread 3: POST /verify-otp {"code":"0000"}</code>
+                        <p style="margin-top: 8px;">Agar validation atomic nahi hai, to ek request pass ho sakti hai</p>
+                    </div>
+                </div>
+
+                <div class="technique-card">
+                    <h3>4. OTP Validation Endpoint Ko Bypass Karna</h3>
+                    <p>
+                        Agar application logic authentication ke baad ek sensitive endpoint tak direct rasai ki ijazat deta hai aur OTP validation ko sakhti se enforce nahi karta, to ek attack-ker ek request bana kar OTP step ko mukammal taur par bypass kar sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Direct Endpoint Access:</h4>
+                        <code>Normal Flow:</code>
+                        <code>1. POST /login → Session created</code>
+                        <code>2. POST /verify-otp → OTP validation</code>
+                        <code>3. GET /dashboard → Access granted</code>
+                        <p style="margin-top: 10px; color: #e17055;"><strong>Bypass:</strong></p>
+                        <code>1. POST /login → Session created</code>
+                        <code>2. GET /dashboard → Direct access (OTP skipped!)</code>
+                    </div>
+                </div>
+
+                <div class="technique-card">
+                    <h3>5. OTP Leakage In Logs Or Error Messages</h3>
+                    <p>
+                        Kabhi kabhi, system errors ya server logs ghalti se OTP ko attack-ker ke samne zaahir kar sakte hain agar unhein in logs tak rasai ho ya woh khaas error conditions ko trigger kar saken.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Log Leakage Examples:</h4>
+                        <code>Server Log: "Sent OTP 123456 to user@example.com"</code>
+                        <code>Error Message: "Invalid OTP. Expected: 123456, Got: 000000"</code>
+                        <code>Debug Mode: "OTP validation failed. Correct OTP: 123456"</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Debug mode enabled hone par OTP expose</li>
+                        <li>Verbose error messages</li>
+                        <li>Application logs publicly accessible</li>
+                        <li>Stack traces mein OTP values</li>
+                    </ul>
+                </div>
+
+                <div class="technique-card">
+                    <h3>6. Session Token Manipulation</h3>
+                    <p>
+                        Agar initial login ke baad generate hone wala session token OTP validation process se kamzor tareeqe se jura hua ho, to ek attack-ker session tokens ko dobara istemal ya manipulate karke OTP ko bypass kar sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Token Manipulation:</h4>
+                        <code>Initial Login: session_token=xyz123</code>
+                        <code>OTP Pending: session_token=xyz123_pending</code>
+                        <code>OTP Verified: session_token=xyz123_verified</code>
+                        <p style="margin-top: 8px;">Attacker manually token modify kar ke "_verified" add kar deta hai</p>
+                    </div>
+                </div>
+
+                <div class="technique-card">
+                    <h3>7. Client-Side Bypass</h3>
+                    <p>
+                        Agar OTP validation logic bunyadi taur par client-side par (masalan, JavaScript mein) laagu kiya gaya ho, to ek attack-ker JavaScript ko disable karke ya seedhe server ko requests bhej kar client-side checks ko bypass kar sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Client-Side Validation Example:</h4>
+                        <code>// Vulnerable JavaScript</code>
+                        <code>function verifyOTP() {</code>
+                        <code>  if (userInput === storedOTP) {</code>
+                        <code>    window.location = '/dashboard';</code>
+                        <code>  }</code>
+                        <code>}</code>
+                        <p style="margin-top: 8px;">Attacker directly <code>/dashboard</code> access kar sakta hai</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Browser console se JavaScript manipulate karna</li>
+                        <li>JavaScript disable kar ke form submit karna</li>
+                        <li>Direct API requests bhejná</li>
+                        <li>Client-side validation skip karna</li>
+                    </ul>
+                </div>
+
+                <div class="technique-card">
+                    <h3>8. Predictable OTPs</h3>
+                    <p>
+                        Achhe tareeqe se design kiye gaye systems mein yeh kam hota hai, lekin agar OTP generation logic kamzor ya qabil-e-pehchan ho, to ek attack-ker mustaqbil ke OTPs ka andaza laga sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Predictable Patterns:</h4>
+                        <code>Sequential: 123456, 123457, 123458...</code>
+                        <code>Time-based (weak): HHMMSS format</code>
+                        <code>User ID based: userId + timestamp</code>
+                        <code>Pseudo-random with known seed</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Weak random number generators</li>
+                        <li>Predictable seeds ka istemal</li>
+                        <li>Pattern analysis se future OTPs predict karna</li>
+                        <li>Time-based patterns identify karna</li>
+                    </ul>
+                </div>
+
+                <div class="technique-card">
+                    <h3>9. OTP Reuse</h3>
+                    <p>
+                        Agar system OTP ko expire nahi karta ya ek baar successful use ke baad bhi same OTP accept karta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Reuse Vulnerability:</h4>
+                        <code>First use: POST /verify {"otp":"123456"} → Success</code>
+                        <code>Second use: POST /verify {"otp":"123456"} → Success again!</code>
+                        <p style="margin-top: 8px;">OTP multiple times use ho sakta hai</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Yeh Itni Sangeen Kamzori Kyun Hai?</h4>
+                <p>
+                    Ek kamyab OTP bypass asal mein multi-factor authentication ko nakam kar deta hai, jis se attack-keron ke liye user accounts ko compromise karna aasan ho jata hai, bhale hi unke paas user ka password na ho.
+                </p>
+                <ul>
+                    <li><strong>Ghair-mujaza rasai:</strong> Unauthorized account access</li>
+                    <li><strong>Data breaches:</strong> Sensitive information ka exposure</li>
+                    <li><strong>Financial losses:</strong> Banking/payment frauds</li>
+                    <li><strong>Identity theft:</strong> User identity compromise</li>
+                    <li><strong>Reputation damage:</strong> Organization ki credibility par asar</li>
+                </ul>
+            </div>
+
+            <div class="risks-section">
+                <h2><span class="icon">⚠️</span>Real-World Impact</h2>
+
+                <div class="risk-card">
+                    <strong>Banking Applications</strong>
+                    <p>
+                        OTP bypass se attackers bank accounts access kar sakte hain, transactions perform kar sakte hain, aur funds transfer kar sakte hain.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>E-commerce Platforms</strong>
+                    <p>
+                        Fraudulent orders place karna, payment information steal karna, aur customer accounts compromise karna possible hai.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>Social Media Accounts</strong>
+                    <p>
+                        Account takeover se identity theft, spam distribution, aur personal data exposure ho sakta hai.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>Corporate Systems</strong>
+                    <p>
+                        Sensitive business data tak unauthorized access, intellectual property theft, aur internal systems compromise.
+                    </p>
+                </div>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>OTP Bypass Se Kaise Bachao Ho Sakta Hai</h2>
+                <p>
+                    OTP bypass se bachne ke liye, developers ko mazboot security measures laagu karne chahiye:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Mazboot Rate Limiting</strong>
+                    <p>
+                        OTP darj karne ki koshishon par mazboot rate limiting implement karen.
+                    </p>
+                    <ul>
+                        <li>Maximum 3-5 attempts per OTP generation</li>
+                        <li>Exponential backoff after failed attempts</li>
+                        <li>Account temporary lockout after threshold</li>
+                        <li>IP-based rate limiting bhi add karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Random Aur Time-Limited OTPs</strong>
+                    <p>
+                        Yeh yaqeeni banana ke OTPs waqai random hon aur unki muddat (validity period) mukhtasar ho.
+                    </p>
+                    <ul>
+                        <li>Cryptographically secure random generation</li>
+                        <li>5-10 minutes validity period</li>
+                        <li>6-8 digit OTPs use karen (4-digit kam secure)</li>
+                        <li>No predictable patterns</li>
+                        <li>Unique OTP har request ke liye</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Sakht Server-Side Validation</strong>
+                    <p>
+                        OTPs ki sakht server-side validation ensure karen.
+                    </p>
+                    <ul>
+                        <li>Sabhi validations server par perform karen</li>
+                        <li>Client-side validation par rely na karen</li>
+                        <li>OTP ko hash kar ke store karen</li>
+                        <li>Constant-time comparison use karen</li>
+                        <li>Session state properly manage karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. OTP Ko Expose Na Karen</strong>
+                    <p>
+                        OTPs ko response ya logs ke kisi bhi hisse mein zaahir na karna.
+                    </p>
+                    <ul>
+                        <li>OTPs ko API responses mein include na karen</li>
+                        <li>Error messages mein OTP values na dikhayen</li>
+                        <li>Logs se OTPs ko filter out karen</li>
+                        <li>Debug mode production mein disable karen</li>
+                        <li>Stack traces properly handle karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Sahi Session Management</strong>
+                    <p>
+                        Sahi session management laagu karna aur session tokens ko mahfooz tareeqe se bandhna.
+                    </p>
+                    <ul>
+                        <li>Separate session states maintain karen (pre-OTP, post-OTP)</li>
+                        <li>OTP verification ke baad naya session token generate karen</li>
+                        <li>Old tokens ko invalidate karen</li>
+                        <li>Session tokens unpredictable hon</li>
+                        <li>Secure cookie attributes use karen (HttpOnly, Secure, SameSite)</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. OTP Ko Single-Use Banayein</strong>
+                    <p>
+                        Ek baar use hone ke baad OTP ko immediately invalidate karen.
+                    </p>
+                    <ul>
+                        <li>Successful validation ke baad OTP expire karen</li>
+                        <li>Same OTP ko dobara accept na karen</li>
+                        <li>Database mein used OTPs track karen</li>
+                        <li>Failed attempts bhi OTP expiry mein count karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Race Condition Prevention</strong>
+                    <p>
+                        Concurrent OTP validation requests ko properly handle karen.
+                    </p>
+                    <ul>
+                        <li>Database-level locking mechanisms</li>
+                        <li>Atomic operations use karen</li>
+                        <li>Idempotent endpoints design karen</li>
+                        <li>Request queuing implement karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Monitoring Aur Alerting</strong>
+                    <p>
+                        Suspicious OTP-related activity ko monitor karen.
+                    </p>
+                    <ul>
+                        <li>Multiple failed OTP attempts track karen</li>
+                        <li>Unusual patterns detect karen</li>
+                        <li>Admin alerts setup karen</li>
+                        <li>User ko suspicious activity notify karen</li>
+                        <li>Audit logs maintain karen</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="testing-section">
+                <h2><span class="icon">🔍</span>OTP Bypass Testing - Practical Approach</h2>
+
+                <div class="testing-card">
+                    <h3>Test 1: Brute Force Testing</h3>
+                    <p>
+                        Check karein ke system OTP guessing attempts ko limit karta hai ya nahi.
+                    </p>
+                    <ol>
+                        <li>Valid username se OTP request karen</li>
+                        <li>Invalid OTPs systematically try karen (0000, 0001, 0002...)</li>
+                        <li>Check karen ke kitni attempts allowed hain</li>
+                        <li>Account lockout hota hai ya nahi verify karen</li>
+                        <li>Burp Intruder se automated testing karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 2: Response Analysis</h3>
+                    <p>
+                        OTP generation response ko carefully analyze karen.
+                    </p>
+                    <ol>
+                        <li>OTP request ke response ko intercept karen (Burp Suite)</li>
+                        <li>Response body, headers, cookies check karen</li>
+                        <li>Hidden fields, JavaScript code examine karen</li>
+                        <li>Network tab mein additional requests dekhen</li>
+                        <li>Source code mein OTP leakage search karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 3: Direct Endpoint Access</h3>
+                    <p>
+                        OTP verification skip kar ke protected endpoints access karne ki koshish karen.
+                    </p>
+                    <ol>
+                        <li>Login karen aur OTP page tak pahunchen</li>
+                        <li>OTP verify karne se pehle <code>/dashboard</code> ya protected endpoint access karen</li>
+                        <li>Session tokens ko analyze karen</li>
+                        <li>Different HTTP methods try karen (GET, POST, PUT)</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 4: OTP Reuse Testing</h3>
+                    <p>
+                        Same OTP ko multiple times use karne ki koshish karen.
+                    </p>
+                    <ol>
+                        <li>Valid OTP generate karen</li>
+                        <li>Successfully verify karen</li>
+                        <li>Logout karen ya naya session start karen</li>
+                        <li>Same old OTP dobara use karen</li>
+                        <li>Check karen ke system accept karta hai ya nahi</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>Test 5: Session Token Manipulation</h3>
+                    <p>
+                        Session tokens ko modify kar ke OTP bypass attempt karen.
+                    </p>
+                    <ol>
+                        <li>Pre-OTP session token note karen</li>
+                        <li>Post-OTP session token compare karen</li>
+                        <li>Predictable patterns identify karen</li>
+                        <li>Manual token manipulation try karen</li>
+                        <li>JWT tokens decode aur modify karen</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Ethical Testing Warning</h4>
+                <p>
+                    OTP bypass testing sirf authorized environments par karein. Production systems par unauthorized testing karna illegal hai. Hamesha proper authorization, bug bounty programs, ya testing agreements ke saath hi security testing karein.
+                </p>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    <strong>OTP Bypass</strong> ko samajhna API hacking seekhne walon ke liye nihayat zaroori hai, kyunki yeh us ahem ilaqay ko ujagar karta hai jahan authentication mechanisms ka ghalat istemal kiya ja sakta hai. Proper implementation aur testing se hi secure OTP systems banaye ja sakte hain.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    OTP Bypass techniques modern authentication systems ke liye ek serious threat hain. Multi-factor authentication implement karna kaafi nahi hai - use properly implement karna bhi zaroori hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Developers ko chahiye ke wo OTP systems design karte waqt har possible attack vector ko consider karen: brute force, response manipulation, race conditions, session management, aur client-side vulnerabilities. Defense in depth approach apnayen aur multiple security layers implement karen.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Yaad rakhein:</strong> OTP sirf ek tool hai - uski security implementation quality par depend karti hai. Regular security audits, penetration testing, aur code reviews zaroori hain.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directory Brute-Forcing - Maloomat Jama Karna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #f5576c;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 4px solid #f5576c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight-box h4 {
+            color: #d63031;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-list li:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-list strong {
+            color: #667eea;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .info-list code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .process-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .process-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .process-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .process-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .process-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .process-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .process-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            padding: 8px 12px;
+        }
+
+        .response-codes {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .response-codes h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .response-item {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .response-item.success {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .response-item.redirect {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .response-item.forbidden {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .response-item.notfound {
+            background: #e2e3e5;
+            border-color: #6c757d;
+        }
+
+        .response-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .importance-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .importance-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .importance-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .importance-list li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .importance-list strong {
+            color: #e17055;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .importance-list code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .tools-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .tools-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .tools-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tools-list li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-list strong {
+            color: #6c5ce7;
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #667eea;
+        }
+
+        .conclusion h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .process-section, .importance-section, .tools-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔨 Directory Brute-Forcing</h1>
+            <p>Chhupi hui Directories Aur Files Ko Dhoondhne Ka Tareeqa</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Maloomat Jama Karna</a> /
+            <span>Directory Brute-Forcing</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Directory Brute-Forcing Kya Hai?</h2>
+                <p>
+                    <strong>Directory Brute-Forcing</strong> API hacking ke "Information Gathering" marhalay mein istemal honay wali aik technique hai. Is mein web server ya API endpoint par systematically bohot saare mumkin directory aur file names ko guess kar ke ya try kar ke un chupay hue ya unlinked resources ko dhoondha jata hai.
+                </p>
+                <p>
+                    Jab aap kisi web server ya API se interact karte hain, to aap specific directories (folders) aur files (jaise <code>.html</code>, <code>.php</code>, <code>.json</code>, <code>.xml</code>, waghera) tak rasai (access) talab karte hain. Baaz auqat, developers aisi directories ya files ko accessible chhod dete hain jo main application se linked nahi hotin, lekin un mein sensitive information, configuration files, backup files, ya hatta ke administrative interfaces ho sakti hain.
+                </p>
+                <p>
+                    Directory brute-forcing in chupay hue resources ko talaash karne ki koshish karta hai.
+                </p>
+            </div>
+
+            <div class="process-section">
+                <h2><span class="icon">⚙️</span>Yeh Kaise Kaam Karta Hai?</h2>
+
+                <div class="process-card">
+                    <h3>1. Wordlists</h3>
+                    <p>
+                        Attacker common directory aur file names ki pehle se tayyar shuda list (jise "wordlist" ya "dictionary" kehte hain) ka istemal karta hai. Yeh wordlists aksar hazaaron entries par mushtamil hoti hain jo common web server structures, popular software, aur pichli vulnerability discoveries par mabni hoti hain.
+                    </p>
+                </div>
+
+                <div class="process-card">
+                    <h3>2. Automated Requests</h3>
+                    <p>
+                        Aik automated tool (jaise <code>dirbuster</code>, <code>gobuster</code>, <code>ffuf</code>, ya custom scripts) wordlist ki har entry ke liye target server ko requests bhejta hai, unhe base URL ke saath jod kar.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Misaal:</h4>
+                        <p>Agar target API <code>https://api.example.com/</code> hai, aur wordlist mein ye shamil hain:</p>
+                        <p><code>admin, dev, backup, config, robots.txt, api/v1/</code></p>
+                        <p>To tool yeh try karega:</p>
+                        <code>https://api.example.com/admin</code>
+                        <code>https://api.example.com/dev</code>
+                        <code>https://api.example.com/backup</code>
+                        <code>https://api.example.com/config</code>
+                        <code>https://api.example.com/robots.txt</code>
+                        <code>https://api.example.com/api/v1/</code>
+                    </div>
+                </div>
+
+                <div class="process-card">
+                    <h3>3. Responses Ka Tajzia (Analyzing Responses)</h3>
+                    <p>
+                        Phir tool server ke responses ka tajzia karta hai:
+                    </p>
+
+                    <div class="response-codes">
+                        <div class="response-item success">
+                            <strong>200 OK:</strong>
+                            <p>Aik 200 OK status code aam taur par ishara karta hai ke directory ya file maujood hai aur accessible hai. Yeh aik dilchasp discovery hoti hai.</p>
+                        </div>
+
+                        <div class="response-item redirect">
+                            <strong>3xx Redirects:</strong>
+                            <p>Redirects se pata chal sakta hai ke koi valid path maujood tha jo ab kahin aur move ho gaya hai.</p>
+                        </div>
+
+                        <div class="response-item forbidden">
+                            <strong>401 Unauthorized / 403 Forbidden:</strong>
+                            <p>Yeh ishara karte hain ke resource maujood hai lekin authentication ki zaroorat hai ya woh forbidden hai, jo phir bhi aik discovery hai kyunki yeh resource ke wujood ki tasdeeq karta hai.</p>
+                        </div>
+
+                        <div class="response-item notfound">
+                            <strong>404 Not Found:</strong>
+                            <p>Yeh ishara karta hai ke guess ki gayi directory ya file server par maujood nahi hai.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="process-card">
+                    <h3>4. Recursion (Ikhtiyari)</h3>
+                    <p>
+                        Kuch tools recursive brute-forcing bhi kar sakte hain, matlab agar unhe koi valid directory mil jati hai (maslan, <code>/admin/</code>), to woh phir us directory ke andar brute-forcing shuru kar denge (maslan, <code>/admin/users</code>, <code>/admin/logs</code>, waghera).
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Recursive Scanning Ki Misaal:</h4>
+                        <code>Step 1: /admin/ mila (200 OK)</code>
+                        <code>Step 2: /admin/users dhoondhna shuru</code>
+                        <code>Step 3: /admin/logs dhoondhna shuru</code>
+                        <code>Step 4: /admin/config dhoondhna shuru</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="importance-section">
+                <h2><span class="icon">⚡</span>API Hacking Mein Yeh Kyun Zaroori Hai?</h2>
+                <p>
+                    APIs, bilkul traditional web applications ki tarah, bhooli hui ya galat configure ki hui endpoints, documentation files, API ke purane versions, ya sensitive test scripts ko ghair mutawaqqe directories mein expose kar sakti hain.
+                </p>
+
+                <ul class="importance-list">
+                    <li>
+                        <strong>1. Maloomat Ka Ikhfa (Information Disclosure)</strong>
+                        <p>
+                            <code>config.json</code>, <code>.env</code>, backup files (<code>.bak</code>, <code>.zip</code>), ya log files (<code>.log</code>) jaisi files milna jin mein database credentials, API keys, ya dosra sensitive data ho sakta hai.
+                        </p>
+                    </li>
+
+                    <li>
+                        <strong>2. Kamzor Endpoints</strong>
+                        <p>
+                            Unlinked API endpoints ka milna jo public access ke liye nahi hain lekin unka faida uthaya ja sakta hai.
+                        </p>
+                    </li>
+
+                    <li>
+                        <strong>3. Authentication Bypass</strong>
+                        <p>
+                            Bhooli hui admin panels ya testing interfaces ko kamzor default credentials ke saath dhoondhna.
+                        </p>
+                    </li>
+
+                    <li>
+                        <strong>4. API Structure Ko Samjhna</strong>
+                        <p>
+                            API ki internal organization aur naming conventions ko behtar tareeqay se samajhna.
+                        </p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tools-section">
+                <h2><span class="icon">🔧</span>Directory Brute-Forcing Ke Liye Tools</h2>
+                <p>
+                    Directory brute-forcing ke liye aam tools mein shamil hain:
+                </p>
+                
+                <ul class="tools-list">
+                    <li>
+                        <strong>Dirb / Dirbuster</strong>
+                        <p>Web content discovery ke liye qadeemi tools. Yeh GUI-based aur command-line dono formats mein available hain.</p>
+                    </li>
+
+                    <li>
+                        <strong>GoBuster</strong>
+                        <p>Go mein likha gaya aik taiz aur taqatwar directory/file/DNS brute-forcer. Yeh speed aur efficiency ke liye mashoor hai.</p>
+                    </li>
+
+                    <li>
+                        <strong>ffuf (Fuzz Faster U Fool)</strong>
+                        <p>Aik bohot flexible fuzzer jise directory brute-forcing ke liye bhi istemal kiya ja sakta hai. Modern aur tezi se kaam karta hai.</p>
+                    </li>
+
+                    <li>
+                        <strong>Burp Suite Intruder</strong>
+                        <p>Buniyadi taur par aik fuzzer hai, lekin ise directory brute-forcing karne ke liye configure kiya ja sakta hai. Manual testing ke liye bohot mufeed.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    Mukhtasar yeh ke, <strong>directory brute-forcing</strong> aik ahem reconnaissance technique hai jis se un chupay hue assets ko zahir kiya jata hai jo fauran nazar nahi aate lekin API hacking scenario mein aham hamle ke rastay faraham kar sakte hain.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">🛡️</span>Defense Aur Best Practices</h2>
+                <p>
+                    Developers aur security teams ko in techniques ke khilaaf apni APIs ko mehfooz banana chahiye:
+                </p>
+                
+                <ul class="info-list">
+                    <li>
+                        <strong>Proper Access Controls</strong>
+                        <p>Har directory aur file par sahi access controls lagayein. Sirf wahi resources public hon jo public hone chahiye.</p>
+                    </li>
+
+                    <li>
+                        <strong>Remove Unnecessary Files</strong>
+                        <p>Backup files, configuration files, aur development files ko production environment se hata dein.</p>
+                    </li>
+
+                    <li>
+                        <strong>Rate Limiting</strong>
+                        <p>Brute-forcing attacks ko slow karne ke liye rate limiting implement karein.</p>
+                    </li>
+
+                    <li>
+                        <strong>Monitoring Aur Logging</strong>
+                        <p>Suspicious patterns (jaise ke 404 responses ki bohot zyada tadaad) ko detect karne ke liye proper monitoring setup karein.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Directory Brute-Forcing information gathering phase ka ek critical component hai. Yeh technique aapko un hidden resources tak pahunchne mein madad karti hai jo normally visible nahi hote. Configuration files, backup directories, admin panels, aur purani API endpoints dhoondhne se aapko valuable information mil sakti hai jo aage ke attacks mein kaam aati hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Yaad rakhein: Ethical hacking aur proper authorization ke saath hi is technique ka istemal karein. Unauthorized systems par testing karna ghair-qanooni hai.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

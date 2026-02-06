@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broken Authentication Logic - Authentication Bypass</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .definition-box {
+            background: white;
+            border: 2px solid #f5576c;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .definition-box h4 {
+            color: #f5576c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .definition-box p {
+            color: #2d3436;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #f5576c;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .flaws-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .flaws-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .flaw-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .flaw-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .flaw-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .flaw-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .flaw-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .flaw-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #00b894;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #00b894;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .api-examples-section {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #6c5ce7;
+        }
+
+        .api-examples-section h2 {
+            color: #6c5ce7;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .api-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #6c5ce7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .api-card h3 {
+            color: #6c5ce7;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .api-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .api-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .risks-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .risks-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .risk-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .risk-card strong {
+            color: #e17055;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .risk-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .defense-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .testing-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .testing-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .testing-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .testing-card h3 {
+            color: #00b894;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .testing-card p {
+            color: #2d3436;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .testing-card ol {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .testing-card ol li {
+            margin: 8px 0;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #f5576c;
+        }
+
+        .conclusion h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .flaws-section, .api-examples-section, .risks-section, .defense-section, .testing-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Broken Authentication Logic</h1>
+            <p>Authentication Mechanism Mein Tarkeebi Kamzoriyan</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Shurwati Hamle</a> /
+            <a href="index.html">Authentication Bypass</a> /
+            <span>Broken Authentication Logic</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Broken Authentication Logic Kya Hai?</h2>
+                <p>
+                    <strong>"Broken Authentication Logic"</strong> ka topic, jo API Hacking roadmap ke "Shurwati Hamle" (Initial Attacks) section mein "Authentication Bypass" ke tehat aata hai, iska matlab hai ke user ki pehchan verify karne ke tareeqe mein kharabiyan hain.
+                </p>
+                <p>
+                    Seedhe lafzon mein, iska matlab hai ke authentication mechanism, jo aapki pehchan ki tasdeeq ke liye banaya gaya hai, usmein <strong>tarkeebi kamzoriyan</strong> ya <strong>design ki ghaltiyan</strong> hain jin ka faida utha kar ek hacker usse bypass kar sakta hai.
+                </p>
+                
+                <div class="definition-box">
+                    <h4>🔍 Ahem Farq</h4>
+                    <p>
+                        Hacker credentials ko seedhe crack karne ke bajaye, authentication process ko dhokha dene ya usse ghoom kar nikalne ki koshish karta hai. Yeh masla passwords ke kamzor hone ka nahi balki <strong>authentication flow ke code ya design mein ghaltiyan</strong> ka hai.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flaws-section">
+                <h2><span class="icon">🐛</span>Logic Flaws (Tarkeebi Ghalatiyan) Ki Types</h2>
+                <p>
+                    Asal masla zaroori nahi ke kamzor passwords hon, balki authentication flow ke code ya design mein ghaltiyan hoti hain:
+                </p>
+
+                <div class="flaw-card">
+                    <h3>1. Improper State Management (Ghalat State Intezaam)</h3>
+                    <p>
+                        Application shayad user ki authentication state ko sahih tareeqe se track na kare, jis se ek hacker purane session tokens ko dobara istemal kar sake ya steps ko bypass kar sake.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Vulnerable Scenario:</h4>
+                        <code>User logs in → Session created with state="pending"</code>
+                        <code>User verifies email → State should change to "verified"</code>
+                        <code>But application doesn't check state before granting access</code>
+                        <p style="margin-top: 10px; color: #e17055;"><strong>Result:</strong> User with "pending" state can access protected resources</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Session state transitions properly handle nahi hote</li>
+                        <li>Intermediate states ka validation missing</li>
+                        <li>State rollback possible hai</li>
+                        <li>Concurrent requests se state corruption</li>
+                    </ul>
+                </div>
+
+                <div class="flaw-card">
+                    <h3>2. Flawed Multi-Factor Authentication (MFA) Implementation</h3>
+                    <p>
+                        Agar MFA maujood hai, lekin ek hacker phir bhi doosre factor ke bagair kisi aur endpoint se ya request mein hera pheri karke log in kar sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 MFA Bypass Examples:</h4>
+                        <code>POST /login → Username/Password accepted → MFA required</code>
+                        <code>But attacker directly accesses:</code>
+                        <code>GET /api/dashboard → Access granted! (MFA skipped)</code>
+                        <p style="margin-top: 10px;">Ya</p>
+                        <code>Cookie mein mfa_verified=false → Manually change to true</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>MFA sirf kuch endpoints par enforced</li>
+                        <li>MFA status client-side par maintained</li>
+                        <li>Backup authentication methods insecure</li>
+                        <li>"Remember this device" feature ka misuse</li>
+                    </ul>
+                </div>
+
+                <div class="flaw-card">
+                    <h3>3. Weak Password Reset Mechanisms</h3>
+                    <p>
+                        Agar password reset process ko aasani se manipulate kiya ja sakta hai (maslan, request mein user ID badal kar ya reset tokens ko sahih tareeqe se validate na karke).
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Reset Vulnerabilities:</h4>
+                        <code>POST /reset-password</code>
+                        <code>{</code>
+                        <code>  "email": "attacker@example.com",</code>
+                        <code>  "user_id": 123,  ← Change to victim's ID</code>
+                        <code>  "new_password": "hacked123"</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px;">Server user_id par rely karta hai, email verify nahi karta</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Reset tokens predictable hain</li>
+                        <li>Token expiry properly check nahi hoti</li>
+                        <li>Same token multiple times use ho sakta hai</li>
+                        <li>User verification insufficient hai</li>
+                        <li>Reset links sensitive data expose karte hain</li>
+                    </ul>
+                </div>
+
+                <div class="flaw-card">
+                    <h3>4. Bypassing Steps In A Workflow</h3>
+                    <p>
+                        Ek hacker zaroori authentication steps ko chhod kar, jaise email verification, seedhe authenticated functions tak pahunch sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Step Bypass Example:</h4>
+                        <code>Expected Flow:</code>
+                        <code>1. Register → 2. Verify Email → 3. Complete Profile → 4. Access Dashboard</code>
+                        <p style="margin-top: 10px; color: #e17055;"><strong>Bypass:</strong></p>
+                        <code>1. Register → 2. Skip verification → 4. Direct /dashboard access</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Sequential workflow enforcement missing</li>
+                        <li>Step completion validation na hona</li>
+                        <li>Direct endpoint access possible</li>
+                        <li>State transition checks absent</li>
+                    </ul>
+                </div>
+
+                <div class="flaw-card">
+                    <h3>5. Insecure Account Creation</h3>
+                    <p>
+                        Agar account banane ki logic ka galat istemal karke administrator ke taur par register kiya ja sake ya maujooda user accounts ko overwrite kiya ja sake.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Registration Exploits:</h4>
+                        <code>POST /register</code>
+                        <code>{</code>
+                        <code>  "username": "newuser",</code>
+                        <code>  "password": "pass123",</code>
+                        <code>  "role": "admin"  ← Attacker sets admin role</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px;">Agar backend role ko validate nahi karta</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Role assignment client se control hota hai</li>
+                        <li>Existing username overwrite ho sakta hai</li>
+                        <li>SQL injection via registration form</li>
+                        <li>Mass assignment vulnerabilities</li>
+                        <li>No email/phone verification</li>
+                    </ul>
+                </div>
+
+                <div class="flaw-card">
+                    <h3>6. Session Fixation</h3>
+                    <p>
+                        Attacker pehle se ek session ID set kar leta hai, phir victim ko us session use karne par majboor karta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Session Fixation Attack:</h4>
+                        <code>1. Attacker gets session ID: ABC123</code>
+                        <code>2. Sends victim: http://site.com/?session=ABC123</code>
+                        <code>3. Victim logs in with this session</code>
+                        <code>4. Attacker uses ABC123 to access victim's account</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Login par naya session generate nahi hota</li>
+                        <li>Session ID URL parameters se accept hoti hai</li>
+                        <li>Old sessions invalidate nahi hote</li>
+                    </ul>
+                </div>
+
+                <div class="flaw-card">
+                    <h3>7. JWT Token Vulnerabilities</h3>
+                    <p>
+                        JSON Web Tokens ki improper implementation se authentication bypass possible hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 JWT Flaws:</h4>
+                        <code>// None algorithm attack</code>
+                        <code>{"alg":"none","typ":"JWT"}</code>
+                        <p style="margin-top: 8px;">Ya</p>
+                        <code>// Change user_id in payload</code>
+                        <code>{"user_id":1,"role":"admin"}</code>
+                        <p style="margin-top: 8px;">Agar signature verify nahi hota</p>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>"none" algorithm accept karna</li>
+                        <li>Weak signing keys</li>
+                        <li>No token expiration</li>
+                        <li>Signature verification skip hona</li>
+                        <li>Key confusion attacks</li>
+                    </ul>
+                </div>
+
+                <div class="flaw-card">
+                    <h3>8. OAuth/SSO Implementation Flaws</h3>
+                    <p>
+                        Third-party authentication mechanisms mein logic errors.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 OAuth Vulnerabilities:</h4>
+                        <code>// Redirect URI manipulation</code>
+                        <code>redirect_uri=https://attacker.com</code>
+                        <p style="margin-top: 8px;">Ya</p>
+                        <code>// State parameter missing (CSRF)</code>
+                    </div>
+
+                    <ul style="margin-top: 15px;">
+                        <li>Open redirect vulnerabilities</li>
+                        <li>Missing state parameter validation</li>
+                        <li>Token leakage via referer headers</li>
+                        <li>Improper scope validation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="api-examples-section">
+                <h2><span class="icon">🔌</span>APIs Mein Iske Zahir Hone Ki Misalein</h2>
+
+                <div class="api-card">
+                    <h3>1. Manipulating API Endpoints</h3>
+                    <p>
+                        Ek API mein authenticated users ke liye ek endpoint ho sakta hai aur unauthenticated users ke liye ek alag endpoint. Agar ek hacker system ko yeh samjhne par majboor kar sakta hai ke woh authenticated hai, to yeh broken authentication logic hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Endpoint Manipulation:</h4>
+                        <code>Authenticated: GET /api/v1/user/profile</code>
+                        <code>Public: GET /api/v1/public/data</code>
+                        <p style="margin-top: 10px; color: #e17055;"><strong>Attack:</strong></p>
+                        <code>GET /api/v1/user/profile (without valid auth)</code>
+                        <code>Server doesn't properly check authentication</code>
+                        <code>→ Sensitive data exposed!</code>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <h3>2. Predictable Session Tokens</h3>
+                    <p>
+                        Agar session tokens qabil-e-peshgoi tareeqe se banaye jaate hain, to ek hacker valid tokens ka andaza laga sakta hai aur login ko bypass kar sakta hai.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Predictable Token Patterns:</h4>
+                        <code>User 1: session_token=1000</code>
+                        <code>User 2: session_token=1001</code>
+                        <code>User 3: session_token=1002</code>
+                        <p style="margin-top: 10px;">Attacker tries: <code>session_token=1003, 1004, 1005...</code></p>
+                        <p style="margin-top: 8px;">Ya</p>
+                        <code>token = MD5(username + timestamp)</code>
+                        <p>Agar algorithm known hai to prediction possible</p>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <h3>3. Lack Of Proper Authorization After Authentication</h3>
+                    <p>
+                        Kabhi kabhi, authentication kaam kar sakti hai, lekin application yeh theek se check karne mein nakam rehti hai ke authenticated user ko ek khaas action karne ki ijazat hai ya nahi.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Missing Authorization:</h4>
+                        <code>User logged in successfully (Authentication ✓)</code>
+                        <code>GET /api/admin/delete-user/123</code>
+                        <code>Server checks: User is authenticated? Yes</code>
+                        <code>Server doesn't check: Is user an admin? No check!</code>
+                        <code>→ Regular user can delete users</code>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <h3>4. Parameter Tampering</h3>
+                    <p>
+                        Request parameters ko modify kar ke authentication bypass karna.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Parameter Attack:</h4>
+                        <code>POST /api/transfer-money</code>
+                        <code>{</code>
+                        <code>  "from_account": "123",</code>
+                        <code>  "to_account": "456",</code>
+                        <code>  "amount": 1000,</code>
+                        <code>  "authenticated": true  ← Attacker adds this</code>
+                        <code>}</code>
+                    </div>
+                </div>
+
+                <div class="api-card">
+                    <h3>5. Race Conditions In Authentication</h3>
+                    <p>
+                        Concurrent requests se authentication checks bypass karna.
+                    </p>
+                    
+                    <div class="example-box">
+                        <h4>💡 Race Condition:</h4>
+                        <code>Thread 1: POST /login (credentials sent)</code>
+                        <code>Thread 2: GET /protected-resource</code>
+                        <p style="margin-top: 8px;">Agar Thread 2 jaldi execute ho jaye before full authentication validation</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Yeh Itni Khatarnak Kyun Hai?</h4>
+                <ul>
+                    <li><strong>Complete Account Takeover:</strong> Hackers user accounts, jismein administrator accounts bhi shamil hain, par mukammal qabza kar sakte hain</li>
+                    <li><strong>Unauthorized Access:</strong> Woh sensitive data tak rasai hasil kar sakte hain, user ki taraf se actions kar sakte hain, ya poore system par qabza kar sakte hain</li>
+                    <li><strong>Difficult to Detect:</strong> Yeh logic flaws chote ho sakte hain aur standard security scanners se pakde nahi ja sakte</li>
+                    <li><strong>Manual Review Required:</strong> Application ke unique authentication flow ko samajhne ki zaroorat hoti hai</li>
+                    <li><strong>Widespread Impact:</strong> Ek flaw se hazaron users affected ho sakte hain</li>
+                </ul>
+            </div>
+
+            <div class="risks-section">
+                <h2><span class="icon">⚠️</span>Real-World Consequences</h2>
+
+                <div class="risk-card">
+                    <strong>Data Breaches</strong>
+                    <p>
+                        Authentication bypass se attackers sensitive customer data, financial information, aur intellectual property access kar sakte hain.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>Financial Loss</strong>
+                    <p>
+                        Banking aur e-commerce platforms mein fraudulent transactions, unauthorized fund transfers, aur payment frauds.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>Compliance Violations</strong>
+                    <p>
+                        GDPR, PCI-DSS, HIPAA jaise regulations ki violations se legal penalties aur fines.
+                    </p>
+                </div>
+
+                <div class="risk-card">
+                    <strong>Reputation Damage</strong>
+                    <p>
+                        Customer trust ka loss, media coverage, aur brand value mein decline.
+                    </p>
+                </div>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>Kaise Bachao Ho Sakta Hai</h2>
+                <p>
+                    Developers ko apni authentication aur session management mechanisms ko ehtiyat se design aur sakhti se test karna chahiye:
+                </p>
+
+                <div class="defense-card">
+                    <strong>1. Proper State Management</strong>
+                    <p>
+                        Authentication state ko server-side par securely manage karen.
+                    </p>
+                    <ul>
+                        <li>State transitions ko strictly enforce karen</li>
+                        <li>Har request par state validate karen</li>
+                        <li>Client-side state par trust na karen</li>
+                        <li>Session data ko encrypt karen</li>
+                        <li>State changes ko log karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Comprehensive MFA Implementation</strong>
+                    <p>
+                        Multi-factor authentication ko properly implement karen.
+                    </p>
+                    <ul>
+                        <li>MFA ko sabhi sensitive endpoints par enforce karen</li>
+                        <li>MFA bypass ke alternate routes close karen</li>
+                        <li>Backup codes securely generate karen</li>
+                        <li>"Remember device" feature carefully implement karen</li>
+                        <li>MFA status server-side track karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Secure Password Reset</strong>
+                    <p>
+                        Password reset process ko secure banayein.
+                    </p>
+                    <ul>
+                        <li>Cryptographically secure tokens generate karen</li>
+                        <li>Short expiry time set karen (15-30 minutes)</li>
+                        <li>One-time use tokens implement karen</li>
+                        <li>User identity properly verify karen</li>
+                        <li>Email/SMS verification zaroori karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. Workflow Enforcement</strong>
+                    <p>
+                        Sequential steps ko properly enforce karen.
+                    </p>
+                    <ul>
+                        <li>Step completion tracking implement karen</li>
+                        <li>Direct endpoint access prevent karen</li>
+                        <li>State machine pattern use karen</li>
+                        <li>Prerequisite checks add karen</li>
+                        <li>Workflow violations log karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Secure Session Management</strong>
+                    <p>
+                        Session tokens ko securely handle karen.
+                    </p>
+                    <ul>
+                        <li>Cryptographically random tokens generate karen</li>
+                        <li>Login par naye session banayein</li>
+                        <li>Logout par sessions invalidate karen</li>
+                        <li>Session expiry implement karen</li>
+                        <li>Concurrent session limits set karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. Input Validation</strong>
+                    <p>
+                        Sabhi inputs ko properly validate karen.
+                    </p>
+                    <ul>
+                        <li>Server-side validation mandatory</li>
+                        <li>Whitelist approach use karen</li>
+                        <li>Parameter tampering prevent karen</li>
+                        <li>Mass assignment vulnerabilities fix karen</li>
+                        <li>Type checking enforce karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Regular Security Audits</strong>
+                    <p>
+                        Authentication logic ko regularly review karen.
+                    </p>
+                    <ul>
+                        <li>Code reviews conduct karen</li>
+                        <li>Penetration testing schedule karen</li>
+                        <li>Automated security scans run karen</li>
+                        <li>Logic flow diagrams banayein</li>
+                        <li>Security team feedback len</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Principle Of Least Privilege</strong>
+                    <p>
+                        Minimum required permissions grant karen.
+                    </p>
+                    <ul>
+                        <li>Default permissions minimal rakhen</li>
+                        <li>Role-based access control implement karen</li>
+                        <li>Permission escalation monitor karen</li>
+                        <li>Regular permission audits karen</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="testing-section">
+                <h2><span class="icon">🔍</span>Testing Methodology</h2>
+
+                <div class="testing-card">
+                    <h3>1. State Transition Testing</h3>
+                    <p>
+                        Authentication workflow ke har state ko test karen.
+                    </p>
+                    <ol>
+                        <li>Sabhi possible states identify karen</li>
+                        <li>State transitions ko map karen</li>
+                        <li>Invalid transitions try karen</li>
+                        <li>State rollback attempts karen</li>
+                        <li>Concurrent state changes test karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>2. Endpoint Authorization Testing</h3>
+                    <p>
+                        Har endpoint par proper authorization check karen.
+                    </p>
+                    <ol>
+                        <li>Unauthenticated access try karen</li>
+                        <li>Different user roles test karen</li>
+                        <li>Cross-user access attempts karen</li>
+                        <li>HTTP method tampering try karen</li>
+                        <li>Parameter manipulation test karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>3. Session Management Testing</h3>
+                    <p>
+                        Session handling ko thoroughly test karen.
+                    </p>
+                    <ol>
+                        <li>Session fixation test karen</li>
+                        <li>Session token predictability check karen</li>
+                        <li>Session expiry validate karen</li>
+                        <li>Concurrent sessions test karen</li>
+                        <li>Session invalidation verify karen</li>
+                    </ol>
+                </div>
+
+                <div class="testing-card">
+                    <h3>4. Token Analysis</h3>
+                    <p>
+                        Authentication tokens ko analyze karen.
+                    </p>
+                    <ol>
+                        <li>JWT tokens decode karen</li>
+                        <li>Token signatures verify karen</li>
+                        <li>Token expiry check karen</li>
+                        <li>Token tampering try karen</li>
+                        <li>Algorithm confusion test karen</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Ethical Guidelines</h4>
+                <p>
+                    Authentication logic testing sirf authorized environments par karein. Production systems par unauthorized testing illegal hai aur serious legal consequences ho sakte hain. Hamesha proper authorization, bug bounty programs, ya signed agreements ke saath testing karein.
+                </p>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Ahem Nuqta</h4>
+                <p>
+                    <strong>Broken Authentication Logic</strong> modern applications mein sab se critical vulnerabilities mein se ek hai. Yeh sirf technical implementation ka masla nahi balki design aur architecture decisions ka natija hai. Developers ko chahiye ke wo authentication flow ko design karte waqt security-first approach apnayen aur har possible attack scenario ko consider karen.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa</h3>
+                <p>
+                    Broken Authentication Logic ek complex vulnerability hai jo implementation flaws, design mistakes, aur improper security practices ka natija hai. Yeh credentials crack karne se zyada tehzeeb-daar lekin equally dangerous attack vector hai.
+                </p>
+                <p style="margin-top: 15px;">
+                    Successful defense ke liye comprehensive approach chahiye: secure design, proper implementation, regular testing, aur continuous monitoring. Authentication har application ki pehli defense line hai - agar yeh toot jaye to baqi saari security measures bekaar hain.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Yaad rakhein:</strong> Security by design, not by afterthought. Authentication logic ko shuru se hi security considerations ke saath design karen, na ke baad mein patch karen.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

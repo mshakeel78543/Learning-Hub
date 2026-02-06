@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Services Ki Iqsam - Types of Web Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 3px solid #f093fb;
+        }
+
+        .breadcrumb p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .breadcrumb span {
+            color: #f5576c;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #f5576c;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #f093fb;
+            display: inline-block;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #f5576c;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .service-types {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-left: 8px solid;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-card.rest {
+            border-left-color: #11998e;
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+        }
+
+        .service-card.soap {
+            border-left-color: #667eea;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        }
+
+        .service-card.graphql {
+            border-left-color: #e1467c;
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+        }
+
+        .service-card h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            border: none;
+            padding: 0;
+            display: block;
+        }
+
+        .service-card.rest h2 {
+            color: #11998e;
+        }
+
+        .service-card.soap h2 {
+            color: #667eea;
+        }
+
+        .service-card.graphql h2 {
+            color: #e1467c;
+        }
+
+        .service-description {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .service-description h3 {
+            color: #333;
+            font-size: 1.2em;
+            margin: 0 0 10px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .service-description p {
+            margin-bottom: 10px;
+        }
+
+        .features-list {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .features-list h3 {
+            color: #f5576c;
+            font-size: 1.3em;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .features-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list ul li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #333;
+        }
+
+        .features-list ul li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #11998e;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .service-card.soap .features-list ul li::before {
+            color: #667eea;
+        }
+
+        .service-card.graphql .features-list ul li::before {
+            color: #e1467c;
+        }
+
+        .hacking-relevance {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #c0392b;
+        }
+
+        .hacking-relevance h3 {
+            color: #c0392b;
+            font-size: 1.3em;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .hacking-relevance p {
+            color: #2c3e50;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .comparison-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid;
+        }
+
+        .comparison-card.rest {
+            border-top-color: #11998e;
+        }
+
+        .comparison-card.soap {
+            border-top-color: #667eea;
+        }
+
+        .comparison-card.graphql {
+            border-top-color: #e1467c;
+        }
+
+        .comparison-card h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .comparison-card.rest h4 {
+            color: #11998e;
+        }
+
+        .comparison-card.soap h4 {
+            color: #667eea;
+        }
+
+        .comparison-card.graphql h4 {
+            color: #e1467c;
+        }
+
+        .benefits-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .benefits-section h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 25px;
+            border: none;
+            display: block;
+        }
+
+        .benefit-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #f5576c;
+        }
+
+        .benefit-item h3 {
+            color: #f5576c;
+            margin: 0 0 10px 0;
+            padding: 0;
+            border: none;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-left: 5px solid #f5576c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box strong {
+            color: #f5576c;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .key-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        ul li {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .summary-box h3 {
+            color: white;
+            margin: 0 0 20px 0;
+            padding: 0;
+            border: none;
+            font-size: 1.6em;
+        }
+
+        .summary-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .summary-box ul li {
+            color: white;
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .summary-box ul li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Web Services Ki Iqsam</h1>
+            <p>Types of Web Services</p>
+        </div>
+
+        <div class="breadcrumb">
+            <p><span>API Hacking</span> → <span>Bunyadi Maloomat</span> → Web Services Ki Iqsam</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <p>"Web Services Ki Iqsam" (Types of Web Services) API Hacking roadmap mein "Bunyadi Maloomat" (Basic Information) section ka aik bunyadi topic hai. Yeh aapko web services banane ke liye istemal hone wale mukhtalif architectural styles aur protocols se mutarif karata hai.</p>
+                
+                <p><strong>Web services darasal aise systems hain jo mukhtalif applications ko network par aik doosre se communication karne ki ijazat dete hain.</strong></p>
+                
+                <p>In iqsam ko samajhna API hacking ke liye bohat zaroori hai kyunki <strong>vulnerabilities aur attack vectors</strong> aksar is baat par depend karte hain ke web service ko kaise design aur implement kiya gaya hai.</p>
+            </div>
+
+            <div class="section">
+                <h2>📚 Aham Web Services Ki Iqsam</h2>
+
+                <div class="service-types">
+                    <!-- RESTful APIs -->
+                    <div class="service-card rest">
+                        <div class="key-icon">🌐</div>
+                        <h2>1. RESTful APIs</h2>
+                        <p style="font-size: 1.1em; color: #11998e; font-weight: bold;">Representational State Transfer APIs</p>
+
+                        <div class="service-description">
+                            <h3>Yeh Kya Hai:</h3>
+                            <p>Aaj kal web services architecture ki <strong>sab se aam qism</strong> hai. RESTful APIs stateless hote hain, matlab client se server tak har request mein woh tamam maloomat shamil hoti hain jo request ko samajhne ke liye zaroori hain. Yeh resources par operations karne ke liye standard HTTP methods (GET, POST, PUT, DELETE) istemal karte hain, jinhein URLs se pehchana jata hai.</p>
+                        </div>
+
+                        <div class="features-list">
+                            <h3>Khas Khususiyaat:</h3>
+                            <ul>
+                                <li><strong>Stateless:</strong> Requests ke darmiyan server par koi session maloomat store nahi hoti.</li>
+                                <li><strong>Client-Server:</strong> Client aur server ke darmiyan wazeh tafreeq.</li>
+                                <li><strong>Cacheable:</strong> Performance behtar banane ke liye responses ko cache kiya ja sakta hai.</li>
+                                <li><strong>Layered System:</strong> Intermediaries jaise load balancers aur proxies shamil ho sakte hain.</li>
+                                <li><strong>Uniform Interface:</strong> Standard HTTP methods aur resource URIs istemal karta hai.</li>
+                            </ul>
+                        </div>
+
+                        <div class="hacking-relevance">
+                            <h3>🔒 Hacking Relevance:</h3>
+                            <p>REST ko samajhna <strong>endpoints, HTTP methods, aur authentication</strong> se mutaliq mumkina vulnerabilities ki nishandahi ke liye zaroori hai. Khaas taur par:</p>
+                            <ul>
+                                <li><strong>Access Control:</strong> IDOR (Insecure Direct Object References) attacks</li>
+                                <li><strong>Injection Attacks:</strong> Requests ke parameters ya body mein malicious data</li>
+                                <li><strong>Authentication Bypass:</strong> Token aur session management issues</li>
+                                <li><strong>Rate Limiting:</strong> API abuse aur DoS attacks</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- SOAP APIs -->
+                    <div class="service-card soap">
+                        <div class="key-icon">🔐</div>
+                        <h2>2. SOAP APIs</h2>
+                        <p style="font-size: 1.1em; color: #667eea; font-weight: bold;">Simple Object Access Protocol APIs</p>
+
+                        <div class="service-description">
+                            <h3>Yeh Kya Hai:</h3>
+                            <p>SOAP web services ki implementation mein <strong>structured information ka tabadla</strong> karne ke liye aik protocol hai. Yeh message formatting ke liye XML par bohat zyada inhisaar karta hai aur aam taur par HTTP par kaam karta hai, lekin SMTP ya TCP jaise deegar protocols bhi istemal kar sakta hai.</p>
+                        </div>
+
+                        <div class="features-list">
+                            <h3>Khas Khususiyaat:</h3>
+                            <ul>
+                                <li><strong>Protocol-based:</strong> Yeh aik rasmi protocol hai jis ke sakht qawanin hain.</li>
+                                <li><strong>XML-based:</strong> Tamam messages XML format mein hote hain.</li>
+                                <li><strong>WSDL:</strong> (Web Services Description Language) Service ke operations, parameters, aur data types ko bayan karti hai.</li>
+                                <li><strong>Stateful (ho sakta hai):</strong> Khaas extensions ke zariye stateful operations ko support kar sakta hai.</li>
+                                <li><strong>Built-in Security:</strong> WS-Security standards support karta hai.</li>
+                            </ul>
+                        </div>
+
+                        <div class="hacking-relevance">
+                            <h3>🔒 Hacking Relevance:</h3>
+                            <p>Hamlawar <strong>WSDL files</strong> talash karte hain taake API ki structure ko samajh saken. SOAP APIs mein khaas vulnerabilities:</p>
+                            <ul>
+                                <li><strong>XML External Entity (XXE) Injection:</strong> XML par inhisaar ki wajah se zyada common</li>
+                                <li><strong>XML Injection:</strong> Malicious XML data injection</li>
+                                <li><strong>WSDL Enumeration:</strong> API structure aur endpoints ki discovery</li>
+                                <li><strong>Header Manipulation:</strong> SOAP headers mein authentication bypass</li>
+                                <li><strong>Message Tampering:</strong> XML message structure manipulation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- GraphQL APIs -->
+                    <div class="service-card graphql">
+                        <div class="key-icon">⚡</div>
+                        <h2>3. GraphQL APIs</h2>
+                        <p style="font-size: 1.1em; color: #e1467c; font-weight: bold;">Query Language for APIs</p>
+
+                        <div class="service-description">
+                            <h3>Yeh Kya Hai:</h3>
+                            <p>GraphQL APIs ke liye aik <strong>query language</strong> hai aur un queries ko aap ke mojooda data se poora karne ke liye aik runtime hai. Yeh clients ko bilkul wohi data talab karne ki ijazat deta hai jo unhein chahiye, na zyada na kam, sirf aik endpoint par aik single query bhej kar.</p>
+                        </div>
+
+                        <div class="features-list">
+                            <h3>Khas Khususiyaat:</h3>
+                            <ul>
+                                <li><strong>Single Endpoint:</strong> Aam taur par, tamam queries aur mutations aik hi /graphql endpoint par jati hain.</li>
+                                <li><strong>Client-driven Data Fetching:</strong> Clients batate hain ke woh kya data chahte hain.</li>
+                                <li><strong>Strongly Typed Schema:</strong> API ki salahiyaten aik schema se bayan ki jati hain.</li>
+                                <li><strong>Introspection:</strong> Clients schema ko khud query kar sakte hain taake woh samajh saken ke kya data available hai.</li>
+                                <li><strong>Flexible Queries:</strong> Multiple resources ko aik hi request mein fetch karna.</li>
+                            </ul>
+                        </div>
+
+                        <div class="hacking-relevance">
+                            <h3>🔒 Hacking Relevance:</h3>
+                            <p>GraphQL <strong>naye attack vectors</strong> paida karta hai jo traditional REST APIs mein nahi paaye jate:</p>
+                            <ul>
+                                <li><strong>Introspection Queries:</strong> API ki structure ke bare mein sensitive maloomat leak kar sakti hain</li>
+                                <li><strong>Batching Attacks:</strong> Multiple queries ko aik request mein bhej kar abuse</li>
+                                <li><strong>Alias Abuse:</strong> Same field ko multiple baar query karna</li>
+                                <li><strong>Resource Exhaustion:</strong> Deeply nested queries se DoS attacks</li>
+                                <li><strong>Authorization Issues:</strong> Field-level access control bypass</li>
+                            </ul>
+                            <p style="margin-top: 15px;"><strong>Note:</strong> Roadmap mein baad mein khaas taur par "GraphQL Attacks" section shamil hai.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 In Mukhtalif Iqsam Ko Samajhne Ke Fawaid</h2>
+
+                <div class="benefits-section">
+                    <h2>Yeh Salahiyaten Paida Hoti Hain:</h2>
+
+                    <div class="benefit-item">
+                        <h3>🔍 1. Technology Ki Pehchan</h3>
+                        <p>Jab aap kisi API ka saamna karte hain, to aap uske <strong>rawaiye, endpoints, aur data formats</strong> ki bunyad par uski zereen technology (REST, SOAP, GraphQL) ka andaza laga sakte hain.</p>
+                        <ul>
+                            <li>Multiple endpoints aur HTTP methods → Likely REST</li>
+                            <li>XML-based messages aur WSDL file → SOAP</li>
+                            <li>Single /graphql endpoint → GraphQL</li>
+                        </ul>
+                    </div>
+
+                    <div class="benefit-item">
+                        <h3>🎯 2. Vulnerabilities Ka Andaza</h3>
+                        <p>Har qism ki <strong>vulnerabilities ka aik aam set</strong> hota hai, jo aapko apni testing koshishon ko markooz karne ki ijazat deta hai.</p>
+                        <ul>
+                            <li>REST → IDOR, Rate Limiting, Token Issues</li>
+                            <li>SOAP → XXE, XML Injection, WSDL Exposure</li>
+                            <li>GraphQL → Introspection, Batching, Nested Queries</li>
+                        </ul>
+                    </div>
+
+                    <div class="benefit-item">
+                        <h3>🛠️ 3. Munasib Tools Aur Techniques Ka Istemal</h3>
+                        <p>Baaz tools aur hamle ke tareeqe <strong>khaas API types ke khilaf zyada asar angaiz</strong> hote hain.</p>
+                        <ul>
+                            <li><strong>REST:</strong> Burp Suite, Postman, OWASP ZAP</li>
+                            <li><strong>SOAP:</strong> SoapUI, XXE payloads, XML parsers</li>
+                            <li><strong>GraphQL:</strong> GraphQL Playground, InQL, specialized query tools</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Quick Comparison</h2>
+
+                <div class="comparison-grid">
+                    <div class="comparison-card rest">
+                        <h4>REST</h4>
+                        <p><strong>Format:</strong> JSON (aam), XML</p>
+                        <p><strong>Endpoints:</strong> Multiple</p>
+                        <p><strong>State:</strong> Stateless</p>
+                        <p><strong>Popularity:</strong> Bohat zyada</p>
+                        <p><strong>Complexity:</strong> Kam</p>
+                    </div>
+
+                    <div class="comparison-card soap">
+                        <h4>SOAP</h4>
+                        <p><strong>Format:</strong> XML only</p>
+                        <p><strong>Endpoints:</strong> Single</p>
+                        <p><strong>State:</strong> Flexible</p>
+                        <p><strong>Popularity:</strong> Legacy systems</p>
+                        <p><strong>Complexity:</strong> Zyada</p>
+                    </div>
+
+                    <div class="comparison-card graphql">
+                        <h4>GraphQL</h4>
+                        <p><strong>Format:</strong> JSON</p>
+                        <p><strong>Endpoints:</strong> Single (/graphql)</p>
+                        <p><strong>State:</strong> Stateless</p>
+                        <p><strong>Popularity:</strong> Barh raha hai</p>
+                        <p><strong>Complexity:</strong> Darmiyana</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Mukhtasar</h2>
+                
+                <div class="summary-box">
+                    <h3>Key Takeaways:</h3>
+                    <ul>
+                        <li><strong>RESTful APIs:</strong> Sab se aam, stateless, HTTP methods istemal karte hain</li>
+                        <li><strong>SOAP APIs:</strong> XML-based, protocol-driven, WSDL files istemal karte hain</li>
+                        <li><strong>GraphQL APIs:</strong> Single endpoint, flexible queries, introspection support</li>
+                        <li>Har type ki apni khaas vulnerabilities hain</li>
+                        <li>Technology ki pehchan testing strategy ko shape deti hai</li>
+                        <li>Munasib tools ka chunao API type par depend karta hai</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>💡 Conclusion:</strong> "Web Services Ki Iqsam" aapko API hacking karte waqt saamna karne wale targets ke landscape ko samajhne ki bunyad فراہم karta hai. Yeh knowledge aapko zyada effective aur targeted security testing karne mein madad karti hai.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📚 API Hacking Course - Bunyadi Maloomat</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Web Services Ki Iqsam - Types of Web Services</p>
+        </div>
+    </div>
+</body>
+</html>

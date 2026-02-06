@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parameter Tampering - Broken Access Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            padding: 20px;
+            line-height: 1.8;
+            direction: ltr;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #fc5c7d;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #fc5c7d;
+        }
+
+        .intro-section h2 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro-section p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .intro-section strong {
+            color: #d63031;
+        }
+
+        .concept-box {
+            background: white;
+            border: 2px solid #fc5c7d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .concept-box h4 {
+            color: #fc5c7d;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .concept-box p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .concept-box ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .concept-box ul li {
+            margin: 6px 0;
+        }
+
+        .concept-box code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #6a82fb;
+        }
+
+        .section h2 {
+            color: #6a82fb;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #fc5c7d;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            color: #2d3436;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .section ul li {
+            margin: 10px 0;
+        }
+
+        .section strong {
+            color: #6a82fb;
+        }
+
+        .types-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #00b894;
+        }
+
+        .types-section h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .type-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #00b894;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .type-card h3 {
+            color: #00b894;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .type-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .type-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .type-card ul li {
+            margin: 8px 0;
+        }
+
+        .examples-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #e17055;
+        }
+
+        .examples-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .example-card {
+            background: white;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #e17055;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .example-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .example-card h3 {
+            color: #e17055;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .example-card p {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .example-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .example-card ul li {
+            margin: 8px 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #e17055;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #e17055;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example-box p {
+            color: #2d3436;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        .impact-section {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #d63031;
+        }
+
+        .impact-section h2 {
+            color: #d63031;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .impact-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #d63031;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .impact-card strong {
+            color: #d63031;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .impact-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .impact-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .impact-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-section {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .defense-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .defense-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .defense-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .defense-card p {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .defense-card ul {
+            margin-left: 20px;
+            color: #2d3436;
+        }
+
+        .defense-card ul li {
+            margin: 6px 0;
+        }
+
+        .defense-card code {
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e83e8c;
+            font-family: 'Courier New', monospace;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .danger-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .danger-box p {
+            color: #721c24;
+        }
+
+        .danger-box ul {
+            margin-left: 20px;
+            color: #721c24;
+        }
+
+        .danger-box ul li {
+            margin: 6px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            color: #856404;
+        }
+
+        .key-point {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .key-point p {
+            color: #2d3436;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+            border: 3px solid #fc5c7d;
+        }
+
+        .conclusion h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .conclusion p {
+            color: #2d3436;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section, .types-section, .examples-section, .impact-section, .defense-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Parameter Tampering</h1>
+            <p>Parameters Mein Hera Pheri - Request Manipulation Attack</p>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="../../index.html">🏠 Home</a> /
+            <a href="../index.html">Hamlon Ki Iqsam</a> /
+            <a href="index.html">Broken Access Control</a> /
+            <span>Parameter Tampering</span>
+        </div>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>🎯 Parameter Tampering Kya Hai?</h2>
+                <p>
+                    <strong>"Parameter Tampering"</strong> API Hacking roadmap ke "Hamlon Ki Iqsam" (Types of Attacks) section mein "Broken Access Control" ke under aata hai.
+                </p>
+                <p>
+                    Parameter Tampering ek qisam ka hamla hai jahan ek hacker <strong>client (jaise web browser ya mobile app) aur server ke darmiyan exchange hone wale parameters ko manipulate karta hai</strong>. Iska maqsad application logic ko modify karna, security checks ko bypass karna, ya ghair-ikhtiyari access haasil karna hota hai.
+                </p>
+
+                <div class="concept-box">
+                    <h4>🎭 Simple Misaal Se Samjhiye</h4>
+                    <p>
+                        Imagine karein aap ek restaurant mein hain aur aap waiter ko apna order likhit form par dete hain:
+                    </p>
+                    <p style="margin-top: 10px;">
+                        <strong>Normal Order Form:</strong>
+                    </p>
+                    <ul>
+                        <li>Item: Burger</li>
+                        <li>Price: $10</li>
+                        <li>Quantity: 1</li>
+                        <li>Total: $10</li>
+                    </ul>
+                    <p style="margin-top: 10px;">
+                        <strong>Parameter Tampering:</strong> Agar restaurant (server) form ko check kiye baghair bill calculate kare, to aap (attacker) form par price ko $10 se $1 kar sakte hain. Restaurant sirf form par jo likha hai us par trust karke bill bana de!
+                    </p>
+                    <p style="margin-top: 10px;">
+                        Web applications mein yeh tab hota hai jab server client se aane wale parameters (price, user_id, role, etc.) par blind trust karta hai baghair verify kiye!
+                    </p>
+                </div>
+            </div>
+
+            <div class="types-section">
+                <h2><span class="icon">📍</span>Parameters Kahan Mil Sakte Hain?</h2>
+                <p>
+                    Yeh parameters mukhtalif jaghon par mil sakte hain:
+                </p>
+
+                <div class="type-card">
+                    <h3>1. URL Parameters (Query Strings)</h3>
+                    <p>
+                        URL mein <code>?</code> ke baad wale hisse:
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Examples:</h4>
+                        <code>www.example.com/item?id=123&quantity=1</code>
+                        <code>www.shop.com/checkout?price=100&discount=0</code>
+                        <code>www.bank.com/transfer?from=123&to=456&amount=1000</code>
+                        <code>www.social.com/profile?user_id=789&role=user</code>
+                    </div>
+
+                    <ul>
+                        <li>Easily visible in browser address bar</li>
+                        <li>Browser history mein save hote hain</li>
+                        <li>Attacker easily modify kar sakta hai</li>
+                        <li>GET requests mein common</li>
+                    </ul>
+                </div>
+
+                <div class="type-card">
+                    <h3>2. Form Fields (POST Data)</h3>
+                    <p>
+                        Hidden ya dikhne wale fields jo POST requests ke through submit kiye jaate hain:
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 HTML Form Example:</h4>
+                        <code>&lt;form method="POST" action="/checkout"&gt;</code>
+                        <code>  &lt;input type="hidden" name="price" value="100"&gt;</code>
+                        <code>  &lt;input type="hidden" name="user_id" value="123"&gt;</code>
+                        <code>  &lt;input type="text" name="quantity" value="1"&gt;</code>
+                        <code>  &lt;button type="submit"&gt;Buy&lt;/button&gt;</code>
+                        <code>&lt;/form&gt;</code>
+                        <p style="margin-top: 10px;">Attacker browser DevTools se hidden fields ko modify kar sakta hai!</p>
+                    </div>
+
+                    <ul>
+                        <li>Hidden fields ko "hidden" samajh kar trust karna galti hai</li>
+                        <li>Browser inspect tool se easily visible</li>
+                        <li>Burp Suite se intercept aur modify kiye ja sakte hain</li>
+                    </ul>
+                </div>
+
+                <div class="type-card">
+                    <h3>3. HTTP Headers</h3>
+                    <p>
+                        Request headers mein sensitive information:
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Common Headers:</h4>
+                        <code>Cookie: session_id=abc123; user_role=admin</code>
+                        <code>Authorization: Bearer eyJhbGci...</code>
+                        <code>X-User-ID: 123</code>
+                        <code>X-Auth-Token: secret_token_xyz</code>
+                        <code>X-Role: administrator</code>
+                    </div>
+
+                    <ul>
+                        <li>Cookie headers easily tampered</li>
+                        <li>Custom headers vulnerable to manipulation</li>
+                        <li>Authorization headers ko modify kiya ja sakta hai</li>
+                        <li>User agents aur referrers spoofed ho sakte hain</li>
+                    </ul>
+                </div>
+
+                <div class="type-card">
+                    <h3>4. JSON/XML Body</h3>
+                    <p>
+                        Request body mein bheja gaya data, jo khaas tor par API calls mein common hai:
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 JSON Body Example:</h4>
+                        <code>POST /api/checkout</code>
+                        <code>Content-Type: application/json</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "user_id": 123,</code>
+                        <code>  "item_id": "ABC",</code>
+                        <code>  "price": 100,</code>
+                        <code>  "quantity": 1,</code>
+                        <code>  "is_admin": false,</code>
+                        <code>  "discount_applied": false</code>
+                        <code>}</code>
+                    </div>
+
+                    <ul>
+                        <li>REST APIs mein bohot common</li>
+                        <li>Postman/Burp Suite se easily modified</li>
+                        <li>Complex nested objects vulnerable</li>
+                        <li>XML injection bhi possible</li>
+                    </ul>
+                </div>
+
+                <div class="type-card">
+                    <h3>5. Cookies</h3>
+                    <p>
+                        Browser cookies mein stored session data:
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Cookie Tampering:</h4>
+                        <code>// Original cookie:</code>
+                        <code>user_id=123; role=user; premium=false</code>
+                        <code></code>
+                        <code>// Tampered cookie:</code>
+                        <code>user_id=1; role=admin; premium=true</code>
+                    </div>
+
+                    <ul>
+                        <li>Browser DevTools se easily editable</li>
+                        <li>Cookie editors available</li>
+                        <li>Base64 encoded cookies decode kiye ja sakte hain</li>
+                        <li>Weak encryption breakable hai</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><span class="icon">⚙️</span>Yeh Kaise Kaam Karta Hai?</h2>
+                <p>
+                    Iska bunyadi khayal yeh hai:
+                </p>
+
+                <div class="example-box">
+                    <h4>💡 Attack Process:</h4>
+                    <p><strong>Step 1: Request Intercept Karna</strong></p>
+                    <code>Attacker apne client se server ko bheji gayi request ko intercept karta hai</code>
+                    <code>Tools: Burp Suite, OWASP ZAP, Browser DevTools</code>
+                    <code></code>
+                    <p><strong>Step 2: Parameters Modify Karna</strong></p>
+                    <code>Request mein ek ya zyada parameters ko badalta hai</code>
+                    <code>Price, user_id, role, permissions, etc.</code>
+                    <code></code>
+                    <p><strong>Step 3: Modified Request Bhejana</strong></p>
+                    <code>Modified request ko server ko bhej deta hai</code>
+                    <code></code>
+                    <p><strong>Step 4: Server Response</strong></p>
+                    <code>Agar server in parameters ko theek se validate ya re-verify nahi karta,</code>
+                    <code>toh woh request ko badle hue values ke saath process kar sakta hai!</code>
+                </div>
+
+                <div class="danger-box">
+                    <h4>🚨 Core Problem</h4>
+                    <p>
+                        Agar server in parameters ko theek se validate ya re-verify nahi karta, toh woh request ko badle hue values ke saath process kar sakta hai, jis se <strong>ghair-mutawaqqe nateeje</strong> nikal sakte hain.
+                    </p>
+                    <ul>
+                        <li>Client-side validation easily bypassable</li>
+                        <li>Server ko har parameter verify karna chahiye</li>
+                        <li>Critical data client se nahi aana chahiye</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="examples-section">
+                <h2><span class="icon">📝</span>Parameter Tampering Ki Misaalein</h2>
+
+                <div class="example-card">
+                    <h3>1. Price Manipulation (Qeemat Mein Hera Pheri)</h3>
+                    <p>
+                        <strong>Scenario:</strong> Online shopping cart mein price tampering
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Normal Request:</h4>
+                        <code>POST /checkout</code>
+                        <code>Content-Type: application/json</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "item_id": "ABC",</code>
+                        <code>  "price": 100,</code>
+                        <code>  "quantity": 1</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px;">Total: $100</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>💡 Tampered Request:</h4>
+                        <code>POST /checkout</code>
+                        <code>Content-Type: application/json</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "item_id": "ABC",</code>
+                        <code>  "price": 1,  // ⚠️ Changed from 100 to 1!</code>
+                        <code>  "quantity": 1</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px; color: #d63031;">Agar server client ki price par trust kare, hacker $1 mein product khareed lega!</p>
+                    </div>
+
+                    <p style="margin-top: 15px;">
+                        <strong>Kya Hota Hai:</strong> Ek hacker is request ko rok kar <code>price</code> parameter ko 1 mein tabdeel kar sakta hai. Agar server client ki taraf se di gayi qeemat par aankh band kar ke bharosa karta hai aur apni database se dobara uski tasdeeq nahi karta, toh hacker us cheez ko $1 mein khareed sakta hai $100 ke bajaye.
+                    </p>
+
+                    <ul>
+                        <li><strong>Impact:</strong> Direct financial loss</li>
+                        <li><strong>Fix:</strong> Server ko database se actual price fetch karni chahiye</li>
+                    </ul>
+                </div>
+
+                <div class="example-card">
+                    <h3>2. Access Control Bypass (Access Control Ko Bypass Karna)</h3>
+                    <p>
+                        <strong>Scenario:</strong> User ID manipulation se doosre user ka data access
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Normal Request:</h4>
+                        <code>GET /user?id=5</code>
+                        <code>Authorization: Bearer user_token</code>
+                        <p style="margin-top: 10px;">User 5 ki apni profile dekh raha hai ✅</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>💡 Tampered Request:</h4>
+                        <code>GET /user?id=1  // ⚠️ Changed from 5 to 1 (admin ID)</code>
+                        <code>Authorization: Bearer user_token</code>
+                        <p style="margin-top: 10px; color: #d63031;">Agar authorization check nahi hai, to User 1 (admin) ka data accessible!</p>
+                    </div>
+
+                    <p style="margin-top: 15px;">
+                        <strong>Kya Hota Hai:</strong> Ek hacker <code>id=5</code> ko <code>id=ADMIN</code> ya <code>id=1</code> (ye farz karte hue ke 1 kisi administrator ki ID ho sakti hai) mein tabdeel kar sakta hai. Agar application yeh theek se check nahi karti ke request karne wale user ke paas dusre users ka data (khaas tor par admin ka) dekhne ka ikhtiyar hai ya nahi, toh hacker ghair-ikhtiyari tor par dusre accounts ki maloomat ya hatta ke administrative functions tak rasai haasil kar sakta hai.
+                    </p>
+
+                    <ul>
+                        <li><strong>Relation:</strong> Yeh IDOR (Insecure Direct Object References) se qareeb se mutaliq hai</li>
+                        <li><strong>Impact:</strong> Unauthorized data access, privacy breach</li>
+                        <li><strong>Fix:</strong> Har request par ownership verify karen</li>
+                    </ul>
+                </div>
+
+                <div class="example-card">
+                    <h3>3. Privilege Escalation (Ikhtiyarat Badhana)</h3>
+                    <p>
+                        <strong>Scenario:</strong> User role manipulation
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Normal Profile Update:</h4>
+                        <code>PUT /api/profile</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "name": "John Doe",</code>
+                        <code>  "email": "john@example.com",</code>
+                        <code>  "is_admin": false</code>
+                        <code>}</code>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>💡 Tampered Request:</h4>
+                        <code>PUT /api/profile</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "name": "John Doe",</code>
+                        <code>  "email": "john@example.com",</code>
+                        <code>  "is_admin": true  // ⚠️ Changed to true!</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px; color: #d63031;">Agar server ko field-level checks nahi hain, user apne aap ko admin bana lega!</p>
+                    </div>
+
+                    <p style="margin-top: 15px;">
+                        <strong>Kya Hota Hai:</strong> Ek user profile update request mein <code>is_admin=false</code> jaisa parameter shamil ho sakta hai. Ek hacker request mein <code>is_admin=false</code> ko <code>is_admin=true</code> mein tabdeel kar sakta hai. Agar server ke paas user roles ko badalne ke liye mazboot server-side checks nahi hain, toh hacker apne ikhtiyarat ko administrator tak badha sakta hai.
+                    </p>
+
+                    <ul>
+                        <li><strong>Impact:</strong> Complete system compromise</li>
+                        <li><strong>Fix:</strong> Critical fields ko user input se accept na karen</li>
+                        <li><strong>Fix:</strong> Role changes sirf authorized admins kar saken</li>
+                    </ul>
+                </div>
+
+                <div class="example-card">
+                    <h3>4. Transaction Manipulation (Lenden Mein Hera Pheri)</h3>
+                    <p>
+                        <strong>Scenario:</strong> Banking transfer mein account number tampering
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Normal Transfer:</h4>
+                        <code>POST /api/transfer</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "from_account": "123456",</code>
+                        <code>  "to_account": "789012",  // Legitimate recipient</code>
+                        <code>  "amount": 1000</code>
+                        <code>}</code>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>💡 Tampered Transfer:</h4>
+                        <code>POST /api/transfer</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "from_account": "999999",  // ⚠️ Changed to victim's account!</code>
+                        <code>  "to_account": "666666",  // ⚠️ Attacker's account</code>
+                        <code>  "amount": 50000  // ⚠️ Increased amount!</code>
+                        <code>}</code>
+                        <p style="margin-top: 10px; color: #d63031;">Agar proper authorization nahi hai, attacker kisi aur ke account se apne account mein transfer kar dega!</p>
+                    </div>
+
+                    <p style="margin-top: 15px;">
+                        <strong>Kya Hota Hai:</strong> Banking application mein, transfer request mein bhejnewale aur wasool karne wale account numbers specify kiye ja sakte hain. Ek hacker mumkin hai ke wasool karne wale account number ko apne control wale account number mein tabdeel kar de.
+                    </p>
+
+                    <ul>
+                        <li><strong>Impact:</strong> Financial fraud, money theft</li>
+                        <li><strong>Fix:</strong> Strong authentication aur authorization</li>
+                        <li><strong>Fix:</strong> Transaction verification (OTP, 2FA)</li>
+                        <li><strong>Fix:</strong> Logged-in user ke account se hi transfer allow karen</li>
+                    </ul>
+                </div>
+
+                <div class="example-card">
+                    <h3>5. Discount/Coupon Manipulation</h3>
+                    <p>
+                        <strong>Scenario:</strong> Discount percentage ko manipulate karna
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Tampered Discount:</h4>
+                        <code>POST /api/apply-discount</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "cart_id": "ABC123",</code>
+                        <code>  "coupon_code": "SAVE10",</code>
+                        <code>  "discount_percent": 99  // ⚠️ Should be 10, changed to 99!</code>
+                        <code>}</code>
+                    </div>
+
+                    <ul>
+                        <li>Coupon validity bypass</li>
+                        <li>Discount percentage manipulation</li>
+                        <li>Multiple coupon application</li>
+                        <li>Expired coupons reactivation</li>
+                    </ul>
+                </div>
+
+                <div class="example-card">
+                    <h3>6. Quantity/Inventory Manipulation</h3>
+                    <p>
+                        <strong>Scenario:</strong> Limited stock items ko bypass karna
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Tampered Quantity:</h4>
+                        <code>POST /api/order</code>
+                        <code></code>
+                        <code>{</code>
+                        <code>  "product_id": "LIMITED_001",</code>
+                        <code>  "quantity": 1000,  // ⚠️ Only 10 in stock!</code>
+                        <code>  "stock_check": "passed"  // ⚠️ Fake parameter!</code>
+                        <code>}</code>
+                    </div>
+
+                    <ul>
+                        <li>Out-of-stock items order karna</li>
+                        <li>Maximum order limit bypass</li>
+                        <li>Inventory validation skip karna</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="impact-section">
+                <h2><span class="icon">💥</span>Yeh Khatarnak Kyun Hai?</h2>
+                <p>
+                    Parameter Tampering ki kamzoriyan tab paida hoti hain jab applications <strong>client-side input par bahut zyada bharosa karti hain</strong>.
+                </p>
+
+                <div class="impact-card">
+                    <strong>1. Financial Loss (Mali Nuqsaan)</strong>
+                    <ul>
+                        <li>Price manipulation se direct revenue loss</li>
+                        <li>Fraudulent transactions</li>
+                        <li>Unauthorized refunds aur credits</li>
+                        <li>Discount abuse</li>
+                        <li>Free premium features access</li>
+                        <li>Payment bypassing</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>2. Unauthorized Access (Ghair-Ikhtiyar Rasai)</strong>
+                    <ul>
+                        <li>Doosre users ke accounts access</li>
+                        <li>Administrative functions unauthorized use</li>
+                        <li>Sensitive data exposure</li>
+                        <li>Private information theft</li>
+                        <li>System configuration access</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>3. Privilege Escalation</strong>
+                    <ul>
+                        <li>Regular user → Admin escalation</li>
+                        <li>Guest → Authenticated user</li>
+                        <li>Free tier → Premium access</li>
+                        <li>Complete system takeover possible</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>4. Data Integrity Compromise</strong>
+                    <ul>
+                        <li>Database records manipulation</li>
+                        <li>Audit logs tampering</li>
+                        <li>Transaction history modification</li>
+                        <li>Inventory corruption</li>
+                        <li>Business logic bypass</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>5. Business Logic Bypass</strong>
+                    <ul>
+                        <li>Approval workflows skip karna</li>
+                        <li>Verification steps bypass</li>
+                        <li>Rate limiting ignore karna</li>
+                        <li>Subscription restrictions bypass</li>
+                        <li>Trial periods extend karna</li>
+                    </ul>
+                </div>
+
+                <div class="impact-card">
+                    <strong>6. Compliance Violations</strong>
+                    <ul>
+                        <li>Regulatory compliance failures</li>
+                        <li>Audit trail corruption</li>
+                        <li>Data protection law violations</li>
+                        <li>Financial reporting inaccuracies</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>🚨 Real-World Examples</h4>
+                <ul>
+                    <li><strong>E-commerce sites:</strong> Price tampering se millions ka loss</li>
+                    <li><strong>Banking apps:</strong> Transaction amount manipulation</li>
+                    <li><strong>Social media:</strong> User ID tampering se privacy breach</li>
+                    <li><strong>Gaming platforms:</strong> In-game currency manipulation</li>
+                    <li><strong>Ticket booking:</strong> Seat selection aur pricing tampering</li>
+                    <li><strong>Food delivery:</strong> Order value aur discount manipulation</li>
+                </ul>
+            </div>
+
+            <div class="defense-section">
+                <h2><span class="icon">🛡️</span>Parameter Tampering Se Kaise Bacha Jaye?</h2>
+
+                <div class="defense-card">
+                    <strong>1. Server-Side Validation (Server Ki Taraf Se Tasdeeq)</strong>
+                    <p>
+                        <strong>Yeh sabse ahem hifazat hai.</strong> Client se aane wale data par kabhi bharosa na karein. Tamam sensitive parameters ko server-side par validate, re-verify ya regenerate kiya jana chahiye.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Secure Implementation:</h4>
+                        <code>// ❌ BAD - Trusting client price</code>
+                        <code>app.post('/checkout', (req, res) => {</code>
+                        <code>  const price = req.body.price;  // Dangerous!</code>
+                        <code>  processPayment(price);</code>
+                        <code>});</code>
+                        <code></code>
+                        <code>// ✅ GOOD - Fetching from database</code>
+                        <code>app.post('/checkout', (req, res) => {</code>
+                        <code>  const itemId = req.body.item_id;</code>
+                        <code>  const price = db.getPrice(itemId);  // Server determines price</code>
+                        <code>  processPayment(price);</code>
+                        <code>});</code>
+                    </div>
+
+                    <ul>
+                        <li><strong>Never trust client input</strong> for critical values</li>
+                        <li>Prices, permissions, roles server se fetch karen</li>
+                        <li>User IDs session se len, parameter se nahi</li>
+                        <li>Critical calculations server-side karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>2. Strong Access Control Checks</strong>
+                    <p>
+                        Har sensitive operation par mazboot authorization checks laagu karein taake yeh yaqeeni ho sake ke authenticated user ke paas specified resource par action perform karne ke liye zaruri permissions hain.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Authorization Check:</h4>
+                        <code>app.get('/user/:id', requireAuth, (req, res) => {</code>
+                        <code>  const requestedId = req.params.id;</code>
+                        <code>  const currentUserId = req.session.userId;</code>
+                        <code>  </code>
+                        <code>  // Ownership check</code>
+                        <code>  if (requestedId !== currentUserId && !req.user.isAdmin) {</code>
+                        <code>    return res.status(403).json({error: 'Forbidden'});</code>
+                        <code>  }</code>
+                        <code>  </code>
+                        <code>  const user = db.getUser(requestedId);</code>
+                        <code>  res.json(user);</code>
+                        <code>});</code>
+                    </div>
+
+                    <ul>
+                        <li>Har request par ownership verify karen</li>
+                        <li>Role-based access control implement karen</li>
+                        <li>Resource-level permissions check karen</li>
+                        <li>Default deny approach use karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>3. Input Sanitization (Input Ki Safai)</strong>
+                    <p>
+                        Tamam user input ko saaf karein taake injection attacks se bacha ja sake aur data mutawaqqe formats ke mutabiq ho.
+                    </p>
+
+                    <ul>
+                        <li><strong>Type validation:</strong> Data types verify karen</li>
+                        <li><strong>Range validation:</strong> Min/max values check karen</li>
+                        <li><strong>Format validation:</strong> Expected patterns match karen</li>
+                        <li><strong>Whitelist approach:</strong> Sirf allowed values accept karen</li>
+                        <li><strong>SQL injection prevention:</strong> Parameterized queries</li>
+                        <li><strong>XSS prevention:</strong> HTML encoding</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>4. Session Management (Session Ka Intezaam)</strong>
+                    <p>
+                        Session token manipulation ko rokne ke liye mazboot session management techniques istemal karein.
+                    </p>
+
+                    <ul>
+                        <li>Cryptographically secure session IDs</li>
+                        <li>Session data server-side store karen</li>
+                        <li>HttpOnly aur Secure flags use karen cookies mein</li>
+                        <li>Session hijacking se bachen</li>
+                        <li>Regular session rotation</li>
+                        <li>Session timeout implement karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>5. Encrypt Sensitive Parameters</strong>
+                    <p>
+                        Nihayat sensitive data ke liye, parameters ko encrypt karna hifazat ki ek mazeed teh laga sakta hai, halanke server-side validation ab bhi sabse ahem hai.
+                    </p>
+
+                    <div class="example-box">
+                        <h4>💡 Encryption Example:</h4>
+                        <code>// Instead of plain IDs:</code>
+                        <code>/user?id=123  ❌</code>
+                        <code></code>
+                        <code>// Use encrypted tokens:</code>
+                        <code>/user?token=a7f8d9e2b3c4...  ✅</code>
+                        <code></code>
+                        <code>// Server decrypts and validates:</code>
+                        <code>const userId = decrypt(token);</code>
+                        <code>if (!isValidUser(userId)) return 403;</code>
+                    </div>
+
+                    <ul>
+                        <li>Sensitive IDs encrypt karen</li>
+                        <li>JWTs use karen with proper signing</li>
+                        <li>Tokens time-bound banayein</li>
+                        <li>One-time tokens use karen critical operations ke liye</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>6. Use Anti-CSRF Tokens</strong>
+                    <p>
+                        Halanke yeh bunyadi tor par Cross-Site Request Forgery ke liye hain, anti-CSRF tokens attackers ke liye malicious requests banana mushkil bana sakte hain.
+                    </p>
+
+                    <ul>
+                        <li>Har form mein unique CSRF token</li>
+                        <li>Token server-side validate karen</li>
+                        <li>SameSite cookie attribute use karen</li>
+                        <li>Double submit cookie pattern</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>7. Rate Limiting Aur Throttling</strong>
+                    <p>
+                        Automated parameter tampering attacks ko slow karen:
+                    </p>
+
+                    <ul>
+                        <li>Request rate limits per user/IP</li>
+                        <li>Brute force attempts detect karen</li>
+                        <li>Temporary bans for suspicious activity</li>
+                        <li>CAPTCHA after failed attempts</li>
+                        <li>API quotas enforce karen</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>8. Comprehensive Logging Aur Monitoring</strong>
+                    <p>
+                        Parameter tampering attempts ko detect karen:
+                    </p>
+
+                    <ul>
+                        <li>Har request ko log karen with parameters</li>
+                        <li>Unusual parameter values detect karen</li>
+                        <li>Failed validation attempts track karen</li>
+                        <li>Real-time alerting for suspicious patterns</li>
+                        <li>Audit trails maintain karen</li>
+                        <li>SIEM integration for analysis</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>9. Web Application Firewall (WAF)</strong>
+                    <p>
+                        WAF parameter tampering patterns detect kar sakta hai:
+                    </p>
+
+                    <ul>
+                        <li>Malicious parameter patterns block karen</li>
+                        <li>SQL injection attempts prevent karen</li>
+                        <li>XSS attacks filter karen</li>
+                        <li>Custom rules define karen</li>
+                        <li>Virtual patching for known vulnerabilities</li>
+                    </ul>
+                </div>
+
+                <div class="defense-card">
+                    <strong>10. Regular Security Testing</strong>
+                    <p>
+                        Parameter tampering vulnerabilities dhoondhein:
+                    </p>
+
+                    <ul>
+                        <li>Penetration testing specifically for parameter tampering</li>
+                        <li>Automated security scanning tools</li>
+                        <li>Code reviews focusing on input validation</li>
+                        <li>Bug bounty programs</li>
+                        <li>Fuzzing tests for unexpected inputs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h4>⚠️ Common Developer Mistakes</h4>
+                <ul>
+                    <li><strong>Client-side validation only:</strong> JavaScript validation easily bypass</li>
+                    <li><strong>Hidden fields ko secure samajhna:</strong> Easily visible in HTML</li>
+                    <li><strong>Price/amount client se lena:</strong> Always fetch from database</li>
+                    <li><strong>Role/permissions client se accept karna:</strong> Server se determine karen</li>
+                    <li><strong>Session data cookies mein plain text:</strong> Encrypt ya server-side store karen</li>
+                    <li><strong>URL parameters par bharosa:</strong> Easily modified</li>
+                </ul>
+            </div>
+
+            <div class="key-point">
+                <h4>💡 Golden Rules</h4>
+                <p>
+                    <strong>Rule #1: "Never trust the client."</strong> Client se aane wala har parameter potentially malicious ho sakta hai.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Rule #2: "Validate everything server-side."</strong> Client-side validation sirf user experience ke liye hai - security ke liye nahi.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Rule #3: "Critical data server se fetch karen."</strong> Prices, permissions, roles kabhi client se na len.
+                </p>
+                <p style="margin-top: 10px;">
+                    <strong>Rule #4: "Default deny approach."</strong> Explicitly allow karna zaroori, implicit trust nahi.
+                </p>
+            </div>
+
+            <div class="conclusion">
+                <h3>📌 Khulasa (Conclusion)</h3>
+                <p>
+                    <strong>Parameter Tampering</strong> ek critical vulnerability hai jo tab hoti hai jab applications client-side input par blind trust karti hain. Attackers easily request parameters ko modify kar ke prices manipulate kar sakte hain, unauthorized access haasil kar sakte hain, privileges escalate kar sakte hain, aur business logic ko bypass kar sakte hain.
+                </p>
+                <p style="margin-top: 15px;">
+                    Yeh vulnerability is bunyadi usool ko ujagar karta hai ke <strong>"client na-qabil-e-bharosa hai"</strong>. Tamam ahem faisle aur validations server-side par hone chahiye taake attackers ko application ke rawaiye ko manipulate karne se roka ja sake.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>Prevention strategy:</strong> Comprehensive server-side validation, strong authorization checks, secure session management, input sanitization, encryption, aur continuous monitoring implement karen. Yaad rakhein: client-side security sirf illusion hai - real security hamesha server par enforce hoti hai!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
